@@ -7,6 +7,7 @@ const articleController = new ArticleController();
 
 router.get('/home', articleController.getHome);
 router.get('/categories/:id', articleController.getArticleListByCategory);
+router.get('/subcategories/:id', articleController.getArticleListBySubCategory);
 router.get('/tags', articleController.getArticleListByTag);
 router.get('/', articleController.getArticle);
 router.get('/search', articleController.searchArticle);
