@@ -24,6 +24,7 @@ app.engine('.hbs', engine({
 }));
 app.set('view engine', 'hbs');
 app.set('views', './Views');
+app.use(express.static('./Static'));
 
 app.use('/articles', ArticleRouter);
 app.use('/writer', WriterRouter);
