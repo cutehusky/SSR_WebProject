@@ -1,0 +1,99 @@
+@import "Variable.css";
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.wrapper {
+  margin-top: 24px;
+}
+
+.writer-publish-news-title {
+  color: var(--color-gray-text);
+  font-size: 40px;
+  border-bottom: 2px solid var(--color-red-primary);
+  display: inline-block;
+}
+
+.writer-publish-news-container {
+  margin-top: 24px;
+}
+
+.input-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.input-field {
+  height: 40px;
+  font-size: 16px;
+}
+
+.textarea-field {
+  font-size: 16px;
+  resize: none;
+}
+
+/* summernote */
+
+/* Resize toolbar icons */
+.note-toolbar .note-btn {
+  font-size: 18px; /* Adjust toolbar icon size */
+  padding: 5px 10px;
+}
+
+.note-toolbar i {
+  font-size: 18px; /* Adjust font-awesome or glyphicon icon size */
+}
+
+.note-current-fontname {
+  font-size: 18px;
+}
+
+.note-dropdown-menu span {
+  font-size: 16px;
+}
+
+/* Resize font size of the editor contents */
+.note-editable {
+  min-height: 800px;
+}
+
+.note-editable * {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.popover-content {
+  font-size: 16px;
+}
+
+/* Footer */
+
+.submit-button {
+  background-color: var(--color-blue-primary);
+  border-radius: 10px;
+  color: var(--color-white);
+  border: none;
+  padding: 8px 24px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.back-button {
+  border-radius: 10px;
+  border: 1px solid var(--color-blue-primary);
+  background-color: var(--color-white);
+  color: var(--color-blue-primary);
+  font-size: 20px;
+  font-weight: bold;
+  padding: 8px 24px;
+  margin-right: 16px;
+}
+
+.submit-button:hover,
+.back-button:hover {
+  opacity: 0.8;
+}

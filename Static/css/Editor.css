@@ -1,0 +1,120 @@
+@import "Variable.css";
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-size: 62.5%;
+}
+
+p {
+  font-size: 1.6rem;
+  margin-bottom: 0;
+}
+
+.editor-title {
+  color: var(--color-gray-text);
+  font-size: 4rem;
+  border-bottom: 2px solid var(--color-red-primary);
+  display: inline-block;
+}
+
+.editor-container-header {
+  list-style-type: none;
+  overflow-x: auto;
+  white-space: nowrap;
+  -ms-overflow-style: none; /* Hide scrollbar in IE/Edge */
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
+}
+
+.editor-container-header::-webkit-scrollbar {
+  display: none; /* Hide scrollbar in Chrome/Safari */
+}
+
+.editor-container-header li {
+  padding: 4px 8px;
+  margin-right: 16px;
+}
+
+.editor-container-header li a {
+  font-size: 2rem;
+}
+
+.editor-container-header li a:not(.editor-container-header-item-active) {
+  color: var(--color-gray-text);
+}
+
+.editor-container-header li:last-child {
+  margin-right: 0px;
+}
+
+.editor-container-header li:hover {
+  border-radius: 4px;
+  background-color: var(--color-red-link);
+}
+
+.editor-container-header li:hover a {
+  color: var(--color-white);
+  text-decoration: none;
+}
+
+.editor-container-header-item-active {
+  color: var(--color-red-link);
+  border-bottom: 1px solid var(--color-red-link);
+  font-style: italic;
+  font-weight: bold;
+}
+
+.editor-container-body {
+  border-top: 2px solid var(--color-black);
+}
+
+.editor-container-body-heading {
+  font-weight: bold;
+  background-color: #ecc9d5;
+  padding: 0 8px;
+}
+
+.editor-container-body-heading p {
+  padding: 8px 0;
+}
+
+.editor-container-body-content-item {
+  padding: 8px;
+  background-color: var(--color-white);
+}
+
+.editor-container-body-content-item p {
+  padding: 0;
+}
+
+.editor-container-body-content-item:nth-child(even) {
+  background-color: #ecc9d5;
+}
+
+.editor-container-footer {
+  margin: 0 auto;
+}
+
+.editor-container-footer-paging {
+  width: 40px;
+  height: 40px;
+  background-color: #ecc9d5;
+  border-radius: 5px;
+  color: var(--color-black);
+  margin-right: 8px;
+}
+
+.editor-container-footer-paging:last-child {
+  margin-right: 0;
+}
+
+.editor-container-footer-paging:hover {
+  background-color: var(--color-red-link);
+  color: var(--color-white);
+  text-decoration: none;
+}
+
+.page-button {
+  font-size: 1.6rem;
+}

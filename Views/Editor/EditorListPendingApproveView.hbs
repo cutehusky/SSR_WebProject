@@ -1,0 +1,64 @@
+<div class="row d-flex justify-content-center">
+  <div class="wrapper col col-lg-12 col-md-12 col-sm-12">
+    <h1 class="editor-title">Bài viết cần duyệt</h1>
+    <div class="editor-container mt-4">
+      <ul class="editor-container-header d-flex align-items-center pb-2">
+        {{#each this.categories}}
+          <li>
+            <a class="" href="#">{{this}}</a>
+          </li>
+        {{/each}}
+      </ul>
+      <div class="editor-container-body pt-2">
+        <div
+          class="editor-container-body-heading d-flex align-items-center justify-content-between"
+        >
+          <p class="col col-4">Tiêu đề</p>
+          <p class="col col-2">Tác giả</p>
+          <p class="col col-2">Ngày viết</p>
+          <p class="col col-2">Nhãn</p>
+          <p class="col col-2">Chuyên mục</p>
+        </div>
+        <div class="editor-container-body-content">
+          {{#each this.articles}}
+            <div
+              class="editor-container-body-content-item d-flex align-items-center justify-content-between"
+            >
+              <p class="col col-4">{{this.title}}</p>
+              <p class="col col-2">{{this.author}}</p>
+              <p class="col col-2">{{this.date}}</p>
+              <p class="col col-2">{{this.tag}}</p>
+              <p class="col col-2">{{this.category}}</p>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+      <div
+        class="editor-container-footer d-flex align-items-center justify-content-center mt-4"
+      >
+        <div class="w-30 d-flex align-items-center justify-content-between">
+          <a
+            href="#"
+            class="editor-container-footer-paging d-flex align-items-center justify-content-center"
+          >
+            <i class="bi bi-caret-left-fill page-button"></i>
+          </a>
+          {{#each this.pages}}
+            <a
+              href="#"
+              class="editor-container-footer-paging d-flex align-items-center justify-content-center"
+            >
+              <p>{{this}}</p>
+            </a>
+          {{/each}}
+          <a
+            href="#"
+            class="editor-container-footer-paging d-flex align-items-center justify-content-center"
+          >
+            <i class="bi bi-caret-right-fill page-button"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
