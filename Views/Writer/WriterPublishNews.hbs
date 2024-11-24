@@ -3,6 +3,7 @@
     <h1 class="writer-publish-news-title">Đăng bài viết mới</h1>
   </div>
   <form
+    id="writer-publish-news-form"
     action=""
     method="POST"
     class="writer-publish-news-container col col-lg-12 col-md-12 col-sm-12"
@@ -22,11 +23,13 @@
         class="form-control textarea-field"
         id="abstract"
         rows="10"
+        name="abstract"
       ></textarea>
     </div>
-    <div class="mb-4"><p class="input-title">Nhập nội dung</p><div
-        id="summernote"
-      ></div></div>
+    <div class="mb-4">
+      <p class="input-title">Nhập nội dung</p>
+      <div id="summernote"></div>
+    </div>
     <div class="mb-4">
       <label for="category" class="form-label input-title">Nhập chuyên mục</label>
       <input
@@ -42,15 +45,11 @@
         type="text"
         class="form-control input-field"
         id="title"
-        name="title"
+        name="tags"
       />
     </div>
+    <div class="writer-publish-news-footer d-flex justify-content-end w-100">
+      <button type="submit" formaction="#" class="submit-button">Đăng</button>
+    </div>
   </form>
-  <div class="writer-publish-news-footer w-100">
-    <button
-      type="submit"
-      formaction=""
-      class="submit-button float-right"
-    >Đăng</button>
-  </div>
 </div>

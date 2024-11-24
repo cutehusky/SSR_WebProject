@@ -1,125 +1,173 @@
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Web Project</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-  {{! summernote }}
-  <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="/css/main.css">
-  {{#each this.customCss}}
-  <link rel="stylesheet" href="/css/{{this}}" />
-  {{/each}}
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Project</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    {{! summernote }}
+    <link
+      href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/main.css" />
+    {{#each this.customCss}}
+      <link rel="stylesheet" href="/css/{{this}}" />
+    {{/each}}
+  </head>
 
-<body>
-  <div class="sticky-top">
-    <div class="topbar">
-      <a href="#"><img src="/logo.jpg" width="60px"></a>
-      <div class="textColor dateDisplay"> Thứ 2, 25/11/2024 </div>
-      <form action="/articles/search/" class="form-inline my-2 my-lg-0" method="get">
-        <div class="input-group">
-          <div class="input-div rounded-pill textColor">
-            <div class="input-group-append">
-              <button class="btn rounded-pill searchInput" type="submit" id="button-addon2">
-                <i class="bi bi-search"></i>
-              </button>
+  <body>
+    <div class="sticky-top">
+      <div class="topbar">
+        <a href="#"><img src="/logo.jpg" width="60px" /></a>
+        <div class="textColor dateDisplay"> Thứ 2, 25/11/2024 </div>
+        <form
+          action="/articles/search/"
+          class="form-inline my-2 my-lg-0"
+          method="get"
+        >
+          <div class="input-group">
+            <div class="input-div rounded-pill textColor">
+              <div class="input-group-append">
+                <button
+                  class="btn rounded-pill searchInput"
+                  type="submit"
+                  id="button-addon2"
+                >
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+              <input
+                type="text"
+                name="q"
+                class="form-control searchInput"
+                placeholder="Search"
+                aria-label="Search"
+                aria-describedby="button-addon2"
+              />
             </div>
-            <input type="text" name="q" class="form-control searchInput" placeholder="Search" aria-label="Search"
-              aria-describedby="button-addon2">
+          </div>
+        </form>
+        <div style="padding: 10px 10px 10px 10px;">
+          <a class="btn rounded-pill btn1" href="#">Tags</a>
+        </div>
+        <div style="display:flex">
+          <div style="padding: 10px 10px 10px 10px;">
+            <a class="btn rounded-pill btn2" href="#">
+              <i class="bi bi-person-fill" style="padding-right: 10px;"></i>
+              Đăng Nhập
+            </a>
+          </div>
+          <div style="padding: 10px 10px 10px 10px;">
+            <a class="btn rounded-pill btn1" href="#">Nâng Cấp Premium</a>
           </div>
         </div>
-      </form>
-      <div style="padding: 10px 10px 10px 10px;">
-        <a class="btn rounded-pill btn1" href="#">Tags</a>
       </div>
-      <div style="display:flex">
-        <div style="padding: 10px 10px 10px 10px;">
-          <a class="btn rounded-pill btn2" href="#">
-            <i class="bi bi-person-fill" style="padding-right: 10px;"></i>
-            Đăng Nhập
-          </a>
-        </div>
-        <div style="padding: 10px 10px 10px 10px;">
-          <a class="btn rounded-pill btn1" href="#">Nâng Cấp Premium</a>
-        </div>
-      </div>
-    </div>
 
-    <nav class="navbar navbar-expand navbar-light navbar-bottom" style="padding-top: 0px;">
-      <div class="navbar-nav topbar">
-        <li class="nav-item dropdown">
-          <a class="nav-link" href="#" role="button" aria-expanded="false">
-            <i class="bi bi-house-fill"></i>
-          </a>
-        </li>
-        {{#each Categories}}
-        <li class="nav-item dropdown">
-          <a class="nav-link" href="/articles/categories/{{id}}" role="button" aria-expanded="false">
-            {{name}}
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="dropdownMenu">
-            {{#each SubCategories}}
-            <li><a class="dropdown-item" href="/articles/subcategories/{{id}}">{{name}}</a></li>
-            {{/each}}
-          </ul>
-        </li>
-        {{/each}}
-      </div>
-    </nav>
-  </div>
-  <div class="container">{{{body}}}</div>
-  <hr>
-  <footer class="footer footer-color2 text-black py-4">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="footer-menu">
-            <a href="#">Trang Chủ</a>
-            {{#each Top10Categories}}
-            <a href="{{link}}">{{name}}</a>
-            {{/each}}
-            <a href="#">Info</a>
+      <nav
+        class="navbar navbar-expand navbar-light navbar-bottom"
+        style="padding-top: 0px;"
+      >
+        <div class="navbar-nav topbar">
+          <li class="nav-item dropdown">
+            <a class="nav-link" href="#" role="button" aria-expanded="false">
+              <i class="bi bi-house-fill"></i>
+            </a>
+          </li>
+          {{#each Categories}}
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link"
+                href="/articles/categories/{{id}}"
+                role="button"
+                aria-expanded="false"
+              >
+                {{name}}
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenu">
+                {{#each SubCategories}}
+                  <li><a
+                      class="dropdown-item"
+                      href="/articles/subcategories/{{id}}"
+                    >{{name}}</a></li>
+                {{/each}}
+              </ul>
+            </li>
+          {{/each}}
+        </div>
+      </nav>
+    </div>
+    <div class="container">{{{body}}}</div>
+    <hr />
+    <footer class="footer footer-color2 text-black py-4">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="footer-menu">
+              <a href="#">Trang Chủ</a>
+              {{#each Top10Categories}}
+                <a href="{{link}}">{{name}}</a>
+              {{/each}}
+              <a href="#">Info</a>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <h5>Thành viên nhóm</h5>
+            <ul class="list-unstyled">
+              <li>22127132, Lý Nghị Hoằng</li>
+              <li>21127087, Nguyễn Gia Kiệt</li>
+              <li>22127441, Thái Huyễn Tùng</li>
+              <li>22127131, Trần Nguyễn Minh Hoàng</li>
+              <li>22127123, Lê Hồ Phi Hoàng</li>
+            </ul>
+          </div>
+
+          <div class="col-md-3">
+            <h5>PTUDW</h5>
+            <ul class="list-unstyled">
+              <li>Final Project</li>
+              <li>Newspaper</li>
+            </ul>
           </div>
         </div>
-
-        <div class="col-md-3">
-          <h5>Thành viên nhóm</h5>
-          <ul class="list-unstyled">
-            <li>22127132, Lý Nghị Hoằng</li>
-            <li>21127087, Nguyễn Gia Kiệt</li>
-            <li>22127441, Thái Huyễn Tùng</li>
-            <li>22127131, Trần Nguyễn Minh Hoàng</li>
-            <li>22127123, Lê Hồ Phi Hoàng</li>
-          </ul>
-        </div>
-
-        <div class="col-md-3">
-          <h5>PTUDW</h5>
-          <ul class="list-unstyled">
-            <li>Final Project</li>
-            <li>Newspaper</li>
-          </ul>
-        </div>
       </div>
-  </footer>
-  <footer class="footer text-white py-4 footer-color1">
-    <div class="col text-center">
-      <p class="mb-0">Powered by ...</p>
-    </div>
-  </footer>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-    crossorigin="anonymous"></script>
-  {{! summernote }}
-  <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
-  {{#each this.customJs}}
-  <script src="/js/{{this}}"></script>
-  {{/each}}
-</body>
+    </footer>
+    <footer class="footer text-white py-4 footer-color1">
+      <div class="col text-center">
+        <p class="mb-0">Powered by ...</p>
+      </div>
+    </footer>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+      integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
+      crossorigin="anonymous"
+    ></script>
+    {{! summernote }}
+    <script
+      src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"
+    ></script>
+    {{#each this.customJs}}
+      <script src="/js/{{this}}"></script>
+    {{/each}}
+  </body>
 
 </html>
