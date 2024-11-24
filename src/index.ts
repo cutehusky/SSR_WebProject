@@ -16,8 +16,13 @@ const port: number = 3000;
 
 app.use(express.urlencoded({ extended: false }));
 
-app.engine('handlebars', engine());
-app.set('view engine', 'handlebars');
+app.engine('.hbs', engine({
+    extname: '.hbs',
+    layoutsDir: './Views/Layouts',
+    partialsDir: "./Views/Partials",
+    defaultLayout: 'main',
+}));
+app.set('view engine', 'hbs');
 app.set('views', './Views');
 
 app.use('/articles', ArticleRouter);
