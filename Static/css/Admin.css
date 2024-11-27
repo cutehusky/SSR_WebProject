@@ -1,0 +1,129 @@
+@import "Variable.css";
+
+.actionBtn {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: var(--color-red-link);
+    color: var(--color-white);
+}
+
+.btn-1 {
+    flex: 1;
+    color: var(--color-white);
+    background-color: #e42b6c;
+    box-shadow: none !important;
+}
+
+.btn-1:hover {
+    color: var(--color-white);
+    background-color: #e42b6c;
+    box-shadow: none !important;
+}
+
+
+.btn-2 {
+    flex: 1;
+    color: var(--color-white);
+    background-color: #1b76ff;
+    box-shadow: none !important;
+}
+
+.btn-2:hover {
+    color: var(--color-white);
+    background-color: #1b76ff;
+    box-shadow: none !important;
+}
+
+.btn-3 {
+    flex: 1;
+    color: var(--color-white);
+    background-color: #717171;
+    box-shadow: none !important;
+}
+
+.btn-3:hover {
+    color: var(--color-white);
+    background-color: #717171;
+    box-shadow: none !important;
+}
+
+.btn-4 {
+    flex: 1;
+    color: var(--color-black);
+    background-color: #a0a0a0;
+    box-shadow: none !important;
+}
+
+.btn-4:hover {
+    color: var(--color-black);
+    background-color: #a0a0a0;
+    box-shadow: none !important;
+}
+
+.toolBar {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    width: 100%;
+    margin: 0px;
+}
+
+.actionBtn:hover {
+    background-color: var(--color-red-link);
+    color: var(--color-white);
+}
+
+.editBtn:hover {
+    background-color: chartreuse;
+    color: var(--color-white);
+}
+
+.delBtn:hover {
+    color: var(--color-white);
+    background-color: red;
+}
+
+.dt-length {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+
+.dt-length label {
+    padding-top: 2px;
+}
+
+.dt-info {
+    display: none;
+}
+
+.categorySelection {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.dt-layout-end {
+    width: 100% !important;
+    justify-content: center !important;
+    align-content: center;
+}
+
+.custom-title {
+    font-weight: bold;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 30px;
+    margin-bottom: 50px;
+    color: var(--color-red-link);
+}
+
+.custom-title::after {
+    content: '';
+    display: block;
+    width: 200px;
+    margin: 0.5rem auto;
+    border-bottom: 2px solid var(--color-red-link);
+}

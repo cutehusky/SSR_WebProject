@@ -3,25 +3,23 @@ import {Response, Request} from "express";
 export class UserController {
     // /user/login
     logIn(req: Request, res: Response) {
-        const articleId = req.params.id;
         res.render('LoginView');
     }
 
     // /user/register
     register(req: Request, res: Response) {
-        const articleId = req.params.id;
         res.render('RegisterView');
     }
 
-    // /user/forgot-password
+    // /user/forgot-password/:id
     forgotPassword(req: Request, res: Response) {
-        const articleId = req.params.id;
+        const userId = req.params.id;
         res.render('forgotPasswordView');
     }
 
-    // /user/profile
+    // /user/profile/:id
     getUserProfile(req: Request, res: Response) {
-        const articleId = req.params.id;
+        const userId = req.params.id;
         res.render('UserProfileView');
     }
 }

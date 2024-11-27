@@ -1,42 +1,27 @@
-import {Response, Request} from "express";
+import { Response, Request } from "express";
 
 export class ArticleController {
     // /articles/home
     getHome(req: Request, res: Response) {
-        res.render('HomeView', {customCss: ['Home.css'],
-            Top10Categories:[
-                {name: 'test a', link: ''},
-                {name: 'test a', link: ''},
-                {name: 'test a', link: ''},
-                {name: 'test a', link: ''},
-                {name: 'test a', link: ''},
-                {name: 'test a', link: ''},
-                {name: 'test a', link: ''},
-                {name: 'test a', link: ''},
-                {name: 'test a', link: ''},
-                {name: 'test a', link: ''},],
-            Categories: [{
-                id: "123",
-                name: "test 1",
-                SubCategories: [{
-                    id: "456",
-                    name: "test 2"
-                }]
-                }, {
-                    id: "789",
-                    name: "test 3",
-                    SubCategories: [{
-                        id: "987",
-                        name: "test 4"
-                    }]
-                },{
-                    id: "654",
-                    name: "test 5",
-                    SubCategories: [{
-                        id: "321",
-                        name: "test 6"
-                    }]
-            }]});
+        let testCategory = [];
+        for (let i = 0; i < 20; i++) {
+            let testSubCategory = [];
+            for (let j = 0; j < 20; j++)
+                testSubCategory.push({
+                    id: j,
+                    name: "test subcategory " + j
+                });
+            testCategory.push({
+                id: i,
+                name: "test category " + i,
+                SubCategories: testSubCategory
+            })
+        }
+        res.render('HomeView', {
+            customCss: ['Home.css'],
+            Top10Categories: testCategory.slice(0, 10),
+            Categories: testCategory
+        });
     }
 
     // /articles/categories/:id?page=

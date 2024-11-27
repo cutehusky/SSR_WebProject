@@ -1,0 +1,103 @@
+<div class="toolBar gap-2 p-3">
+    <a name="" id="" href="#" role="button" class="btn btn-1 scale d-flex align-items-center gap-2">
+        <i class="bi bi-list"></i>
+        Quản Lý Chuyên Mục
+    </a>
+
+    <a name="" id="" href="#" role="button" class="btn btn-2 scale d-flex align-items-center gap-2">
+        <i class="bi bi-tag"></i>
+        Quản Lý Nhãn
+    </a>
+
+    <a name="" id="" href="#" role="button" class="btn btn-3 scale d-flex align-items-center gap-2">
+        <i class="bi bi-file-earmark-text"></i>
+        Quản Lý Bài Viết
+    </a>
+
+    <a name="" id="" href="#" role="button" class="btn btn-4 d-flex align-items-center gap-2">
+        <i class="bi bi-person"></i>
+        <i>
+            Quản Lý Người Dùng
+        </i>
+    </a>
+</div>
+<div class="container mt-5">
+    <h3 class="custom-title">Quản Lý Người Dùng</h3>
+</div>
+<h4>Thêm Người Dùng</h4>
+<form method="post" action="">
+    <div class="categorySelection">
+        <label for="roleSelect1" class="form-label" style="padding-top: 8px; width: 200px;">
+            Vai Trò
+        </label>
+        <select name="role" class="form-select" style="height: 40px;" id="roleSelect1">
+            <option>Admin</option>
+            <option>User</option>
+            <option>Writer</option>
+            <option>Editor</option>
+        </select>
+        <button type="submit" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;"><i
+                class="bi bi-person-fill-add" style="margin-right: 5px;"></i> Thêm</button>
+    </div>
+</form>
+<h4>Danh Sách Người Dùng</h4>
+<form method="get" action="/admin/user">
+    <div class="categorySelection">
+        <label for="roleSelect2" class="form-label" style="padding-top: 8px; width: 200px;">
+            Vai Trò
+        </label>
+        <select name="role" class="form-select" style="height: 40px;" id="roleSelect2">
+            <option value="all" {{#if (eq selectedRole 'all' ) }}selected{{/if}}>
+                Tất Cả
+            </option>
+            <option value="admin" {{#if (eq selectedRole 'admin' ) }}selected{{/if}}>
+                Admin
+            </option>
+            <option value="user" {{#if (eq selectedRole 'user' ) }}selected{{/if}}>
+                User
+            </option>
+            <option value="writer" {{#if (eq selectedRole 'writer' ) }}selected{{/if}}>
+                Writer
+            </option>
+            <option value="editor" {{#if (eq selectedRole 'editor' ) }}selected{{/if}}>
+                Editor
+            </option>
+        </select>
+        <button type="submit" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;">
+            <i class="bi bi-funnel-fill" style="margin-right: 10px;"></i>Lọc</button>
+    </div>
+</form>
+<table id="myTable" class="display">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Họ Tên</th>
+            <th>Vai Trò</th>
+            <th>Ngày Sinh</th>
+            <th>Thao Tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each data}}
+        <tr>
+            <td>{{email}}</td>
+            <td>{{name}}</td>
+            <td>{{role}}</td>
+            <td>{{dateOfBirth}}</td>
+            <td>
+                <form method="get" style="margin: 0px; display: inline">
+                    <button name="" class="btn actionBtn editBtn scale" formaction="/user/profile/{{id}}" type="submit">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                </form>
+                <form method="post" style="margin: 0px; display: inline">
+                    <input name="id" type="text" value="{{id}}" style="display: none;">
+                    <button name="" class="btn actionBtn delBtn scale" formaction="/user/delete" type="submit">
+                        <i class="bi bi-person-x-fill"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

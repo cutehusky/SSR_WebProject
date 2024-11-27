@@ -8,9 +8,10 @@ import { Response, Request } from "express";
 import { ArticleRouter } from "./Router/ArticleRouter";
 import { WriterRouter } from "./Router/WriterRouter";
 import { UserRouter } from "./Router/UserRouter";
-import { AdminRouter } from "./Router/AdminController";
+import { AdminRouter } from "./Router/AdminRouter";
 import { EditorRouter } from "./Router/EditorRouter";
 import { GuestRouter } from "./Router/GuestRouter";
+import Handlebars from 'handlebars';
 
 const app: Express = express();
 const port: number = 3000;
@@ -36,6 +37,10 @@ app.use("/user", UserRouter);
 app.use("/admin", AdminRouter);
 app.use("/editor", EditorRouter);
 app.use("/guest", GuestRouter);
+
+Handlebars.registerHelper('eq', function (a, b) {
+  return a === b;
+});
 
 app.get("/", (req: Request, res: Response) => {
   res.redirect("/articles/home/");
