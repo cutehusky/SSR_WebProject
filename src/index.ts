@@ -10,6 +10,7 @@ import { WriterRouter } from "./Router/WriterRouter";
 import { UserRouter } from "./Router/UserRouter";
 import { AdminRouter } from "./Router/AdminController";
 import { EditorRouter } from "./Router/EditorRouter";
+import { GuestRouter } from "./Router/GuestRouter";
 
 const app: Express = express();
 const port: number = 3000;
@@ -34,6 +35,7 @@ app.use("/writer", WriterRouter);
 app.use("/user", UserRouter);
 app.use("/admin", AdminRouter);
 app.use("/editor", EditorRouter);
+app.use("/guest", GuestRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.redirect("/articles/home/");

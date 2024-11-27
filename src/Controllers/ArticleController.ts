@@ -3,7 +3,7 @@ import {Response, Request} from "express";
 export class ArticleController {
     // /articles/home
     getHome(req: Request, res: Response) {
-        res.render('HomeView', {customCss: [],
+        res.render('HomeView', {customCss: ['Home.css'],
             Top10Categories:[
                 {name: 'test a', link: ''},
                 {name: 'test a', link: ''},
