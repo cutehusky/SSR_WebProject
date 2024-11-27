@@ -76,7 +76,6 @@
     margin: auto;
 }
 
-/* 
 .bootstrap-tagsinput {
     width: 100%;
     display: flex !important;
@@ -87,13 +86,14 @@
     background-color: var(--color-red-primary);
     border-radius: 20px;
     padding: 5px 8px 5px 8px;
-    color: black !important;
-} 
+    margin: 3px;
+    color: white !important;
+}
 
 span[data-role="remove"]::after {
     content: "\F622" !important;
     font-family: "bootstrap-icons" !important;
-} */
+}
 
 .input-div {
     width: 100%;
@@ -225,11 +225,9 @@ span[data-role="remove"]::after {
     background-color: var(--color-red-primary);
 }
 
-/*
 .dropdown-menu {
     border-radius: 0 !important;
 }
-*/
 
 /*
 ref: https://www.w3schools.com/howto/howto_css_subnav.asp 
