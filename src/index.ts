@@ -10,7 +10,6 @@ import { WriterRouter } from "./Router/WriterRouter";
 import { UserRouter } from "./Router/UserRouter";
 import { AdminRouter } from "./Router/AdminRouter";
 import { EditorRouter } from "./Router/EditorRouter";
-import { GuestRouter } from "./Router/GuestRouter";
 import Handlebars from 'handlebars';
 
 const app: Express = express();
@@ -36,7 +35,6 @@ app.use("/writer", WriterRouter);
 app.use("/user", UserRouter);
 app.use("/admin", AdminRouter);
 app.use("/editor", EditorRouter);
-app.use("/guest", GuestRouter);
 
 Handlebars.registerHelper('eq', function (a, b) {
   return a === b;

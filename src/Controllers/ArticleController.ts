@@ -1,5 +1,65 @@
 import { Response, Request } from "express";
 
+
+const listCardResult = [
+    {
+        img: "https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0",
+        title: "Mây giống đĩa bay trên ngọn núi chứa chan",
+        description: "Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.",
+        date: "10/10/2024",
+        tagTitle: "Khoa học",
+        tagDescription: "Khoa học trong nước",
+        tagList: [
+            { tag: "Địa lý", link: "#" },
+            { tag: "Khoa học", link: "#" },
+            { tag: "Hiện tượng siêu nhiên", link: "#" }
+        ]
+    },
+    {
+        img: "https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0",
+        title: "Mây giống đĩa bay trên ngọn núi chứa chan",
+        description: "Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.",
+        date: "10/10/2024",
+        tagTitle: "Khoa học",
+        tagDescription: "Khoa học trong nước",
+        tagList: [
+            { tag: "Địa lý", link: "#" },
+            { tag: "Khoa học", link: "#" },
+            { tag: "Hiện tượng siêu nhiên", link: "#" },
+            { tag: "Viễn tưởng", link: "#" },
+            { tag: "Tâm linh", link: "#" },
+        ]
+    },
+    {
+        img: "https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0",
+        title: "Mây giống đĩa bay trên ngọn núi chứa chan",
+        description: "Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.",
+        date: "10/10/2024",
+        tagTitle: "Khoa học",
+        tagDescription: "Khoa học trong nước",
+        tagList: [
+            { tag: "Địa lý", link: "#" },
+            { tag: "Khoa học", link: "#" },
+            { tag: "Hiện tượng siêu nhiên", link: "#" }
+        ]
+    },
+    {
+        img: "https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0",
+        title: "Mây giống đĩa bay trên ngọn núi chứa chan",
+        description: "Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.",
+        date: "10/10/2024",
+        tagTitle: "Khoa học",
+        tagDescription: "Khoa học trong nước",
+        tagList: [
+            { tag: "Địa lý", link: "#" },
+            { tag: "Khoa học", link: "#" },
+            { tag: "Hiện tượng siêu nhiên", link: "#" },
+            { tag: "Viễn tưởng", link: "#" },
+            { tag: "Tâm linh", link: "#" },
+
+        ]
+    }
+];
 export class ArticleController {
     // /articles/home
     getHome(req: Request, res: Response) {
@@ -64,7 +124,7 @@ export class ArticleController {
         const page = req.query.page as string || '0';
         console.log(searchValue);
         console.log(page);
-        res.render('SearchView');
+        res.render('Home/HomeGuestSearch', { listCardResult });
     }
 
     // /articles/download/:id
