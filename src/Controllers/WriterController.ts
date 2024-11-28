@@ -3,7 +3,7 @@ import { Response, Request } from "express";
 export class WriterController {
   // /writer/new
   createArticleEditor(req: Request, res: Response) {
-    // res.render('ArticleEditorView');=
+    // res.render('ArticleEditorView');
     res.render("Writer/WriterPublishNews", {
       customCss: ["Writer.css"],
       customJs: ["Summernote.js"],

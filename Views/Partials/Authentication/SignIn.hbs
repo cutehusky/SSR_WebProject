@@ -1,0 +1,62 @@
+<div class="modal-body d-flex align-items-start justify-content-between">
+  <div
+    class="sign-in-email d-flex flex-column align-items-center justify-content-center w-50 border-end border-secondary-subtle"
+  >
+    <h6 class="mb-4">Đăng nhập với email</h6>
+    {{! Form submit for sign in with email }}
+    <form action="#" class="w-75">
+      <div class="mb-3">
+        <input
+          type="email"
+          class="form-control mb-4 sign-in-form-input"
+          id="sign-in-form-email"
+          placeholder="Email của bạn"
+          name="email"
+        />
+      </div>
+      <div class="mb-3">
+        <input
+          type="password"
+          class="form-control mb-4 sign-in-form-input"
+          id="sign-in-form-password"
+          placeholder="Mật khẩu của bạn"
+          name="password"
+        />
+      </div>
+      <div class="d-flex flex-column align-items-center justify-content-center">
+        <button type="submit" class="btn btn-secondary w-100">Đăng nhập</button>
+        <a href="#" class="mt-4 forgot-password">Lấy lại mật khẩu</a>
+      </div>
+    </form>
+  </div>
+  <div
+    class="sign-in-social-media sign-in-email d-flex flex-column align-items-center justify-content-center w-50"
+  >
+    <h6 class="mb-4">Đăng nhập với</h6>
+    <div
+      class="social-media d-flex align-items-center flex-column justify-content-center w-100"
+    >
+      <a
+        href="#"
+        class="social-media-item d-flex align-items-center mb-4 w-75 facebook"
+      >
+        <i class="bi bi-facebook social-medial-icon"></i>
+        <p>Facebok</p>
+      </a>
+      <a
+        href="#"
+        class="social-media-item d-flex align-items-center mb-4 w-75 google"
+      >
+        <i class="bi bi-google social-medial-icon"></i>
+        <p>Google</p>
+      </a>
+      <a
+        href="#"
+        class="social-media-item d-flex align-items-center w-75 apple"
+      >
+        <i class="bi bi-apple social-medial-icon"></i>
+        <p>Apple</p>
+      </a>
+    </div>
+  </div>
+</div>

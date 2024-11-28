@@ -1,0 +1,88 @@
+.modal-content-config {
+  border-radius: 0;
+  position: relative;
+}
+
+.button-close-modal {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  padding: 12px;
+  border-radius: 100%;
+  background-color: var(--color-white);
+  opacity: 1;
+}
+
+.modal-header-config {
+  padding: 0;
+  border: none;
+}
+
+.modal-header-config-title {
+  padding: 16px;
+  border-bottom: 1px solid var(--bs-border-color);
+  cursor: pointer;
+}
+
+.modal-header-config-title.is-active {
+  color: var(--color-red-primary);
+  border-color: var(--color-red-link);
+}
+
+.sign-in-form-input {
+  height: 48px;
+}
+
+.forgot-password {
+  text-decoration: none;
+  color: #757575;
+}
+
+.footer-text {
+  color: #4f4f4f;
+  opacity: 0.6;
+}
+
+.is-registered {
+  color: var(--color-blue-primary);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.social-media-item {
+  padding: 10px 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-decoration: none;
+
+  position: relative;
+}
+
+.social-media-item.facebook {
+  color: #3b5999;
+  border-color: #3b5999;
+}
+
+.social-media-item.google {
+  color: #0f9d58;
+  border-color: #0f9d58;
+}
+
+.social-media-item.apple {
+  color: #000000;
+  border-color: #000000;
+}
+
+.social-medial-icon {
+  font-size: 28px;
+}
+
+.social-media-item p {
+  margin-bottom: 0;
+  font-size: 18px;
+  font-weight: bold;
+
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
