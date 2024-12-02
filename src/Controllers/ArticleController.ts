@@ -104,11 +104,14 @@ export class ArticleController {
 
     // /articles/tags?tags=&page=
     getArticleListByTag(req: Request, res: Response) {
-        const tags = req.query.tags as string[] || [];
+        const tags = req.query.tags as string;
         const page = req.query.page as string || '0';
         console.log(tags);
         console.log(page)
-        res.render('ArticleListByTagView');
+        res.render('Home/HomeGuestTag', {
+            listCardResult, 
+            tags
+        });
     }
 
     // /articles/:id

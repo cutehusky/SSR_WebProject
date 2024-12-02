@@ -121,7 +121,7 @@
             >
               <label for="tagInput">Tìm kiếm theo tags</label>
               <input
-                id="tagInput"
+                class="tagInput"
                 name="tags"
                 type="text"
                 id="tags"
@@ -246,7 +246,7 @@
     {{/each}}
 
     <script>
-      $('#tagInput').tagsinput({ onTagExists: function (item, $tag) {
+      $('.tagInput').tagsinput({ onTagExists: function (item, $tag) {
       console.log("test") } }); $(document).keypress( function (event) { if
       (event.which == '13') { event.preventDefault(); } });
     </script>

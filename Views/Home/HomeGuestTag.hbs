@@ -1,0 +1,51 @@
+<div class="title-search-box d-flex align-items-center justify-content-between pb-4" style="width: 270px; height: 60px;"> 
+  <div class="fs-2 fw-bold">Kết quả tìm kiếm</div>
+</div>
+
+<div class="input-group rounded mt-5">
+    <form method="get" action="/articles/tags" style="width: 100%; padding-top: 10px" class="topbar gap-2">
+        <div class="input-wrapper position-relative" style="width: 100%;">
+            <input class="tagInput form-control pe-5" id="tagsInputSearch" name="tags" type="text" data-role="tagsinput" placeholder="Enter tags" value={{tags}} "" />
+            <a href="#">
+            <i class="bi bi-search position-absolute end-0 top-50 translate-middle-y me-3 text-muted"></i>
+            </a>
+        </div>
+    </form>
+</div>
+
+
+
+<div class="container mt-5 d-flex flex-column justify-content-center align-items-center">
+  {{#each listCardResult}}
+    <div class="card d-flex flex-row justify-content-center align-items-center" style="width: 750px; height: 150px;">
+      <img class="card-img-top" src="{{this.img}}" alt="Image" style="width: 200px; height: 120px;">
+      <div class="card-body d-flex flex-column justify-content-between align-items-start ms-3 border-end" style="width: 320px;">
+        <div class="card-item-title fw-bold text-dark">{{this.title}}</div>
+        <div class="card-item-description text-dark">{{this.description}}</div>
+        <div class="card-item-date text-muted">Ngày đăng: {{this.date}}</div>
+      </div>
+      <div class="card-body d-flex flex-column justify-content-between align-items-start ms-3" style="width: 200px;">
+        <div class="card-item-title fw-bold text-dark">{{this.tagTitle}}</div>
+        <div class="card-item-description text-dark">{{this.tagDescription}}</div>
+        <div class="card-item-tags">
+          {{#each this.tagList}}
+            <a href="{{this.link}}">
+              <button class="btn btn-sm btn2">{{this.tag}}</button>
+            </a>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  {{/each}}
+</div>
+<script>
+    // Kiểm tra dữ liệu đã đúng chưa
+  $(document).ready(function() {
+    var taglist = {{tags}};  // Đảm bảo `tags` là mảng từ server
+    console.log(taglist);  // tags sẽ là mảng trong JavaScript
+    // Lặp qua các tag và thêm vào ô input
+    taglist.forEach(function(tag) {
+      $('#tagsInputSearch').tagsinput('add', tag);
+    });
+  });
+</script>
