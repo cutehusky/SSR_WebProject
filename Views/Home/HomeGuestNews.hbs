@@ -1,0 +1,90 @@
+<section class="mt-5">
+    <div class="header-content mb-1 d-flex justify-content-between">
+        <ul class="d-flex list-unstyled">
+            <li class="text-primary">{{News.category}}</li>
+            <li>/</li>
+            <li>{{News.subcategory}}</li>
+        </ul>
+
+        <span class="data">{{News.date}}</span>
+    </div>
+
+    <h1 class="mb-2">{{News.title}}</h1>
+
+    <p>Được đăng bởi: {{News.writer}}</p>
+
+    <article class="d-flex flex-column align-items-center">
+        {{{News.content}}}
+    </article>
+</section>
+
+<hr>
+
+<div class="d-flex mt-2 flex-wrap">
+    <p class="fw-bold me-2" >Tags:</p>
+    <div class="card-item-tags" style="width:90%">
+        {{#each News.tagList}}
+            <a href="{{this.link}}" class="me-1">
+                <button class="btn btn-sm btn">{{this.tag}}</button>
+            </a>
+        {{/each}}
+    </div>
+</div>
+
+<section class="mt-5">
+    <h2 class="text-primary pb-2 d-inline" style="border-bottom: 1px solid var(--color-red-primary);">Bài viết liên quan</h2>
+    <div class="container mt-5 d-flex flex-column justify-content-center align-items-center">
+        {{#each News.RelatedNews}}
+            <div class="card d-flex flex-row justify-content-center align-items-center" style="width: 750px; height: 150px;">
+            <img class="card-img-top" src="{{this.img}}" alt="Image" style="width: 200px; height: 120px;">
+            <div class="card-body d-flex flex-column justify-content-between align-items-start ms-3 border-end" style="width: 320px;">
+                <div class="card-item-title fw-bold text-dark">{{this.title}}</div>
+                <div class="card-item-description text-dark">{{this.description}}</div>
+                <div class="card-item-date text-muted">Ngày đăng: {{this.date}}</div>
+            </div>
+            <div class="card-body d-flex flex-column justify-content-between align-items-start ms-3" style="width: 200px;">
+                <div class="card-item-title fw-bold text-dark">{{this.tagTitle}}</div>
+                <div class="card-item-description text-dark">{{this.tagDescription}}</div>
+                <div class="card-item-tags">
+                {{#each this.tagList}}
+                    <a href="{{this.link}}">
+                    <button class="btn btn-sm tag">{{this.tag}}</button>
+                    </a>
+                {{/each}}
+                </div>
+            </div>
+            </div>
+        {{/each}}
+    </div>
+
+</section>
+
+<hr>
+
+<section class="mt-5">
+    <h2 class="pb-2 d-inline" style="border-bottom: 1px solid var(--color-red-primary);">Bình luận</h2>
+    <div class="mt-5">
+        <div class="input-group mb-5">
+            <div class="me-2">
+                <img src="https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
+            </div>
+            <input type="text" class="form-control" placeholder="Viết bình luận">
+        </div>
+
+        {{#each News.comments}}
+            <div class="d-flex mt-3">
+                <div class="me-2">
+                    <img src="{{this.avatar}}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
+                </div>
+                <div class="d-flex flex-column">
+                    <div class="d-flex">
+                        <div class="fw-bold me-2">{{this.name}}</div>
+                        <div class="text-muted">{{this.date}}</div>
+                    </div>
+                        <div>{{this.content}}</div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</section>
+
