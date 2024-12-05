@@ -108,8 +108,6 @@ const News = {
     comments: commentList
 }
 
-
-
 const listCardResult = [
     {
         img: "https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0",

@@ -40,12 +40,14 @@
 
 /* Resize toolbar icons */
 .note-toolbar .note-btn {
-  font-size: 18px; /* Adjust toolbar icon size */
+  font-size: 18px;
+  /* Adjust toolbar icon size */
   padding: 5px 10px;
 }
 
 .note-toolbar i {
-  font-size: 18px; /* Adjust font-awesome or glyphicon icon size */
+  font-size: 18px;
+  /* Adjust font-awesome or glyphicon icon size */
 }
 
 .note-current-fontname {
@@ -96,4 +98,81 @@
 .submit-button:hover,
 .back-button:hover {
   opacity: 0.8;
+}
+
+/* WRITE HOME PAGE */
+
+
+.statistics .stat-item {
+  width: 250px;
+  height: 250px;
+  color: #FFFFFF;
+}
+
+.statistics .stat-item#completed {
+  background-color: #B52759;
+}
+
+.statistics .stat-item#waiting {
+  background-color: #087CCE;
+}
+
+.statistics .stat-item#pending {
+  background-color: #FCFAF6;
+  color: #222222;
+}
+
+.statistics .stat-item#reject {
+  background-color: #222222;
+}
+
+.statistics .stat-item .stat-label {
+  width: 225px;
+  border-bottom: 2px solid #FFFFFF;
+}
+
+.statistics .stat-item#pending .stat-label {
+  border-bottom: 2px solid #222222;
+}
+
+form .button button {
+  width: 100px;
+  height: 50px;
+}
+
+form.pass .button button {
+  width: 200px;
+  height: 50px;
+}
+
+form.infor .button .cancel {
+  background-color: #757575;
+}
+
+form.infor .button .cancel:hover {
+  background-color: #595151;
+}
+
+form.infor .button .submit {
+  background-color: #087CCE;
+}
+
+form.infor .button .submit:hover {
+  background-color: #1166a3;
+}
+
+form.pass .button .changePass {
+  background-color: #9F224E;
+}
+
+form.pass .button .changePass:hover {
+  background-color: #7c2846;
+}
+
+form.pass .button .forgetPass {
+  background-color: #087CCE;
+}
+
+form.pass .button .forgetPass:hover {
+  background-color: #1166a3;
 }
