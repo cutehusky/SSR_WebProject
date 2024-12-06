@@ -103,7 +103,16 @@ export class AdminController {
                 id: i,
                 email: "123@gmail.com",
                 name: "hello",
-                role: "abc",
+                role: "editor",
+                dateOfBirth: "1/1/2077"
+            })
+        }
+        for (let i = 0; i < 20; i++) {
+            testData.push({
+                id: i,
+                email: "123@gmail.com",
+                name: "hello",
+                role: "admin",
                 dateOfBirth: "1/1/2077"
             })
         }
