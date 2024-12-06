@@ -3,7 +3,7 @@
 .actionBtn {
     margin-top: 5px;
     margin-bottom: 5px;
-    background-color: var(--color-red-link);
+    background-color: var(--color-red-primary);
     color: var(--color-white);
 }
 
@@ -69,7 +69,7 @@
 }
 
 .actionBtn:hover {
-    background-color: var(--color-red-link);
+    background-color: var(--color-red-primary);
     color: var(--color-white);
 }
 
@@ -89,6 +89,9 @@
     align-content: center;
 }
 
+.dt-orderable-none {
+    border-bottom: none !important;
+}
 
 .dt-length label {
     padding-top: 2px;
@@ -117,7 +120,7 @@
     padding-top: 20px;
     padding-bottom: 30px;
     margin-bottom: 50px;
-    color: var(--color-red-link);
+    color: var(--color-red-primary);
 }
 
 .custom-title::after {
@@ -125,5 +128,41 @@
     display: block;
     width: 200px;
     margin: 0.5rem auto;
-    border-bottom: 2px solid var(--color-red-link);
+    border-bottom: 2px solid var(--color-red-primary);
+}
+
+.custom-modal-header {
+    border-bottom: none;
+}
+
+.custom-modal-footer {
+    border-top: none;
+}
+
+textarea {
+    width: 100%;
+    margin-top: 10px;
+    height: 100px;
+    border: 1px solid var(--color-red-primary) !important;
+    border-radius: 20px;
+    resize: none;
+}
+
+select {
+    border: 1px solid var(--color-red-primary) !important;
+}
+
+select:focus {
+    border: 1px solid var(--color-red-primary) !important;
+    box-shadow: none !important;
+
+}
+
+textarea:focus {
+    border: 1px solid var(--color-red-primary) !important;
+    box-shadow: none !important;
+}
+
+h4 {
+    padding-top: 20px;
 }

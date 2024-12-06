@@ -339,7 +339,7 @@ table.dataTable tfoot th,
 table.dataTable tfoot td {
     text-align: left;
     color: var(--color-white);
-    background-color: var(--color-red-link);
+    background-color: var(--color-red-primary);
 }
 
 table.dataTable thead th.dt-head-left,

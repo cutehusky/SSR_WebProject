@@ -2,9 +2,42 @@ import { Response, Request } from "express";
 
 export class AdminController {
 
-    // /admin/categories
+    // /admin/categories?category=
     getCategories(req: Request, res: Response) {
-        res.render('AdminCategoriesView');
+        const category = (req.query.category || "-1") as string;
+        const categoryId = parseInt(category);
+        let testCategory = [];
+        let testSubCategoryList = [];
+        for (let i = 0; i < 20; i++) {
+            let testSubCategory = [];
+            for (let j = 0; j < 20; j++) {
+                testSubCategory.push({
+                    id: j,
+                    name: "test subcategory " + j
+                });
+                testSubCategoryList.push({
+                    id: j,
+                    name: "test subcategory " + j,
+                    parentName: "test category " + i,
+                    parentId: i
+                });
+            }
+            testCategory.push({
+                id: i,
+                name: "test category " + i,
+                SubCategories: testSubCategory
+            });
+        }
+        res.render('Admin/AdminCategoriesView', {
+            customCss: ['Admin.css'],
+            customJs: ['AdminCategoryDataTable.js'],
+            selectedCategory: categoryId,
+            Top10Categories: testCategory.slice(0, 10),
+            Categories: testCategory,
+            data: {
+                subcategories: testSubCategoryList
+            }
+        });
     }
 
     // /admin/category/:id/edit
@@ -15,7 +48,17 @@ export class AdminController {
 
     // /admin/tags
     getTags(req: Request, res: Response) {
-        res.render('AdminTagsView');
+        res.render('Admin/AdminTagsView', {
+            customCss: ['Admin.css'],
+            customJs: ['AdminTagsDataTable.js'],
+            data: [
+                { name: "test 1", id: 1 },
+                { name: "test 2", id: 2 },
+                { name: "test 3", id: 3 },
+                { name: "test 4", id: 4 },
+                { name: "test 5", id: 5 },
+            ]
+        });
     }
 
     // /admin/tag/:id/edit
@@ -44,7 +87,7 @@ export class AdminController {
         }
         res.render('Admin/AdminArticlesView', {
             selectedCategory: categoryId,
-            customJs: ['DataTable.js'],
+            customJs: ['AdminArticlesDataTable.js'],
             customCss: ['Admin.css'],
             Top10Categories: testCategory.slice(0, 10),
             Categories: testCategory
@@ -82,7 +125,7 @@ export class AdminController {
             selectedRole: role,
             Top10Categories: testCategory.slice(0, 10),
             Categories: testCategory,
-            customJs: ['DataTable.js'],
+            customJs: ['AdminUsersDataTable.js'],
             customCss: ['Admin.css'],
             data: testData
         });

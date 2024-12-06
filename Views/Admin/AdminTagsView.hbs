@@ -1,0 +1,106 @@
+<div class="toolBar gap-2 p-3">
+    <a name="" id="" href="#" role="button" class="btn btn-1 scale d-flex align-items-center gap-2">
+        <i class="bi bi-list"></i>
+        Quản Lý Chuyên Mục
+    </a>
+
+    <a name="" id="" href="#" role="button" class="btn btn-2 d-flex align-items-center gap-2">
+        <i class="bi bi-tag"></i>
+        <i>
+            Quản Lý Nhãn
+        </i>
+    </a>
+
+    <a name="" id="" href="#" role="button" class="btn btn-3 scale d-flex align-items-center gap-2">
+        <i class="bi bi-file-earmark-text"></i>
+        Quản Lý Bài Viết
+    </a>
+
+    <a name="" id="" href="#" role="button" class="btn btn-4 scale d-flex align-items-center gap-2">
+        <i class="bi bi-person"></i>
+        Quản Lý Người Dùng
+    </a>
+</div>
+<div class="container mt-5">
+    <h1 class="custom-title">Quản Lý Nhãn</h1>
+</div>
+
+<div class="categorySelection" style="justify-content: flex-start;">
+    <h4 style="padding-top: 5px;">Thêm Nhãn</h4>
+    <button type="button" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;" data-bs-toggle="modal"
+        data-bs-target="#modal">
+        <i class="bi bi-plus-circle-fill" style="margin-right: 5px;"></i> Thêm
+    </button>
+</div>
+
+<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header custom-modal-header ">
+                <h1 class="modal-title fs-5" style="width:100%; text-align: center;" id="modalLabel">Thêm
+                    Tag</h1>
+            </div>
+            <form method="post">
+                <div class="modal-body">
+                    <textarea class="form-control" rows="4" name="name" placeholder="Mời nhập tên tag mới"></textarea>
+                </div>
+                <div class="modal-footer custom-modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="sumbit" class="btn actionBtn" formaction="/admin/tag/add">Thêm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<h4>Danh Sách Nhãn</h4>
+<table id="myTable" class="display">
+    <thead>
+        <tr>
+            <th>Tên</th>
+            <th>Thao Tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each data}}
+        <tr>
+            <td>{{name}}</td>
+            <td>
+                <button type="button" class="btn actionBtn editBtn scale" data-bs-toggle="modal"
+                    data-bs-target="#modal_{{id}}">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+                <form method="post" style="margin: 0px; display: inline">
+                    <input name="id" type="text" value="{{id}}" style="display: none;">
+                    <button class="btn actionBtn delBtn scale" formaction="/admin/tags/delete" type="submit">
+                        <i class="bi bi-person-x-fill"></i>
+                    </button>
+                </form>
+                <div class="modal fade" id="modal_{{id}}" tabindex="-1" aria-labelledby="modalLabel_{{id}}"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header custom-modal-header ">
+                                <h1 class="modal-title fs-5" style="width:100%; text-align: center;"
+                                    id="modalLabel_{{id}}">Chỉnh Sửa Tag</h1>
+                            </div>
+                            <form method="post">
+                                <input name="id" type="text" value="{{id}}" style="display: none;">
+                                <div class="modal-body">
+                                    <textarea class="form-control" rows="4" name="name"
+                                        placeholder="Mời nhập tên mới"> {{name}}</textarea>
+                                </div>
+                                <div class="modal-footer custom-modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Đóng</button>
+                                    <button type="sumbit" class="btn actionBtn"
+                                        formaction="/admin/tags/edit">Lưu</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

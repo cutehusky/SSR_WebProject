@@ -215,7 +215,7 @@ span[data-role="remove"]::after {
 }
 
 .input-group-text {
-    color: var(--color-red-link);
+    color: var(--color-red-primary);
     background-color: var(--color-white);
     cursor: pointer;
 }
