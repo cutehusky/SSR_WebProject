@@ -36,8 +36,8 @@ app.use("/user", UserRouter);
 app.use("/admin", AdminRouter);
 app.use("/editor", EditorRouter);
 
-Handlebars.registerHelper('eq', function (a, b) {
-  return a === b;
+Handlebars.registerHelper('eq', function (this: any, arg1: any, arg2: any, options) {
+  return arg1 === arg2 ? options.fn(this) : options.inverse(this);
 });
 
 app.get("/", (req: Request, res: Response) => {

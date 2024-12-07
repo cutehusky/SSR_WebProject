@@ -1,5 +1,6 @@
 import { time } from "console";
 import { Response, Request } from "express";
+import { get } from "http";
 import { data } from "jquery";
 import { title } from "process";
 
@@ -108,8 +109,6 @@ const News = {
     comments: commentList
 }
 
-
-
 const listCardResult = [
     {
         img: "https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0",
@@ -169,6 +168,77 @@ const listCardResult = [
         ]
     }
 ];
+
+const listCategories = [
+    {
+        id: 1,
+        name: "Khoa học",
+        SubCategories: [
+            { id: 1, name: "Khoa học trong nước" },
+            { id: 2, name: "Khoa học quốc tế" },
+            { id: 3, name: "Khoa học vũ trụ" },
+            { id: 4, name: "Khoa học tự nhiên" },
+            { id: 5, name: "Khoa học xã hội" }
+        ]
+    },
+    {
+        id: 2,
+        name: "Kinh doanh",
+        SubCategories: [
+            { id: 1, name: "Kinh doanh trong nước" },
+            { id: 2, name: "Kinh doanh quốc tế" },
+            { id: 3, name: "Kinh doanh vũ trụ" },
+            { id: 4, name: "Kinh doanh tự nhiên" },
+            { id: 5, name: "Kinh doanh xã hội" }
+        ]
+    },
+    {
+        id: 3,
+        name: "Giải trí",
+        SubCategories: [
+            { id: 1, name: "Giải trí trong nước" },
+            { id: 2, name: "Giải trí quốc tế" },
+            { id: 3, name: "Giải trí vũ trụ" },
+            { id: 4, name: "Giải trí tự nhiên" },
+            { id: 5, name: "Giải trí xã hội" }
+        ]
+    },
+    {
+        id: 4,
+        name: "Thể thao",
+        SubCategories: [
+            { id: 1, name: "Thể thao trong nước" },
+            { id: 2, name: "Thể thao quốc tế" },
+            { id: 3, name: "Thể thao vũ trụ" },
+            { id: 4, name: "Thể thao tự nhiên" },
+            { id: 5, name: "Thể thao xã hội" }
+        ]
+    }
+]
+
+const topNews = 
+{
+    img: "https://i1-vnexpress.vnecdn.net/2024/11/13/bao-9731-1731466141.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=-B1swA7YvV95zbdjBJPBMA",
+    title: "Bão số 9 đổ bộ vào miền Trung",
+    description: "Bão số 9 đổ bộ vào miền Trung vào chiều ngay 13/11, gây mưa to, gió lớn và sóng biển cao.",
+    date: "15/10/2024",
+    tagTitle: "Thời sự",
+    tagDescription: "Thời sự trong nước",
+    tagList: [
+        { tag: "Bão", link: "#" },
+        { tag: "Thời tiết", link: "#" },
+        { tag: "Miền Trung", link: "#" }
+    ]
+}
+
+function getFirstTwoTags(data: { tagList: { tag: string; link: string }[] }[]) {
+    return data.map(item => {
+        item.tagList = item.tagList.slice(0, 2);
+        return item;
+    });
+}   
+
+
 export class ArticleController {
     // /articles/home
     getHome(req: Request, res: Response) {
@@ -199,19 +269,37 @@ export class ArticleController {
         const page = req.query.page as string || '0';
         console.log(categoryId);
         console.log(page);
-        res.render('HomeGuestCategories', {
+        res.render('Home/HomeGuestCategories', {
+            customCss: ['Category.css', 'News.css'],
+            categories: listCategories[Number(categoryId) - 1].SubCategories,
+            name: listCategories[Number(categoryId) - 1].name,
             
+            newsOfCategory: getFirstTwoTags(listCardResult),
+            topNews
         }
         );
     }
 
-    // /articles/subcategories/:id?page=
+    // /articles/:category/subcategories/:id?page=
     getArticleListBySubCategory(req: Request, res: Response) {
-        const categoryId = req.params.id;
+        const categoryName = req.params.category;
+        const subCategoryId = req.params.id;
         const page = req.query.page as string || '0';
-        console.log(categoryId);
+        console.log(subCategoryId);
         console.log(page);
-        res.render('ArticleListBySubCategoryView');
+
+        //tìm trong datebase các category có name = categoryName
+        // const idCategory = listCategories.find(category => category.name === categoryName)?.id;
+        const idCategory = 1;
+        res.render('Home/HomeGuestSubCategories', {
+            customCss: ['Category.css', 'News.css'],
+            categories: listCategories[Number(idCategory) - 1].SubCategories,
+            nameCategory: categoryName,
+            subCategoryId :Number(subCategoryId),
+
+            newsOfCategory: getFirstTwoTags(listCardResult),
+            topNews
+        });
     }
 
     // /articles/tags?tags=&page=
@@ -226,7 +314,7 @@ export class ArticleController {
         });
     }
 
-    // /articles/:id
+    // /article/:id
     getArticle(req: Request, res: Response) {
         const articleId = req.params.id;
         console.log(articleId);

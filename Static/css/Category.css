@@ -1,0 +1,20 @@
+@import "Variable.css";
+
+ul {
+    /* max-height: 40px !important; */
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* width: auto; */
+    /* flex-grow: 1; */
+    /* max-width: calc(100% - 170px); */
+  /* background-color: var(--primary-color); */
+
+}
+
+a{
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
