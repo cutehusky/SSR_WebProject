@@ -1,0 +1,21 @@
+<div class="modal fade" id="modal_{{id}}" tabindex="-1" aria-labelledby="modalLabel_{{id}}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header custom-modal-header ">
+                <h1 class="modal-title fs-5" style="width:100%; text-align: center;" id="modalLabel_{{id}}">Chỉnh Sửa
+                    Tag</h1>
+            </div>
+            <form method="post">
+                <input name="id" type="text" value="{{id}}" style="display: none;">
+                <div class="modal-body">
+                    <textarea class="form-control" rows="4" name="name"
+                        placeholder="Mời nhập tên mới"> {{name}}</textarea>
+                </div>
+                <div class="modal-footer custom-modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="sumbit" class="btn actionBtn" formaction="/admin/tags/edit">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

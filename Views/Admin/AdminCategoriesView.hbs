@@ -1,26 +1,5 @@
-<div class="toolBar gap-2 p-3">
-    <a name="" id="" href="#" role="button" class="btn btn-1 d-flex align-items-center gap-2">
-        <i class="bi bi-list"></i>
-        <i>
-            Quản Lý Chuyên Mục
-        </i>
-    </a>
+{{> Admin/Menu active='category'}}
 
-    <a name="" id="" href="#" role="button" class="btn btn-2 scale d-flex align-items-center gap-2">
-        <i class="bi bi-tag"></i>
-        Quản Lý Nhãn
-    </a>
-
-    <a name="" id="" href="#" role="button" class="btn btn-3 scale d-flex align-items-center gap-2">
-        <i class="bi bi-file-earmark-text"></i>
-        Quản Lý Bài Viết
-    </a>
-
-    <a name="" id="" href="#" role="button" class="btn btn-4 scale d-flex align-items-center gap-2">
-        <i class="bi bi-person"></i>
-        Quản Lý Người Dùng
-    </a>
-</div>
 <div class="container mt-5">
     <h1 class="custom-title">Quản Lý Chuyên Mục</h1>
 </div>
@@ -33,26 +12,7 @@
     </button>
 </div>
 
-<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header custom-modal-header">
-                <h1 class="modal-title fs-5" style="width:100%; text-align: center;" id="modalLabel">Thêm Chuyên mục cấp
-                    1 </h1>
-            </div>
-            <form method="post">
-                <div class="modal-body">
-                    <textarea class="form-control" rows="4" name="name"
-                        placeholder="Mời nhập tên chuyên mục cấp 1 mới"></textarea>
-                </div>
-                <div class="modal-footer custom-modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="sumbit" class="btn actionBtn" formaction="/admin/category/add">Thêm</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+{{> Admin/Modal/AddCategory}}
 
 <h4>Danh Sách Chuyên Mục Cấp 1</h4>
 <table id="myTable" class="display">
@@ -78,30 +38,7 @@
                         <i class="bi bi-bookmark-x-fill"></i>
                     </button>
                 </form>
-                <div class="modal fade" id="modal_{{id}}" tabindex="-1" aria-labelledby="modalLabel_{{id}}"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header custom-modal-header ">
-                                <h1 class="modal-title fs-5" style="width:100%; text-align: center;"
-                                    id="modalLabel_{{id}}">Chỉnh sửa chuyên mục cấp 1</h1>
-                            </div>
-                            <form method="post">
-                                <input name="id" type="text" value="{{id}}" style="display: none;">
-                                <div class="modal-body">
-                                    <textarea class="form-control" rows="4" name="name"
-                                        placeholder="Mời nhập tên mới"> {{name}}</textarea>
-                                </div>
-                                <div class="modal-footer custom-modal-footer ">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Đóng</button>
-                                    <button type="sumbit" class="btn actionBtn"
-                                        formaction="/admin/category/edit">Lưu</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+                {{> Admin/Modal/EditCategory name=name id=id}}
             </td>
         </tr>
         {{/each}}
@@ -118,31 +55,7 @@
     </button>
 </div>
 
-<div class="modal fade" id="modal_" tabindex="-1" aria-labelledby="modalLabel_" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header custom-modal-header">
-                <h1 class="modal-title fs-5" style="width:100%; text-align: center;" id="modalLabel_">Thêm chuyên mục
-                    cấp 2 </h1>
-            </div>
-            <form method="post">
-                <div class="modal-body">
-                    <select name="category" class="form-select" style="height: 40px;" id="roleSelect">
-                        {{#each Categories}}
-                        <option value="{{id}}">{{name}}</option>
-                        {{/each}}
-                    </select>
-                    <textarea class="form-control" rows="4" name="name"
-                        placeholder="Mời nhập tên chuyên mục cấp 2 mới"></textarea>
-                </div>
-                <div class="modal-footer custom-modal-footer ">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="sumbit" class="btn actionBtn" formaction="/admin/subcategory/add">Thêm</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+{{>Admin/Modal/AddSubcategory}}
 
 <h4>Danh Sách Chuyên Mục Cấp 2</h4>
 <form method="get" action="/admin/categories/">
@@ -170,7 +83,7 @@
         </tr>
     </thead>
     <tbody>
-        {{#each data.subcategories}}
+        {{#each Subcategories}}
         <tr>
             <td> {{parentName}} </td>
             <td>{{name}}</td>
@@ -186,36 +99,7 @@
                         <i class="bi bi-bookmark-x-fill"></i>
                     </button>
                 </form>
-                <div class="modal fade" id="modal_{{id}}_" tabindex="-1" aria-labelledby="modalLabel_{{id}}_"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header custom-modal-header">
-                                <h1 class="modal-title fs-5" style="width:100%; text-align: center;"
-                                    id="modalLabel_{{id}}_">Chỉnh sửa chuyên mục cấp 2</h1>
-                            </div>
-                            <form method="post">
-                                <input name="id" type="text" value="{{id}}" style="display: none;">
-                                <div class="modal-body">
-                                    <select name="category" class="form-select" style="height: 40px;" id="roleSelect">
-                                        {{#each ../Categories}}
-                                        <option value="{{id}}" {{#if (eq ../parentId id ) }}selected{{/if }}>
-                                            {{name}}</option>
-                                        {{/each}}
-                                    </select>
-                                    <textarea class="form-control" rows="4" name="name"
-                                        placeholder="Mời nhập tên mới">{{name}}</textarea>
-                                </div>
-                                <div class="modal-footer custom-modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Đóng</button>
-                                    <button type="sumbit" class="btn actionBtn"
-                                        formaction="/admin/subcategory/edit">Lưu</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+                {{> Admin/Modal/EditSubcategory Categories=../Categories name=name id=id}}
             </td>
         </tr>
         {{/each}}

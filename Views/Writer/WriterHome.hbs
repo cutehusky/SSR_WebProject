@@ -1,55 +1,17 @@
 <div class="statistics mt-4 mb-4 d-flex flex-wrap align-items-center justify-content-between">
   {{#each statistics}}
-    <div class="stat-item rounded-bottom fw-bold fs-4 shadow p-3 d-flex flex-column align-items-center justify-content-center" id="{{id}}">
-      <span class="stat-label pb-1 m-0 d-flex text-center">{{label}}</span>
-      <span class="stat-value pt-4">{{value}}</span>
-      <span class="stat-tag fs-5 fw-normal pt-2">{{tag}}</span>
-    </div>
+  <div
+    class="stat-item rounded-bottom fw-bold fs-4 shadow p-3 d-flex flex-column align-items-center justify-content-center"
+    id="{{id}}">
+    <span class="stat-label pb-1 m-0 d-flex text-center">{{label}}</span>
+    <span class="stat-value pt-4">{{value}}</span>
+    <span class="stat-tag fs-5 fw-normal pt-2">{{tag}}</span>
+  </div>
   {{/each}}
 </div>
 
-
-<div class="title-search-box d-flex align-items-center justify-content-between pb-4" style="width: 270px; height: 60px;"> 
-  <div class="fs-2 fw-bold">Cập nhật hồ sơ</div>
-</div>
-
-<form class="infor">
-  <div class="mb-3 mt-4">
-    <label for="exampleInputPassword1" class="form-label fw-bold">Bút danh</label>
-    <input type="text" class="form-control" id="exampleInputPassword1">
-  </div>
-  <div class="mb-3 mt-4">
-    <label for="exampleInputPassword1" class="form-label fw-bold">Email</label>
-    <input type="email" class="form-control" id="exampleInputPassword1">
-  </div>
-  <div class="mb-3 mt-4">
-    <label for="exampleInputPassword1" class="form-label fw-bold">Họ và tên</label>
-    <input type="text" class="form-control" id="exampleInputPassword1">
-  </div>
-  <div class="mb-3 mt-4">
-    <label for="exampleInputPassword1" class="form-label fw-bold">Ngày tháng năm sinh</label>
-    <input type="date" class="form-control" id="exampleInputPassword1">
-  </div>
-  <div class="button mt-4 d-flex justify-content-end">
-      <button type="submit" class="btn btn-primary p-0 rounded fw-bold cancel">Hủy</button>
-      <button type="submit" class="btn btn-primary p-0 rounded fw-bold submit ms-sm-2 ms-md-4">Submit</button>
-  </div>
-</form>
-
-<div class="title-search-box d-flex align-items-center justify-content-between pb-4" style="width: 270px; height: 60px;"> 
-  <div class="fs-2 fw-bold">Mật khẩu</div>
-</div>
-
-<form class="pass">
-  <div class="mb-3 mt-4">
-    <input type="password" class="form-control" id="exampleInputPassword1">
-  </div>
-  <div class="button mt-4">
-      <button type="submit" class="btn btn-primary changePass p-0 rounded fw-bold me-3 ">Đổi mật khẩu</button>
-      <button type="submit" class="btn btn-primary forgetPass p-0 rounded fw-bold ">Quên mật khẩu</button>
-  </div>
-</form>
+{{> User/UserProfile id=profile.id penName=profile.penName dateOfBirth=profile.dateOfBirth email=profile.email name=profile.name}}
 
 <script>
-  console.log("data: ",this.statistics)
+  console.log("data: ", this.statistics)
 </script>

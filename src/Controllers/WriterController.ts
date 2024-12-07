@@ -53,7 +53,7 @@ export class WriterController {
   getWriterHome(req: Request, res: Response) {
     res.render("Writer/WriterHome", { 
       statistics,
-      customCss: ["Writer.css"],
+      customCss: ["Writer.css", "User.css"],
      });
   }
 

@@ -170,24 +170,8 @@ const listCardResult = [
 export class ArticleController {
     // /articles/home
     getHome(req: Request, res: Response) {
-        let testCategory = [];
-        for (let i = 0; i < 20; i++) {
-            let testSubCategory = [];
-            for (let j = 0; j < 20; j++)
-                testSubCategory.push({
-                    id: j,
-                    name: "test subcategory " + j
-                });
-            testCategory.push({
-                id: i,
-                name: "test category " + i,
-                SubCategories: testSubCategory
-            })
-        }
         res.render('HomeView', {
-            customCss: ['Home.css'],
-            Top10Categories: testCategory.slice(0, 10),
-            Categories: testCategory
+            customCss: ['Home.css']
         });
     }
 

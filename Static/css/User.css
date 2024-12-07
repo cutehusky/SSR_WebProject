@@ -1,0 +1,45 @@
+form .button button {
+    width: 100px;
+    height: 50px;
+}
+
+form.pass .button button {
+    width: 200px;
+    height: 50px;
+}
+
+form.infor .button .cancel {
+    background-color: #757575;
+}
+
+form.infor .button .cancel:hover {
+    background-color: #595151;
+}
+
+form.infor .button .submit {
+    background-color: #087CCE;
+}
+
+form.infor .button .submit:hover {
+    background-color: #1166a3;
+}
+
+form.pass .button .changePass {
+    background-color: #9F224E;
+}
+
+form.pass .button .changePass:hover {
+    background-color: #7c2846;
+}
+
+form.pass .button .forgetPass {
+    background-color: #087CCE;
+}
+
+form.pass .button .forgetPass:hover {
+    background-color: #1166a3;
+}
+
+li {
+    padding: 10px;
+}

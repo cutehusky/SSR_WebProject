@@ -11,6 +11,7 @@ import { UserRouter } from "./Router/UserRouter";
 import { AdminRouter } from "./Router/AdminRouter";
 import { EditorRouter } from "./Router/EditorRouter";
 import Handlebars from 'handlebars';
+import {MiddlewareController} from "./Controllers/Middleware";
 
 const app: Express = express();
 const port: number = 3000;
@@ -30,11 +31,12 @@ app.engine(
 app.set("view engine", "hbs");
 app.set("views", "./Views");
 
-app.use("/articles", ArticleRouter);
-app.use("/writer", WriterRouter);
-app.use("/user", UserRouter);
-app.use("/admin", AdminRouter);
-app.use("/editor", EditorRouter);
+let middlewareController = new MiddlewareController();
+app.use("/articles",middlewareController.getCategory,middlewareController.getProfile, ArticleRouter);
+app.use("/writer",middlewareController.getCategory,middlewareController.getProfile, WriterRouter);
+app.use("/user",middlewareController.getCategory,middlewareController.getProfile, UserRouter);
+app.use("/admin",middlewareController.getCategory,middlewareController.getProfile, AdminRouter);
+app.use("/editor",middlewareController.getCategory,middlewareController.getProfile, EditorRouter);
 
 Handlebars.registerHelper('eq', function (a, b) {
   return a === b;

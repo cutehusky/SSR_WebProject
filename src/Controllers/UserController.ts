@@ -14,12 +14,14 @@ export class UserController {
     // /user/forgot-password/:id
     forgotPassword(req: Request, res: Response) {
         const userId = req.params.id;
-        res.render('forgotPasswordView');
+        res.render('User/ForgotPasswordView',{
+            customCss: ['User.css']});
     }
 
     // /user/profile/:id
     getUserProfile(req: Request, res: Response) {
         const userId = req.params.id;
-        res.render('UserProfileView');
+        res.render('User/UserProfileView', {
+            customCss: ['User.css']});
     }
 }

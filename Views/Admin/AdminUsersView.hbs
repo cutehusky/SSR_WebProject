@@ -1,29 +1,9 @@
-<div class="toolBar gap-2 p-3">
-    <a name="" id="" href="#" role="button" class="btn btn-1 scale d-flex align-items-center gap-2">
-        <i class="bi bi-list"></i>
-        Quản Lý Chuyên Mục
-    </a>
+{{> Admin/Menu active='user'}}
 
-    <a name="" id="" href="#" role="button" class="btn btn-2 scale d-flex align-items-center gap-2">
-        <i class="bi bi-tag"></i>
-        Quản Lý Nhãn
-    </a>
-
-    <a name="" id="" href="#" role="button" class="btn btn-3 scale d-flex align-items-center gap-2">
-        <i class="bi bi-file-earmark-text"></i>
-        Quản Lý Bài Viết
-    </a>
-
-    <a name="" id="" href="#" role="button" class="btn btn-4 d-flex align-items-center gap-2">
-        <i class="bi bi-person"></i>
-        <i>
-            Quản Lý Người Dùng
-        </i>
-    </a>
-</div>
 <div class="container mt-5">
     <h1 class="custom-title">Quản Lý Người Dùng</h1>
 </div>
+
 <div class="categorySelection" style="justify-content: flex-start;">
     <h4 style="padding-top: 5px;">Thêm Người Dùng</h4>
     <button type="button" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;" data-bs-toggle="modal"
@@ -32,47 +12,7 @@
     </button>
 </div>
 
-<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel_" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header custom-modal-header">
-                <h1 class="modal-title fs-5" style="width:100%; text-align: center;" id="modalLabel_">Thêm người dùng
-                </h1>
-            </div>
-            <form method="post">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="emailInput">Email</label>
-                        <input type="text" class="form-control" name="email" id="emailInput" placeholder="">
-                    </div>
-                    <div class="form-group">
-                        <label for="nameInput">Họ tên</label>
-                        <input type="text" class="form-control" name="name" id="nameInput" placeholder="">
-                    </div>
-                    <div class="form-group">
-                        <label for="dobInput">Ngày sinh</label>
-                        <input type="text" class="form-control" name="dob" id="dobInput" placeholder="">
-                    </div>
-                    <div class="form-group">
-                        <label for="roleSelect1" class="form-label" style="padding-top: 8px; width: 200px;">
-                            Vai Trò
-                        </label>
-                        <select name="role" class="form-select" style="height: 40px;" id="roleSelect1">
-                            <option>Admin</option>
-                            <option>User</option>
-                            <option>Writer</option>
-                            <option>Editor</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer custom-modal-footer ">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="sumbit" class="btn actionBtn" formaction="/admin/user/add">Thêm</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+{{> Admin/Modal/AddUser}}
 
 <h4>Danh Sách Người Dùng</h4>
 <form method="get" action="/admin/user">
@@ -129,85 +69,7 @@
                         <i class="bi bi-person-x-fill"></i>
                     </button>
                 </form>
-                <div class="modal fade" id="modal_{{id}}" tabindex="-1" aria-labelledby="modalLabel_"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header custom-modal-header">
-                                <h1 class="modal-title fs-5" style="width:100%; text-align: center;" id="modalLabel_">
-                                    Chỉnh sửa người dùng
-                                </h1>
-                            </div>
-                            <form method="post">
-                                <div class="modal-body">
-                                    <div class="form-group">
-                                        <label for="emailInput">Email</label>
-                                        <input type="text" value="{{email}}" class="form-control" name="email"
-                                            id="emailInput" placeholder="">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="nameInput">Họ tên</label>
-                                        <input type="text" value="{{name}}" class="form-control" name="name"
-                                            id="nameInput" placeholder="">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="dobInput">Ngày sinh</label>
-                                        <input value="{{dateOfBirth}}" type="text" class="form-control" name="dob"
-                                            id="dobInput" placeholder="">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="roleSelect_{{id}}" class="form-label"
-                                            style="padding-top: 8px; width: 200px;">
-                                            Vai Trò
-                                        </label>
-                                        <select name="role" class="form-select" style="height: 40px;"
-                                            id="roleSelect_{{id}}">
-                                            <option value="admin" {{#if (eq role 'admin' ) }}selected{{/if}}>
-                                                Admin
-                                            </option>
-                                            <option value="user" {{#if (eq role 'user' ) }}selected{{/if}}>
-                                                User
-                                            </option>
-                                            <option value="writer" {{#if (eq role 'writer' ) }}selected{{/if}}>
-                                                Writer
-                                            </option>
-                                            <option value="editor" {{#if (eq role 'editor' ) }}selected{{/if}}>
-                                                Editor
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="category_{{id}}" class="form-label"
-                                            style="padding-top: 8px; width: 200px;">
-                                            Chuyên mục phụ trách
-                                        </label>
-                                        <input type="text" class="form-control" value="" name="category" readonly
-                                            style="display: none;">
-                                        </input>
-                                        <div class="categoryInputResult">
-                                            <div class="categoryInputItem">abc <span class="categoryInputItemRemove"
-                                                    onclick="">×</span></div>
-                                        </div>
-                                        <select class="form-select" style="height: 40px;" id="category_{{id}}">
-                                            {{#each ../Categories}}
-                                            {{#each SubCategories}}
-                                            <option value="{{id}}"> {{name}}</option>
-                                            {{/each}}
-                                            {{/each}}
-                                        </select>
-                                        <button type="button" id="addBtn_{{id}}" class="btn actionBtn">Add</button>
-                                    </div>
-                                </div>
-                                <div class="modal-footer custom-modal-footer ">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Đóng</button>
-                                    <button type="sumbit" class="btn actionBtn"
-                                        formaction="/admin/user/edit/{{id}}">Lưu</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+                {{> Admin/Modal/EditUser name=name email=email role=role dateOfBirth=dateOfBirth id=id}}
             </td>
         </tr>
         {{/each}}

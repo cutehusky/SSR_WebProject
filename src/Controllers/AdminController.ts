@@ -6,37 +6,22 @@ export class AdminController {
     getCategories(req: Request, res: Response) {
         const category = (req.query.category || "-1") as string;
         const categoryId = parseInt(category);
-        let testCategory = [];
-        let testSubCategoryList = [];
+        let testSubCategory = [];
         for (let i = 0; i < 20; i++) {
-            let testSubCategory = [];
             for (let j = 0; j < 20; j++) {
                 testSubCategory.push({
-                    id: j,
-                    name: "test subcategory " + j
-                });
-                testSubCategoryList.push({
                     id: j,
                     name: "test subcategory " + j,
                     parentName: "test category " + i,
                     parentId: i
                 });
             }
-            testCategory.push({
-                id: i,
-                name: "test category " + i,
-                SubCategories: testSubCategory
-            });
         }
         res.render('Admin/AdminCategoriesView', {
             customCss: ['Admin.css'],
             customJs: ['AdminCategoryDataTable.js'],
             selectedCategory: categoryId,
-            Top10Categories: testCategory.slice(0, 10),
-            Categories: testCategory,
-            data: {
-                subcategories: testSubCategoryList
-            }
+            Subcategories: testSubCategory
         });
     }
 
@@ -71,26 +56,10 @@ export class AdminController {
     getArticles(req: Request, res: Response) {
         const category = (req.query.category || "-1") as string;
         const categoryId = parseInt(category);
-        let testCategory = [];
-        for (let i = 0; i < 20; i++) {
-            let testSubCategory = [];
-            for (let j = 0; j < 20; j++)
-                testSubCategory.push({
-                    id: j,
-                    name: "test subcategory " + j
-                });
-            testCategory.push({
-                id: i,
-                name: "test category " + i,
-                SubCategories: testSubCategory
-            })
-        }
         res.render('Admin/AdminArticlesView', {
             selectedCategory: categoryId,
             customJs: ['AdminArticlesDataTable.js'],
-            customCss: ['Admin.css'],
-            Top10Categories: testCategory.slice(0, 10),
-            Categories: testCategory
+            customCss: ['Admin.css']
         });
     }
 
@@ -104,36 +73,21 @@ export class AdminController {
                 email: "123@gmail.com",
                 name: "hello",
                 role: "editor",
-                dateOfBirth: "1/1/2077"
+                dateOfBirth: "2077-12-12"
             })
         }
-        for (let i = 0; i < 20; i++) {
+        for (let i = 20; i < 40; i++) {
             testData.push({
                 id: i,
                 email: "123@gmail.com",
                 name: "hello",
                 role: "admin",
-                dateOfBirth: "1/1/2077"
+                dateOfBirth: "2077-1-1"
             })
         }
-        let testCategory = [];
-        for (let i = 0; i < 20; i++) {
-            let testSubCategory = [];
-            for (let j = 0; j < 20; j++)
-                testSubCategory.push({
-                    id: j,
-                    name: "test subcategory " + j
-                });
-            testCategory.push({
-                id: i,
-                name: "test category " + i,
-                SubCategories: testSubCategory
-            })
-        }
+
         res.render('Admin/AdminUsersView', {
             selectedRole: role,
-            Top10Categories: testCategory.slice(0, 10),
-            Categories: testCategory,
             customJs: ['AdminUsersDataTable.js'],
             customCss: ['Admin.css'],
             data: testData
