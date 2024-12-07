@@ -1,0 +1,107 @@
+{{> Admin/Menu active='category'}}
+
+<div class="container mt-5">
+    <h1 class="custom-title">Quản Lý Chuyên Mục</h1>
+</div>
+
+<div class="categorySelection" style="justify-content: flex-start;">
+    <h4 style="padding-top: 5px;">Thêm Chuyên Mục Cấp 1</h4>
+    <button type="button" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;" data-bs-toggle="modal"
+        data-bs-target="#modal">
+        <i class="bi bi-bookmark-plus-fill" style="margin-right: 5px;"></i> Thêm
+    </button>
+</div>
+
+{{> Admin/Modal/AddCategory}}
+
+<h4>Danh Sách Chuyên Mục Cấp 1</h4>
+<table id="myTable" class="display">
+    <thead>
+        <tr>
+            <th>Tên</th>
+            <th>Thao Tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each Categories}}
+        <tr>
+            <td>{{name}}</td>
+            <td>
+                <button type="button" class="btn actionBtn editBtn scale" data-bs-toggle="modal"
+                    data-bs-target="#modal_{{id}}">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+                <form method="post" style="margin: 0px; display: inline">
+                    <input name="id" type="text" value="{{id}}" style="display: none;">
+                    <button name="" class="btn actionBtn delBtn scale" formaction="/admin/category/delete"
+                        type="submit">
+                        <i class="bi bi-bookmark-x-fill"></i>
+                    </button>
+                </form>
+                {{> Admin/Modal/EditCategory name=name id=id}}
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<hr />
+
+<div class="categorySelection" style="justify-content: flex-start;">
+    <h4 style="padding-top: 5px;">Thêm Chuyên Mục Cấp 2</h4>
+    <button type="button" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;" data-bs-toggle="modal"
+        data-bs-target="#modal_">
+        <i class="bi bi-bookmark-plus-fill" style="margin-right: 5px;"></i> Thêm
+    </button>
+</div>
+
+{{>Admin/Modal/AddSubcategory}}
+
+<h4>Danh Sách Chuyên Mục Cấp 2</h4>
+<form method="get" action="/admin/categories/">
+    <div class="categorySelection">
+        <label for="roleSelect" class="form-label" style="padding-top: 8px; width: 200px;">
+            Chuyên Mục
+        </label>
+        <select name="category" class="form-select" style="height: 40px;" id="roleSelect">
+            <option value="-1" {{#if (eq ../selectedCategory -1 ) }}selected{{/if }}>Tất Cả</option>
+            {{#each Categories}}
+            <option value="{{id}}" {{#if (eq ../selectedCategory id ) }}selected{{/if }}>{{name}}</option>
+            {{/each}}
+        </select>
+        <button type="submit" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;">
+            <i class="bi bi-funnel-fill" style="margin-right: 10px;"></i>Lọc</button>
+    </div>
+</form>
+
+<table id="myTable2" class="display">
+    <thead>
+        <tr>
+            <th>Chuyên Mục Cấp 1 </th>
+            <th>Tên</th>
+            <th>Thao Tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each Subcategories}}
+        <tr>
+            <td> {{parentName}} </td>
+            <td>{{name}}</td>
+            <td>
+                <button type="button" class="btn actionBtn editBtn scale" data-bs-toggle="modal"
+                    data-bs-target="#modal_{{id}}_">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+                <form method="post" style="margin: 0px; display: inline">
+                    <input name="id" type="text" value="{{id}}" style="display: none;">
+                    <button name="" class="btn actionBtn delBtn scale" formaction="/admin/category/delete"
+                        type="submit">
+                        <i class="bi bi-bookmark-x-fill"></i>
+                    </button>
+                </form>
+                {{> Admin/Modal/EditSubcategory Categories=../Categories name=name id=id}}
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

@@ -1,0 +1,15 @@
+<div class="title-search-box d-flex align-items-center justify-content-between pb-4"
+    style="width: 350px; height: 60px; margin-top: 100px;">
+    <div class="fs-2 fw-bold">Trạng thái Premium</div>
+</div>
+<ul style="padding: 20px;">
+    {{#if (eq profile.time 0)}}
+    <li>Hiện tại bạn vẫn chưa đăng ký gói Premium của chúng tôi.</li>
+    <li>Hãy đăng ký ngay để nhận những trải nghiệm tốt nhất.</li>
+    {{else}}
+    <li>Hiện tại bạn còn {{profile.time}} phút premium</li>
+    <li>Cảm ơn bạn đã đăng ký gói Premium. Chúc bạn có một ngày vui vẻ</li>
+
+    {{/if}}
+</ul>
+{{> User/UserProfile id=profile.id dateOfBirth=profile.dateOfBirth email=profile.email name=profile.name}}

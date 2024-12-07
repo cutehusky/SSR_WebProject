@@ -1,0 +1,41 @@
+<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel_" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header custom-modal-header">
+                <h1 class="modal-title fs-5" style="width:100%; text-align: center;" id="modalLabel_">Thêm người dùng
+                </h1>
+            </div>
+            <form method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="emailInput">Email</label>
+                        <input type="text" class="form-control" name="email" id="emailInput" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        <label for="nameInput">Họ tên</label>
+                        <input type="text" class="form-control" name="name" id="nameInput" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        <label for="dobInput">Ngày sinh</label>
+                        <input type="date" class="form-control" name="dob" id="dobInput" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        <label for="roleSelect1" class="form-label" style="padding-top: 8px; width: 200px;">
+                            Vai Trò
+                        </label>
+                        <select name="role" class="form-select" style="height: 40px;" id="roleSelect1">
+                            <option>Admin</option>
+                            <option>User</option>
+                            <option>Writer</option>
+                            <option>Editor</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer custom-modal-footer ">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="sumbit" class="btn actionBtn" formaction="/admin/user/add">Thêm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

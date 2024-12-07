@@ -1,0 +1,45 @@
+{{> Admin/Menu active='tag'}}
+
+<div class="container mt-5">
+    <h1 class="custom-title">Quản Lý Nhãn</h1>
+</div>
+
+<div class="categorySelection" style="justify-content: flex-start;">
+    <h4 style="padding-top: 5px;">Thêm Nhãn</h4>
+    <button type="button" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;" data-bs-toggle="modal"
+        data-bs-target="#modal">
+        <i class="bi bi-plus-circle-fill" style="margin-right: 5px;"></i> Thêm
+    </button>
+</div>
+
+{{> Admin/Modal/AddTag}}
+
+<h4>Danh Sách Nhãn</h4>
+<table id="myTable" class="display">
+    <thead>
+        <tr>
+            <th>Tên</th>
+            <th>Thao Tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each data}}
+        <tr>
+            <td>{{name}}</td>
+            <td>
+                <button type="button" class="btn actionBtn editBtn scale" data-bs-toggle="modal"
+                    data-bs-target="#modal_{{id}}">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+                <form method="post" style="margin: 0px; display: inline">
+                    <input name="id" type="text" value="{{id}}" style="display: none;">
+                    <button class="btn actionBtn delBtn scale" formaction="/admin/tag/delete" type="submit">
+                        <i class="bi bi-x-octagon-fill"></i>
+                    </button>
+                </form>
+                {{> Admin/Modal/EditTag nam=name id=id}}
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

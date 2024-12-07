@@ -1,0 +1,59 @@
+<div class="toolBar gap-2 p-3">
+    {{#if (eq active 'category')}}
+    <a name="" id="" href="#" role="button" class="btn btn-1 d-flex align-items-center gap-2">
+        <i class="bi bi-list"></i>
+        <i>
+            Quản Lý Chuyên Mục
+        </i>
+    </a>
+    {{else}}
+    <a name="" id="" href="/admin/categories" role="button" class="btn btn-1 d-flex scale align-items-center gap-2">
+        <i class="bi bi-list"></i>
+        Quản Lý Chuyên Mục
+    </a>
+    {{/if}}
+
+
+    {{#if (eq active 'tag')}}
+    <a name="" id="" href="#" role="button" class="btn btn-2 d-flex align-items-center gap-2">
+        <i class="bi bi-tag"></i>
+        <i>
+            Quản Lý Nhãn
+        </i>
+    </a>
+    {{else}}
+    <a name="" id="" href="/admin/tags" role="button" class="btn btn-2 d-flex scale align-items-center gap-2">
+        <i class="bi bi-tag"></i>
+        Quản Lý Nhãn
+    </a>
+    {{/if}}
+
+    {{#if (eq active 'article')}}
+    <a name="" id="" href="#" role="button" class="btn btn-3 d-flex align-items-center gap-2">
+        <i class="bi bi-file-earmark-text"></i>
+        <i>
+            Quản Lý Bài Viết
+        </i>
+    </a>
+    {{else}}
+    <a name="" id="" href="/admin/articles" role="button" class="btn btn-3 d-flex scale align-items-center gap-2">
+        <i class="bi bi-file-earmark-text"></i>
+        Quản Lý Bài Viết
+    </a>
+    {{/if}}
+
+    {{#if (eq active 'user')}}
+    <a name="" id="" href="#" role="button" class="btn btn-4 d-flex align-items-center gap-2">
+        <i class="bi bi-person"></i>
+        <i>
+            Quản Lý Người Dùng
+        </i>
+    </a>
+    {{else}}
+    <a name="" id="" href="/admin/users" role="button" class="btn btn-4 d-flex scale align-items-center gap-2">
+        <i class="bi bi-person"></i>
+        Quản Lý Người Dùng
+    </a>
+    {{/if}}
+
+</div>

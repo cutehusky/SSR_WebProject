@@ -1,36 +1,18 @@
-<div class="toolBar gap-2 p-3">
-    <a name="" id="" href="#" role="button" class="btn btn-1 scale d-flex align-items-center gap-2">
-        <i class="bi bi-list"></i>
-        Quản Lý Chuyên Mục
-    </a>
+{{> Admin/Menu active='article'}}
 
-    <a name="" id="" href="#" role="button" class="btn btn-2 scale d-flex align-items-center gap-2">
-        <i class="bi bi-tag"></i>
-        Quản Lý Nhãn
-    </a>
-
-    <a name="" id="" href="#" role="button" class="btn btn-3 d-flex align-items-center gap-2">
-        <i class="bi bi-file-earmark-text"></i>
-        <i>
-            Quản Lý Bài Viết
-        </i>
-    </a>
-
-    <a name="" id="" href="#" role="button" class="btn btn-4 scale d-flex align-items-center gap-2">
-        <i class="bi bi-person"></i>
-        Quản Lý Người Dùng
-    </a>
-</div>
 <div class="container mt-5">
-    <h3 class="custom-title">Quản Lý Bài Viết</h3>
+    <h1 class="custom-title">Quản Lý Bài Viết</h1>
 </div>
-<form>
+
+<form method="get">
     <div class="categorySelection" style="justify-content: flex-start;">
         <h4 style="padding-top: 5px;">Thêm Bài Viết</h4>
-        <button type="submit" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;"><i
-                class="bi bi-file-earmark-plus-fill" style="margin-right: 5px;"></i> Thêm</button>
+        <button formaction="/admin/article/new" type="submit" class="btn actionBtn scale"
+            style="margin-left: 30px;width: 120px;"><i class="bi bi-file-earmark-plus-fill"
+                style="margin-right: 5px;"></i> Thêm</button>
     </div>
 </form>
+
 <h4>Danh Sách Bài Viết</h4>
 <form method="get" action="/admin/articles/">
     <div class="categorySelection">
@@ -47,6 +29,7 @@
             <i class="bi bi-funnel-fill" style="margin-right: 10px;"></i>Lọc</button>
     </div>
 </form>
+
 <table id="myTable" class="display">
     <thead>
         <tr>
@@ -68,14 +51,13 @@
             <td>{{category}}</td>
             <td>
                 <form method="get" style="margin: 0px; display: inline">
-                    <button name="" class="btn actionBtn editBtn scale" formaction="/articles/{{id}}/edit"
-                        type="submit">
+                    <button name="" class="btn actionBtn editBtn scale" formaction="/article/edit/{{id}}" type="submit">
                         <i class="bi bi-pencil-square"></i>
                     </button>
                 </form>
                 <form method="post" style="margin: 0px; display: inline">
                     <input name="id" type="text" value="{{id}}" style="display: none;">
-                    <button name="" class="btn actionBtn delBtn scale" formaction="/articles/delete" type="submit">
+                    <button name="" class="btn actionBtn delBtn scale" formaction="/article/delete" type="submit">
                         <i class="bi bi-person-x-fill"></i>
                     </button>
                 </form>

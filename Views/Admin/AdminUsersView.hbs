@@ -1,45 +1,19 @@
-<div class="toolBar gap-2 p-3">
-    <a name="" id="" href="#" role="button" class="btn btn-1 scale d-flex align-items-center gap-2">
-        <i class="bi bi-list"></i>
-        Quản Lý Chuyên Mục
-    </a>
+{{> Admin/Menu active='user'}}
 
-    <a name="" id="" href="#" role="button" class="btn btn-2 scale d-flex align-items-center gap-2">
-        <i class="bi bi-tag"></i>
-        Quản Lý Nhãn
-    </a>
-
-    <a name="" id="" href="#" role="button" class="btn btn-3 scale d-flex align-items-center gap-2">
-        <i class="bi bi-file-earmark-text"></i>
-        Quản Lý Bài Viết
-    </a>
-
-    <a name="" id="" href="#" role="button" class="btn btn-4 d-flex align-items-center gap-2">
-        <i class="bi bi-person"></i>
-        <i>
-            Quản Lý Người Dùng
-        </i>
-    </a>
-</div>
 <div class="container mt-5">
-    <h3 class="custom-title">Quản Lý Người Dùng</h3>
+    <h1 class="custom-title">Quản Lý Người Dùng</h1>
 </div>
-<h4>Thêm Người Dùng</h4>
-<form method="post" action="">
-    <div class="categorySelection">
-        <label for="roleSelect1" class="form-label" style="padding-top: 8px; width: 200px;">
-            Vai Trò
-        </label>
-        <select name="role" class="form-select" style="height: 40px;" id="roleSelect1">
-            <option>Admin</option>
-            <option>User</option>
-            <option>Writer</option>
-            <option>Editor</option>
-        </select>
-        <button type="submit" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;"><i
-                class="bi bi-person-fill-add" style="margin-right: 5px;"></i> Thêm</button>
-    </div>
-</form>
+
+<div class="categorySelection" style="justify-content: flex-start;">
+    <h4 style="padding-top: 5px;">Thêm Người Dùng</h4>
+    <button type="button" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;" data-bs-toggle="modal"
+        data-bs-target="#modal">
+        <i class="bi bi-person-fill-add" style="margin-right: 5px;"></i> Thêm
+    </button>
+</div>
+
+{{> Admin/Modal/AddUser}}
+
 <h4>Danh Sách Người Dùng</h4>
 <form method="get" action="/admin/user">
     <div class="categorySelection">
@@ -85,17 +59,17 @@
             <td>{{role}}</td>
             <td>{{dateOfBirth}}</td>
             <td>
-                <form method="get" style="margin: 0px; display: inline">
-                    <button name="" class="btn actionBtn editBtn scale" formaction="/user/profile/{{id}}" type="submit">
-                        <i class="bi bi-pencil-square"></i>
-                    </button>
-                </form>
+                <button type="button" class="btn actionBtn editBtn scale" data-bs-toggle="modal"
+                    data-bs-target="#modal_{{id}}">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
                 <form method="post" style="margin: 0px; display: inline">
                     <input name="id" type="text" value="{{id}}" style="display: none;">
-                    <button name="" class="btn actionBtn delBtn scale" formaction="/user/delete" type="submit">
+                    <button name="" class="btn actionBtn delBtn scale" formaction="/admin/user/delete" type="submit">
                         <i class="bi bi-person-x-fill"></i>
                     </button>
                 </form>
+                {{> Admin/Modal/EditUser name=name email=email role=role dateOfBirth=dateOfBirth id=id}}
             </td>
         </tr>
         {{/each}}

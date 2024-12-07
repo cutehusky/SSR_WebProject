@@ -117,3 +117,161 @@ p {
 .page-button {
   font-size: 16px;
 }
+
+.editor-option {
+  border-bottom: 1px solid var(--color-red-primary);
+  padding-bottom: 10px; 
+}
+
+.editor-option button{
+  border: 1px solid var(--color-red-primary);
+  min-width: 100px;
+  border-radius: 0;
+}
+
+.editor-option .editor-decline {
+  background-color: var(--color-red-primary);
+  color: var(--color-white);
+}
+
+.editor-option .editor-decline:hover {
+  background-color: var(--color-red-link);
+}
+
+.editor-option .editor-accept {
+  background-color: var(--color-blue-primary);
+  color: var(--color-white);
+}
+
+.editor-option .editor-accept:hover {
+  background-color: color-mix(in srgb, var(--color-blue-primary) 80%, black 20%);
+}
+
+.editor-option div i {
+  font-size: 30px;
+}
+
+.editor-option div p {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.editor-article .badge {
+  color: var(--color-red-primary) !important;
+  border: 1px solid var(--color-red-primary) !important;
+  font-weight: 400;
+  min-width: 70px;
+}
+
+.paragraph {
+  text-align: justify;
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-footer {
+  border-top: none;
+}
+
+#editor-decline-modal h1 {
+  color: var(--color-red-primary);
+  font-weight: 700;
+  font-style: italic;
+}
+
+#editor-decline-modal span{
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--color-red-primary);
+}
+
+.editor-modal-return {
+  background-color: white;
+  color: var(--color-red-primary);
+  border: 1px solid var(--color-red-primary);
+  min-width: 100px;
+}
+
+.editor-modal-return:hover {
+  background-color: var(--color-red-link);
+  color: var(--color-white);
+}
+
+.editor-modal-send {
+  background-color: var(--color-red-primary);
+  color: var(--color-white);
+  border: 1px solid var(--color-red-primary);
+  min-width: 100px;
+}
+
+.editor-modal-send:hover {
+  background-color: var(--color-red-link);
+  border: 1px solid var(--color-red-link);
+  color: var(--color-white);
+}
+
+.editor-modal-send:focus {
+  background-color: var(--color-red-link);
+  color: var(--color-white);
+}
+
+#editor-decline-modal textarea {
+  resize: none;
+}
+
+#editor-decline-modal textarea:focus {
+  outline: 2px solid var(--color-red-primary);
+  box-shadow: 0 0 4px var(--color-red-primary);
+  border: 1px solid var(--color-red-primary);
+}
+
+#editor-adjust-modal h1 {
+  color: var(--color-red-primary);
+  font-weight: 700;
+  font-style: italic;
+}
+
+#editor-adjust-modal span{
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--color-red-primary);
+}
+
+#editor-adjust-modal .badge {
+  color: var(--color-red-primary) !important;
+  border: 1px solid var(--color-red-primary) !important;
+  font-weight: 400;
+  min-width: 70px;
+}
+
+.editor-add-tag {
+  background-color: var(--color-red-primary);
+  color: var(--color-white);
+  border: 1px solid var(--color-red-primary);
+}
+
+.editor-add-tag:hover {
+  background-color: var(--color-red-link);
+  color: var(--color-white);
+}
+
+#editor-adjust-modal .editor-modal-return {
+  color: var(--color-blue-primary);
+  border: 1px solid var(--color-blue-primary);
+}
+
+#editor-adjust-modal .editor-modal-return:hover {
+  background-color: var(--color-blue-primary);
+  color: var(--color-white);
+}
+
+#editor-adjust-modal .editor-modal-send {
+  background-color: var(--color-blue-primary);
+  color: var(--color-white);
+  border: 1px solid var(--color-blue-primary);
+}
+
+#editor-adjust-modal .editor-modal-send:hover {
+  background-color: color-mix(in srgb, var(--color-blue-primary) 80%, black 20%);
+  color: var(--color-white);
+}

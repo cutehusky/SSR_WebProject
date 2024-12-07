@@ -1,0 +1,17 @@
+<div class="statistics mt-4 mb-4 d-flex flex-wrap align-items-center justify-content-between">
+  {{#each statistics}}
+  <div
+    class="stat-item rounded-bottom fw-bold fs-4 shadow p-3 d-flex flex-column align-items-center justify-content-center"
+    id="{{id}}">
+    <span class="stat-label pb-1 m-0 d-flex text-center">{{label}}</span>
+    <span class="stat-value pt-4">{{value}}</span>
+    <span class="stat-tag fs-5 fw-normal pt-2">{{tag}}</span>
+  </div>
+  {{/each}}
+</div>
+
+{{> User/UserProfile id=profile.id penName=profile.penName dateOfBirth=profile.dateOfBirth email=profile.email name=profile.name}}
+
+<script>
+  console.log("data: ", this.statistics)
+</script>

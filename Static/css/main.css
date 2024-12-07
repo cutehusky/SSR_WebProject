@@ -5,6 +5,23 @@
     border: 0px !important;
 }
 
+input.searchInput {
+    margin-right: 20px;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-background-clip: text;
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: inset 0 0 20px 20px #23232329;
+}
+
+input:focus {
+    box-shadow: none !important;
+}
+
 .searchInput:focus {
     background-color: transparent;
     border: 0px !important;
@@ -215,7 +232,7 @@ span[data-role="remove"]::after {
 }
 
 .input-group-text {
-    color: var(--color-red-link);
+    color: var(--color-red-primary);
     background-color: var(--color-white);
     cursor: pointer;
 }

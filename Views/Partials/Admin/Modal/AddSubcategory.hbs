@@ -1,0 +1,25 @@
+<div class="modal fade" id="modal_" tabindex="-1" aria-labelledby="modalLabel_" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header custom-modal-header">
+                <h1 class="modal-title fs-5" style="width:100%; text-align: center;" id="modalLabel_">Thêm chuyên mục
+                    cấp 2 </h1>
+            </div>
+            <form method="post">
+                <div class="modal-body">
+                    <select name="category" class="form-select" style="height: 40px;" id="roleSelect">
+                        {{#each Categories}}
+                        <option value="{{id}}">{{name}}</option>
+                        {{/each}}
+                    </select>
+                    <textarea class="form-control" rows="4" name="name"
+                        placeholder="Mời nhập tên chuyên mục cấp 2 mới"></textarea>
+                </div>
+                <div class="modal-footer custom-modal-footer ">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="sumbit" class="btn actionBtn" formaction="/admin/subcategory/add">Thêm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -240,30 +240,14 @@ function getFirstTwoTags(data: { tagList: { tag: string; link: string }[] }[]) {
 
 
 export class ArticleController {
-    // /articles/home
+    // /home
     getHome(req: Request, res: Response) {
-        let testCategory = [];
-        for (let i = 0; i < 20; i++) {
-            let testSubCategory = [];
-            for (let j = 0; j < 20; j++)
-                testSubCategory.push({
-                    id: j,
-                    name: "test subcategory " + j
-                });
-            testCategory.push({
-                id: i,
-                name: "test category " + i,
-                SubCategories: testSubCategory
-            })
-        }
-        res.render('HomeView', {
-            customCss: ['Home.css'],
-            Top10Categories: testCategory.slice(0, 10),
-            Categories: testCategory
+        res.render('Home/HomeView', {
+            customCss: ['Home.css']
         });
     }
 
-    // /articles/categories/:id?page=
+    // /category/:id?page=
     getArticleListByCategory(req: Request, res: Response) {
         const categoryId = req.params.id;
         const page = req.query.page as string || '0';
@@ -302,9 +286,9 @@ export class ArticleController {
         });
     }
 
-    // /articles/tags?tags=&page=
-    getArticleListByTag(req: Request, res: Response) {
-        const tags = req.query.tags as string;
+    // /tags?tag=&page=
+    getArticleListByTags(req: Request, res: Response) {
+        const tags = req.query.tag as string[];
         const page = req.query.page as string || '0';
         console.log(tags);
         console.log(page)
@@ -328,7 +312,7 @@ export class ArticleController {
         });
     }
 
-    // /articles/search?q=&page=
+    // /search?q=&page=
     searchArticle(req: Request, res: Response) {
         const searchValue = req.query.q as string || '';
         const page = req.query.page as string || '0';
@@ -337,9 +321,13 @@ export class ArticleController {
         res.render('Home/HomeGuestSearch', { listCardResult });
     }
 
-    // /articles/download/:id
+    // /download/:id
     downloadArticle(req: Request, res: Response) {
         let articleId = req.params.id;
         console.log(articleId);
+    }
+
+    // /comment
+    commentArticle(req: Request, res: Response) {
     }
 }
