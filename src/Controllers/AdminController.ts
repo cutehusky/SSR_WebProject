@@ -25,12 +25,6 @@ export class AdminController {
         });
     }
 
-    // /admin/category/:id/edit
-    editCategory(req: Request, res: Response) {
-        const categoryId = req.params.id;
-        res.render('AdminEditCategoryView', { categoryId });
-    }
-
     // /admin/tags
     getTags(req: Request, res: Response) {
         res.render('Admin/AdminTagsView', {
@@ -44,12 +38,6 @@ export class AdminController {
                 { name: "test 5", id: 5 },
             ]
         });
-    }
-
-    // /admin/tag/:id/edit
-    editTag(req: Request, res: Response) {
-        const tagId = req.params.id;
-        res.render('AdminEditTagView', { tagId });
     }
 
     // /admin/articles?category=
@@ -92,5 +80,96 @@ export class AdminController {
             customCss: ['Admin.css'],
             data: testData
         });
+    }
+
+    // /admin/tag/edit
+    editTag(req: Request, res: Response) {
+        const tagId = req.query.id as string;
+    }
+
+    // /admin/category/edit
+    editCategory(req: Request, res: Response) {
+        const categoryId = req.query.id as string;
+    }
+
+    // /admin/user/edit
+    editUser(req: Request, res: Response) {
+
+    }
+
+    // /admin/article/edit
+    editArticle(req: Request, res: Response) {
+
+    }
+
+    // /admin/tag/new
+    newTag(req: Request, res: Response) {
+
+    }
+
+    // /admin/category/new
+    newCategory(req: Request, res: Response) {
+
+    }
+
+    // /admin/user/new
+    newUser(req: Request, res: Response) {
+
+    }
+
+    // /admin/article/new
+    newArticle(req: Request, res: Response) {
+
+    }
+
+    // /admin/tag/delete
+    deleteTag(req: Request, res: Response) {
+
+    }
+
+    // /admin/category/delete
+    deleteCategory(req: Request, res: Response) {
+
+    }
+
+    // /admin/user/delete
+    deleteUser(req: Request, res: Response) {
+
+    }
+
+    // /admin/article/delete
+    deleteArticle(req: Request, res: Response) {
+
+    }
+
+    // /admin/article/edit/:id
+    editArticleEditor(req: Request, res: Response) {
+
+    }
+
+    // /admin/article/edit/:id
+    createArticleEditor(req: Request, res: Response) {
+        res.render("Writer/WriterPublishNews", {
+            customCss: ["Writer.css"],
+            customJs: ["Summernote.js"],
+        });
+    }
+
+    // /admin/subcategory/edit
+    editSubCategory(req: Request, res: Response) {
+        res.render("Writer/WriterUpdateNews", {
+            customCss: ["Writer.css"],
+            customJs: ["Summernote.js"],
+        });
+    }
+
+    // /admin/subcategory/new
+    newSubCategory(req: Request, res: Response) {
+
+    }
+
+    // /admin/subcategory/delete
+    deleteSubCategory(req: Request, res: Response) {
+
     }
 }

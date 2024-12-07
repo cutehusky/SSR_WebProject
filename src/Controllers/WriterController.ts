@@ -27,7 +27,6 @@ const statistics = [
 export class WriterController {
   // /writer/new
   createArticleEditor(req: Request, res: Response) {
-    // res.render('ArticleEditorView');
     res.render("Writer/WriterPublishNews", {
       customCss: ["Writer.css"],
       customJs: ["Summernote.js"],
@@ -37,7 +36,6 @@ export class WriterController {
   // /writer/edit/:id
   editArticleEditor(req: Request, res: Response) {
     const articleId = req.params.id;
-    // res.render("ArticleEditorView");
     res.render("Writer/WriterUpdateNews", {
       customCss: ["Writer.css"],
       customJs: ["Summernote.js"],
@@ -88,4 +86,13 @@ export class WriterController {
      });
   }
 
+  // /writer/new
+  newArticle(req: Request, res: Response) {
+
+  }
+
+  // /writer/edit
+  editArticle(req: Request, res: Response) {
+
+  }
 }

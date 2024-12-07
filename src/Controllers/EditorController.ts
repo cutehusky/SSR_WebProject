@@ -62,21 +62,21 @@ export class EditorController {
     });
   }
 
-  // /editor/articles/:id/approve
+  // /editor/approve
   approveArticle(req: Request, res: Response) {
     const articleId = req.params.id;
     console.log(articleId);
     res.send(`Article ${articleId} approved`);
   }
 
-  // /editor/articles/:id/reject
+  // /editor/reject
   rejectArticle(req: Request, res: Response) {
     const articleId = req.params.id;
     console.log(articleId);
     res.send(`Article ${articleId} rejected`);
   }
 
-  // /editor/articles/:id/view
+  // /editor/article/:id/
   viewArticle(req: Request, res: Response) {
     const articleId = req.params.id;
     const article = {

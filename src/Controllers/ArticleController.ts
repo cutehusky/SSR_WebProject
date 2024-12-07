@@ -168,37 +168,37 @@ const listCardResult = [
     }
 ];
 export class ArticleController {
-    // /articles/home
+    // /home
     getHome(req: Request, res: Response) {
-        res.render('HomeView', {
+        res.render('Home/HomeView', {
             customCss: ['Home.css']
         });
     }
 
-    // /articles/categories/:id?page=
+    // /category/:id?page=
     getArticleListByCategory(req: Request, res: Response) {
         const categoryId = req.params.id;
         const page = req.query.page as string || '0';
         console.log(categoryId);
         console.log(page);
-        res.render('HomeGuestCategories', {
+        res.render('Home/HomeGuestCategories', {
             
         }
         );
     }
 
-    // /articles/subcategories/:id?page=
+    // /subcategory/:id?page=
     getArticleListBySubCategory(req: Request, res: Response) {
         const categoryId = req.params.id;
         const page = req.query.page as string || '0';
         console.log(categoryId);
         console.log(page);
-        res.render('ArticleListBySubCategoryView');
+        res.render('Home/HomeGuestSubcategory');
     }
 
-    // /articles/tags?tags=&page=
-    getArticleListByTag(req: Request, res: Response) {
-        const tags = req.query.tags as string;
+    // /tags?tag=&page=
+    getArticleListByTags(req: Request, res: Response) {
+        const tags = req.query.tag as string[];
         const page = req.query.page as string || '0';
         console.log(tags);
         console.log(page)
@@ -208,7 +208,7 @@ export class ArticleController {
         });
     }
 
-    // /articles/:id
+    // /article/:id
     getArticle(req: Request, res: Response) {
         const articleId = req.params.id;
         console.log(articleId);
@@ -222,7 +222,7 @@ export class ArticleController {
         });
     }
 
-    // /articles/search?q=&page=
+    // /search?q=&page=
     searchArticle(req: Request, res: Response) {
         const searchValue = req.query.q as string || '';
         const page = req.query.page as string || '0';
@@ -231,9 +231,13 @@ export class ArticleController {
         res.render('Home/HomeGuestSearch', { listCardResult });
     }
 
-    // /articles/download/:id
+    // /download/:id
     downloadArticle(req: Request, res: Response) {
         let articleId = req.params.id;
         console.log(articleId);
+    }
+
+    // /comment
+    commentArticle(req: Request, res: Response) {
     }
 }

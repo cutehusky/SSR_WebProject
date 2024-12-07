@@ -7,6 +7,7 @@
                 </h1>
             </div>
             <form method="post">
+                <input type="text" value="{{id}}" name="id" style="display: none;">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="emailInput">Email</label>
@@ -65,7 +66,7 @@
                 </div>
                 <div class="modal-footer custom-modal-footer ">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="sumbit" class="btn actionBtn" formaction="/admin/user/edit/{{id}}">Lưu</button>
+                    <button type="sumbit" class="btn actionBtn" formaction="/admin/user/edit">Lưu</button>
                 </div>
             </form>
         </div>

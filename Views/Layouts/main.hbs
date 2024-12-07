@@ -1,255 +1,185 @@
 <html lang="en">
 
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Web Project</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Project</title>
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-    />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
-    {{! datatables}}
-    <link
-      rel="stylesheet"
-      href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css"
-    />
+  {{! datatables}}
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css" />
 
-    {{! bootstrap}}
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    />
+  {{! bootstrap}}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
-    {{! tagsinput }}
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css"
-    />
+  {{! tagsinput }}
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css" />
 
-    {{! summernote }}
-    <link
-      href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css"
-      rel="stylesheet"
-    />
+  {{! summernote }}
+  <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet" />
 
-    <link rel="stylesheet" href="/css/DataTable.css" />
-    <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="/css/DataTable.css" />
+  <link rel="stylesheet" href="/css/main.css" />
 
-    {{#each this.customCss}}
-      <link rel="stylesheet" href="/css/{{this}}" />
-    {{/each}}
-  </head>
+  {{#each this.customCss}}
+  <link rel="stylesheet" href="/css/{{this}}" />
+  {{/each}}
+</head>
 
-  <body>
-    <div class="sticky-top">
-      <div class="topbar" style="border-bottom: 1.5px solid #c0c0c0;">
-        <a href="#"><img src="/logo.jpg" width="60px" /></a>
-        <div class="textColor dateDisplay"> Thứ 2, 25/11/2024 </div>
-        <form
-          style="min-width: 320px; width: 25%"
-          action="/articles/search/"
-          class="form-inline my-2 my-lg-0"
-          method="get"
-        >
-          <div class="input-group">
-            <div class="input-div rounded-pill textColor">
-              <div class="input-group-append">
-                <button
-                  class="btn rounded-pill searchInput"
-                  type="submit"
-                  id="button-addon2"
-                >
-                  <i class="bi bi-search"></i>
-                </button>
-              </div>
-              <input
-                type="text"
-                name="q"
-                class="form-control searchInput"
-                placeholder="Search"
-                aria-label="Search"
-                aria-describedby="button-addon2"
-                id="searchInput"
-              />
+<body>
+  <div class="sticky-top">
+    <div class="topbar" style="border-bottom: 1.5px solid #c0c0c0;">
+      <a href="#"><img src="/logo.jpg" width="60px" /></a>
+      <div class="textColor dateDisplay"> Thứ 2, 25/11/2024 </div>
+      <form style="min-width: 320px; width: 25%" action="/search/" class="form-inline my-2 my-lg-0" method="get">
+        <div class="input-group">
+          <div class="input-div rounded-pill textColor">
+            <div class="input-group-append">
+              <button class="btn rounded-pill searchInput" type="submit" id="button-addon2">
+                <i class="bi bi-search"></i>
+              </button>
             </div>
+            <input type="text" name="q" class="form-control searchInput" placeholder="Search" aria-label="Search"
+              aria-describedby="button-addon2" id="searchInput" />
           </div>
-        </form>
-        <div style="display:flex">
-          <div
-            style="padding: 10px 10px 10px 10px;"
-            data-bs-toggle="modal"
-            data-bs-target="#authenticationModal"
-          >
-            <a class="btn rounded-pill btn2 scale" href="#">
-              <i class="bi bi-person-fill" style="padding-right: 10px;"></i>
-              Đăng Nhập
+        </div>
+      </form>
+      <div style="display:flex">
+        <div style="padding: 10px 10px 10px 10px;" data-bs-toggle="modal" data-bs-target="#authenticationModal">
+          <a class="btn rounded-pill btn2 scale" href="#">
+            <i class="bi bi-person-fill" style="padding-right: 10px;"></i>
+            Đăng Nhập
+          </a>
+        </div>
+        <div style="padding: 10px 10px 10px 10px;">
+          <a class="btn rounded-pill btn1 scale" href="#">Nâng Cấp Premium</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button class="btn rounded-pill btn2" data-bs-auto-close="outside" type="button" id="dropdownMenuButton"
+          data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-tag-fill"></i>
+        </button>
+        <div class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton" style="width: 300px">
+          <form method="get" action="/tags" style="width: 80%; padding-top: 10px" class="topbar gap-2">
+            <label for="tagInput">Tìm kiếm theo tags</label>
+            <input class="tagInput" name="tag" type="text" id="tags" data-role="tagsinput" class="form-control"
+              placeholder="Enter tags" />
+            <button type="submit" class="btn rounded-pill btn1 scale" style="width: 100%;">Tìm</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="navbarBtn">
+        <div style="padding: 10px 10px 10px 10px;">
+          <div class="btn rounded-pill btn2" style="padding-top: 12px;">
+            <i class="bi bi-bookmarks-fill"></i>
+          </div>
+        </div>
+        <div class="navbar">
+          <div class="topbar">
+            <a href="#" role="button" aria-expanded="false">
+              <i class="bi bi-house-fill"></i>
             </a>
-          </div>
-          <div style="padding: 10px 10px 10px 10px;">
-            <a class="btn rounded-pill btn1 scale" href="#">Nâng Cấp Premium</a>
-          </div>
-
-        </div>
-
-        <div class="dropdown">
-          <button
-            class="btn rounded-pill btn2"
-            data-bs-auto-close="outside"
-            type="button"
-            id="dropdownMenuButton"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <i class="bi bi-tag-fill"></i>
-          </button>
-          <div
-            class="dropdown-menu mt-2"
-            aria-labelledby="dropdownMenuButton"
-            style="width: 300px"
-          >
-            <form
-              method="get"
-              action="/articles/tags"
-              style="width: 80%; padding-top: 10px"
-              class="topbar gap-2"
-            >
-              <label for="tagInput">Tìm kiếm theo tags</label>
-              <input
-                class="tagInput"
-                name="tags"
-                type="text"
-                id="tags"
-                data-role="tagsinput"
-                class="form-control"
-                placeholder="Enter tags"
-              />
-              <button
-                type="submit"
-                class="btn rounded-pill btn1 scale"
-                style="width: 100%;"
-              >Tìm</button>
-            </form>
-          </div>
-        </div>
-
-        <div class="navbarBtn">
-          <div style="padding: 10px 10px 10px 10px;">
-            <div class="btn rounded-pill btn2" style="padding-top: 12px;">
-              <i class="bi bi-bookmarks-fill"></i>
+            {{#each Categories}}
+            <div class="subnav">
+              <button class="subnavbtn">
+                <a href="/articles/categories/{{id}}">{{name}} </a></button>
+              <div class="subnav-content">
+                {{#each SubCategories}}
+                <a href="/articles/subcategories/{{id}}">{{name}}</a>
+                {{/each}}
+              </div>
             </div>
-          </div>
-          <div class="navbar">
-            <div class="topbar">
-              <a href="#" role="button" aria-expanded="false">
-                <i class="bi bi-house-fill"></i>
-              </a>
-              {{#each Categories}}
-                <div class="subnav">
-                  <button class="subnavbtn">
-                    <a href="/articles/categories/{{id}}">{{name}} </a></button>
-                  <div class="subnav-content">
-                    {{#each SubCategories}}
-                      <a href="/articles/subcategories/{{id}}">{{name}}</a>
-                    {{/each}}
-                  </div>
-                </div>
-              {{/each}}
-            </div>
+            {{/each}}
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    {{!-- Modal for authentication popup --}}
-    {{> Authentication/Authentication}}
+  {{!-- Modal for authentication popup --}}
+  {{> Authentication/Authentication}}
 
-    <div class="container">{{{body}}}</div>
+  <div class="container">{{{body}}}</div>
 
-    <hr />
+  <hr />
 
-    <footer class="footer footer-color2 text-black py-1">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-6">
-            <div class="footer-menu">
-              <a class="scale" href="#">Trang Chủ</a>
-              {{#each Top10Categories}}
-                <a class="scale" href="/articles/categories/{{id}}">{{name}}</a>
-              {{/each}}
-              <a class="scale" href="#">Info</a>
-            </div>
-          </div>
-
-          <div class="col-md-3">
-            <h5>Thành viên nhóm</h5>
-            <ul class="list-unstyled">
-              <li>22127132, Lý Nghị Hoằng</li>
-              <li>21127087, Nguyễn Gia Kiệt</li>
-              <li>22127441, Thái Huyễn Tùng</li>
-              <li>22127131, Trần Nguyễn Minh Hoàng</li>
-              <li>22127123, Lê Hồ Phi Hoàng</li>
-            </ul>
-          </div>
-
-          <div class="col-md-3">
-            <h5>PTUDW</h5>
-            <ul class="list-unstyled">
-              <li>Final Project</li>
-              <li>Newspaper</li>
-            </ul>
+  <footer class="footer footer-color2 text-black py-1">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="footer-menu">
+            <a class="scale" href="#">Trang Chủ</a>
+            {{#each Top10Categories}}
+            <a class="scale" href="/articles/categories/{{id}}">{{name}}</a>
+            {{/each}}
+            <a class="scale" href="#">Info</a>
           </div>
         </div>
+
+        <div class="col-md-3">
+          <h5>Thành viên nhóm</h5>
+          <ul class="list-unstyled">
+            <li>22127132, Lý Nghị Hoằng</li>
+            <li>21127087, Nguyễn Gia Kiệt</li>
+            <li>22127441, Thái Huyễn Tùng</li>
+            <li>22127131, Trần Nguyễn Minh Hoàng</li>
+            <li>22127123, Lê Hồ Phi Hoàng</li>
+          </ul>
+        </div>
+
+        <div class="col-md-3">
+          <h5>PTUDW</h5>
+          <ul class="list-unstyled">
+            <li>Final Project</li>
+            <li>Newspaper</li>
+          </ul>
+        </div>
       </div>
-    </footer>
-    <footer class="footer text-white py-4 footer-color1">
-      <div class="col text-center">
-        <p class="mb-0">Powered by ...</p>
-      </div>
-    </footer>
+    </div>
+  </footer>
+  <footer class="footer text-white py-4 footer-color1">
+    <div class="col text-center">
+      <p class="mb-0">Powered by ...</p>
+    </div>
+  </footer>
 
-    {{! jquery }}
-    <script
-      src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
-      integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
-      crossorigin="anonymous"
-    ></script>
+  {{! jquery }}
+  <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+    integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
 
-    {{! bootstrap }}
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    ></script>
+  {{! bootstrap }}
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    {{! tagsinput}}
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.js"
-    ></script>
+  {{! tagsinput}}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.js"></script>
 
-    {{! summernote }}
-    <script
-      src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"
-    ></script>
+  {{! summernote }}
+  <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
 
-    {{! datatables }}
-    <script
-      src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"
-    ></script>
+  {{! datatables }}
+  <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
 
-    {{! custom JS }}
-    {{#each this.customJs}}
-      <script src="/js/{{this}}"></script>
-    {{/each}}
+  {{! custom JS }}
+  {{#each this.customJs}}
+  <script src="/js/{{this}}"></script>
+  {{/each}}
 
-    <script>
-      $('.tagInput').tagsinput({ onTagExists: function (item, $tag) {
-      console.log("test") } }); $(document).keypress( function (event) { if
-      (event.which == '13') { event.preventDefault(); } });
-    </script>
-  </body>
+  <script>
+    $('.tagInput').tagsinput({
+      onTagExists: function (item, $tag) {
+        console.log("test")
+      }
+    }); $(document).keypress(function (event) {
+      if
+        (event.which == '13') { event.preventDefault(); }
+    });
+  </script>
+</body>
 
 </html>

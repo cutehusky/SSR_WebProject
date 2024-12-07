@@ -32,7 +32,7 @@ app.set("view engine", "hbs");
 app.set("views", "./Views");
 
 let middlewareController = new MiddlewareController();
-app.use("/articles",middlewareController.getCategory,middlewareController.getProfile, ArticleRouter);
+app.use("/",middlewareController.getCategory,middlewareController.getProfile, ArticleRouter);
 app.use("/writer",middlewareController.getCategory,middlewareController.getProfile, WriterRouter);
 app.use("/user",middlewareController.getCategory,middlewareController.getProfile, UserRouter);
 app.use("/admin",middlewareController.getCategory,middlewareController.getProfile, AdminRouter);
@@ -43,7 +43,7 @@ Handlebars.registerHelper('eq', function (a, b) {
 });
 
 app.get("/", (req: Request, res: Response) => {
-  res.redirect("/articles/home/");
+  res.redirect("/home/");
 });
 
 app.listen(port, function () {
