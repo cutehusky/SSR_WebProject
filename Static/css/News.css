@@ -1,27 +1,32 @@
 @import "Variable.css";
 
 .tag {
-    border: 1px solid var(--color-red-primary) ;
-    color: var(--color-red-primary);
-    border-radius: 4px;
-    padding: 0px 5px;
-    margin-right: 20px;
-    display: inline-block;  
+  border: 1px solid var(--color-red-primary);
+  color: var(--color-red-primary);
+  border-radius: 4px;
+  padding: 0px 5px;
+  margin-right: 20px;
+  display: inline-block;
+}
+
+button.btn.tag:hover {
+  background-color: var(--color-red-primary);
+  color: var(--color-white);
 }
 
 a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .form-control {
-    border: none;
-    border-bottom: 2px solid var(--color-gray-border);
-    border-radius: 0;
-    box-shadow: none;
+  border: none;
+  border-bottom: 2px solid var(--color-gray-border);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .form-control:focus {
-    border-bottom: 2px solid var(--color-red-primary);
-    outline: none;
-    box-shadow: none;
+  border-bottom: 2px solid var(--color-red-primary);
+  outline: none;
+  box-shadow: none;
 }

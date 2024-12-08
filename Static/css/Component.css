@@ -1,0 +1,30 @@
+.paging-icon {
+  color: var(--color-red-primary);
+}
+
+.page-item > a {
+  color: var(--color-red-primary);
+  padding: 12px 18px;
+  font-size: 16px;
+}
+
+.page-item:not(.disabled):hover > a {
+  background-color: var(--color-red-primary);
+  border-color: var(--color-red-primary);
+  color: var(--color-white);
+}
+
+.page-item.control:not(.disabled):hover .paging-icon {
+  border-color: var(--color-red-primary);
+  color: var(--color-white);
+}
+
+.page-item.active > a {
+  background-color: var(--color-red-primary);
+  border: none;
+  font-weight: bold;
+}
+
+.page-item.disabled > a > i {
+  color: var(--color-gray-subtext);
+}
