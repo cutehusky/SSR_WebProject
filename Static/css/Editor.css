@@ -120,10 +120,10 @@ p {
 
 .editor-option {
   border-bottom: 1px solid var(--color-red-primary);
-  padding-bottom: 10px; 
+  padding-bottom: 10px;
 }
 
-.editor-option button{
+.editor-option button {
   border: 1px solid var(--color-red-primary);
   min-width: 100px;
   border-radius: 0;
@@ -140,11 +140,16 @@ p {
 
 .editor-option .editor-accept {
   background-color: var(--color-blue-primary);
+  border-color: var(--color-blue-primary);
   color: var(--color-white);
 }
 
 .editor-option .editor-accept:hover {
-  background-color: color-mix(in srgb, var(--color-blue-primary) 80%, black 20%);
+  background-color: color-mix(
+    in srgb,
+    var(--color-blue-primary) 80%,
+    black 20%
+  );
 }
 
 .editor-option div i {
@@ -161,6 +166,11 @@ p {
   border: 1px solid var(--color-red-primary) !important;
   font-weight: 400;
   min-width: 70px;
+}
+
+.image-description {
+  margin-top: 16px;
+  color: var(--color-gray-subtext);
 }
 
 .paragraph {
@@ -181,7 +191,7 @@ p {
   font-style: italic;
 }
 
-#editor-decline-modal span{
+#editor-decline-modal span {
   padding-bottom: 5px;
   border-bottom: 1px solid var(--color-red-primary);
 }
@@ -232,7 +242,7 @@ p {
   font-style: italic;
 }
 
-#editor-adjust-modal span{
+#editor-adjust-modal span {
   padding-bottom: 5px;
   border-bottom: 1px solid var(--color-red-primary);
 }
@@ -272,6 +282,10 @@ p {
 }
 
 #editor-adjust-modal .editor-modal-send:hover {
-  background-color: color-mix(in srgb, var(--color-blue-primary) 80%, black 20%);
+  background-color: color-mix(
+    in srgb,
+    var(--color-blue-primary) 80%,
+    black 20%
+  );
   color: var(--color-white);
 }

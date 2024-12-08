@@ -6,10 +6,6 @@
   padding: 0;
 }
 
-.wrapper {
-  margin-top: 24px;
-}
-
 .writer-publish-news-title {
   color: var(--color-gray-text);
   font-size: 40px;

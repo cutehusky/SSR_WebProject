@@ -272,7 +272,7 @@ export class ArticleController {
     });
   }
 
-  // /articles/:category/subcategories/:id?page=
+  // /category/subcategories/:id?page=
   getArticleListBySubCategory(req: Request, res: Response) {
     const categoryName = req.params.category;
     const subCategoryId = req.params.id;
@@ -284,7 +284,7 @@ export class ArticleController {
     // const idCategory = listCategories.find(category => category.name === categoryName)?.id;
     const idCategory = 1;
     res.render("Home/HomeGuestSubCategories", {
-      customCss: ["Category.css", "News.css"],
+      customCss: ["Category.css", "News.css", "Home.css", "Component.css"],
       categories: listCategories[Number(idCategory) - 1].SubCategories,
       nameCategory: categoryName,
       subCategoryId: Number(subCategoryId),
@@ -301,6 +301,7 @@ export class ArticleController {
     console.log(tags);
     console.log(page);
     res.render("Home/HomeGuestTag", {
+      customCss: ["Home.css", "News.css", "Component.css"],
       listCardResult,
       tags,
     });
@@ -326,7 +327,10 @@ export class ArticleController {
     const page = (req.query.page as string) || "0";
     console.log(searchValue);
     console.log(page);
-    res.render("Home/HomeGuestSearch", { listCardResult });
+    res.render("Home/HomeGuestSearch", {
+      customCss: ["Home.css", "News.css", "Component.css"],
+      listCardResult,
+    });
   }
 
   // /download/:id
