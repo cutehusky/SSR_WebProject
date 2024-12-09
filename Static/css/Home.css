@@ -54,11 +54,11 @@
   padding-right: 24px;
 }
 
-.main-news {
-  padding-top: 100px;
-}
-
 /* Main news*/
+
+/* .main-news {
+  padding-top: 100px;
+} */
 
 .main-news-item {
   padding: 12px 0;
@@ -84,6 +84,17 @@
 
 .main-news-item__description > div:last-child > span:first-child {
   color: var(--color-gray-subtext);
+}
+
+.main-news-item__tags-container {
+  max-height: 80px;
+  overflow-y: scroll;
+  -ms-overflow-style: none; /* Hide scrollbar in IE/Edge */
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
+}
+
+.main-news-item__tags-container::-webkit-scrollbar {
+  display: none;
 }
 
 /* Sub news */

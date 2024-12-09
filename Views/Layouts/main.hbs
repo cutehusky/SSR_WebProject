@@ -1,235 +1,323 @@
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Web Project</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Web Project</title>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+        />
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+        {{! datatables}}
+        <link
+            rel="stylesheet"
+            href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css"
+        />
 
-  {{! datatables}}
-  <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css" />
+        {{! bootstrap}}
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        />
 
-  {{! bootstrap}}
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+        {{! tagsinput }}
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css"
+        />
 
-  {{! tagsinput }}
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css" />
+        {{! summernote }}
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css"
+        />
 
-  {{! summernote }}
-  <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="/css/DataTable.css" />
+        <link rel="stylesheet" href="/css/main.css" />
 
-  <link rel="stylesheet" href="/css/DataTable.css" />
-  <link rel="stylesheet" href="/css/main.css" />
+        {{#each this.customCss}}
+        <link rel="stylesheet" href="/css/{{this}}" />
+        {{/each}}
+    </head>
 
-  {{#each this.customCss}}
-  <link rel="stylesheet" href="/css/{{this}}" />
-  {{/each}}
-</head>
+    <body>
+        <div class="sticky-top">
+            <div class="topbar" style="border-bottom: 1.5px solid #c0c0c0">
+                <a href="#"
+                    ><img
+                        src="/website_logo.png"
+                        width="45px"
+                        height="45px"
+                        class="rounded"
+                /></a>
+                <div class="textColor dateDisplay">Thứ 2, 25/11/2024</div>
+                <form
+                    style="min-width: 320px; width: 25%"
+                    action="/search/"
+                    class="form-inline my-2 my-lg-0"
+                    method="get"
+                >
+                    <div class="input-group">
+                        <div class="input-div rounded-pill textColor">
+                            <div class="input-group-append">
+                                <button
+                                    class="btn rounded-pill searchInput"
+                                    type="submit"
+                                    id="button-addon2"
+                                >
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                            <input
+                                type="text"
+                                name="q"
+                                class="form-control searchInput"
+                                placeholder="Search"
+                                aria-label="Search"
+                                aria-describedby="button-addon2"
+                                id="searchInput"
+                            />
+                        </div>
+                    </div>
+                </form>
+                <div style="display: flex">
+                    <div
+                        style="padding: 10px 10px 10px 10px"
+                        data-bs-toggle="modal"
+                        data-bs-target="#authenticationModal"
+                    >
+                        <a class="btn rounded-pill btn2 scale" href="#">
+                            <i
+                                class="bi bi-person-fill"
+                                style="padding-right: 10px"
+                            ></i>
+                            Đăng Nhập
+                        </a>
+                    </div>
+                    <div style="padding: 10px 10px 10px 10px">
+                        <a class="btn rounded-pill btn1 scale" href="#"
+                            >Nâng Cấp Premium</a
+                        >
+                    </div>
+                </div>
 
-<body>
-  <div class="sticky-top">
-    <div class="topbar" style="border-bottom: 1.5px solid #c0c0c0;">
-      <a href="#"><img src="/website_logo.png" width="45px" height="45px" class="rounded" /></a>
-      <div class="textColor dateDisplay"> Thứ 2, 25/11/2024 </div>
-      <form style="min-width: 320px; width: 25%" action="/search/" class="form-inline my-2 my-lg-0" method="get">
-        <div class="input-group">
-          <div class="input-div rounded-pill textColor">
-            <div class="input-group-append">
-              <button class="btn rounded-pill searchInput" type="submit" id="button-addon2">
-                <i class="bi bi-search"></i>
-              </button>
+                <div class="dropdown">
+                    <button
+                        class="btn rounded-pill btn2"
+                        data-bs-auto-close="outside"
+                        type="button"
+                        id="dropdownMenuButton"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        <i class="bi bi-tag-fill"></i>
+                    </button>
+                    <div
+                        class="dropdown-menu mt-2"
+                        aria-labelledby="dropdownMenuButton"
+                        style="width: 300px"
+                    >
+                        <form
+                            method="get"
+                            action="/tags"
+                            style="width: 80%; padding-top: 10px"
+                            class="topbar gap-2"
+                        >
+                            <label for="tagInput">Tìm kiếm theo tags</label>
+                            <input
+                                class="tagInput"
+                                name="tag"
+                                type="text"
+                                id="tags"
+                                data-role="tagsinput"
+                                class="form-control"
+                                placeholder="Enter tags"
+                            />
+                            <button
+                                type="submit"
+                                class="btn rounded-pill btn1 scale"
+                                style="width: 100%"
+                            >
+                                Tìm
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="navbarBtn">
+                    <div style="padding: 10px 10px 10px 10px">
+                        <div
+                            class="btn rounded-pill btn2"
+                            style="padding-top: 12px"
+                        >
+                            <i class="bi bi-bookmarks-fill"></i>
+                        </div>
+                    </div>
+                    <div class="navbar">
+                        <div class="topbar">
+                            <a href="#" role="button" aria-expanded="false">
+                                <i class="bi bi-house-fill"></i>
+                            </a>
+                            {{#each Categories}}
+                            <div class="subnav">
+                                <button class="subnavbtn">
+                                    <a href="/articles/categories/{{id}}"
+                                        >{{name}}
+                                    </a>
+                                </button>
+                                <div class="subnav-content">
+                                    {{#each SubCategories}}
+                                    <a href="/articles/subcategories/{{id}}"
+                                        >{{name}}</a
+                                    >
+                                    {{/each}}
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                    </div>
+                </div>
             </div>
-            <input type="text" name="q" class="form-control searchInput" placeholder="Search" aria-label="Search"
-              aria-describedby="button-addon2" id="searchInput" />
-          </div>
         </div>
-      </form>
-      <div style="display:flex">
-        <div style="padding: 10px 10px 10px 10px;" data-bs-toggle="modal" data-bs-target="#authenticationModal">
-          <a class="btn rounded-pill btn2 scale" href="#">
-            <i class="bi bi-person-fill" style="padding-right: 10px;"></i>
-            Đăng Nhập
-          </a>
-        </div>
-        <div style="padding: 10px 10px 10px 10px;">
-          <a class="btn rounded-pill btn1 scale" href="#">Nâng Cấp Premium</a>
-        </div>
-      </div>
 
-      <div class="dropdown">
-        <button class="btn rounded-pill btn2" data-bs-auto-close="outside" type="button" id="dropdownMenuButton"
-          data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-tag-fill"></i>
-        </button>
-        <div class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton" style="width: 300px">
-          <form method="get" action="/tags" style="width: 80%; padding-top: 10px" class="topbar gap-2">
-            <label for="tagInput">Tìm kiếm theo tags</label>
-            <input class="tagInput" name="tag" type="text" id="tags" data-role="tagsinput" class="form-control"
-              placeholder="Enter tags" />
-            <button type="submit" class="btn rounded-pill btn1 scale" style="width: 100%;">Tìm</button>
-          </form>
-        </div>
-      </div>
+        {{!-- Modal for authentication popup --}} {{>
+        Authentication/Authentication}}
+        <main style="padding-bottom: 120px">
+            <div class="container">{{{body}}}</div>
+        </main>
 
-      <div class="navbarBtn">
-        <div style="padding: 10px 10px 10px 10px;">
-          <div class="btn rounded-pill btn2" style="padding-top: 12px;">
-            <i class="bi bi-bookmarks-fill"></i>
-          </div>
-        </div>
-        <div class="navbar">
-          <div class="topbar">
-            <a href="#" role="button" aria-expanded="false">
-              <i class="bi bi-house-fill"></i>
-            </a>
-            {{#each Categories}}
-            <div class="subnav">
-              <button class="subnavbtn">
-                <a href="/articles/categories/{{id}}">{{name}} </a></button>
-              <div class="subnav-content">
-                {{#each SubCategories}}
-                <a href="/articles/subcategories/{{id}}">{{name}}</a>
-                {{/each}}
-              </div>
+        <footer class="footer footer-color2 text-black py-1">
+            <div class="container">
+                <div class="row" style="padding-top: 24px">
+                    <div class="col-md-6">
+                        <div class="footer-menu">
+                            <a class="scale" href="#">Trang Chủ</a>
+                            {{#each Top10Categories}}
+                            <a class="scale" href="/articles/categories/{{id}}"
+                                >{{name}}</a
+                            >
+                            {{/each}}
+                            <a class="scale" href="#">Info</a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <h5>Thành viên nhóm</h5>
+                        <ul class="list-unstyled">
+                            <li>22127132, Lý Nghị Hoằng</li>
+                            <li>21127087, Nguyễn Gia Kiệt</li>
+                            <li>22127441, Thái Huyễn Tùng</li>
+                            <li>22127131, Trần Nguyễn Minh Hoàng</li>
+                            <li>22127123, Lê Hồ Phi Hoàng</li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md-3">
+                        <h5>PTUDW- 22KTPM2</h5>
+                        <ul class="list-unstyled">
+                            <li>Final Project</li>
+                            <li>Newspaper</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            {{/each}}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+        </footer>
+        <footer class="footer text-white py-4 footer-color1">
+            <div class="col text-center">
+                <p class="mb-0">Powered by NewsHub - Vietnam and Global News</p>
+            </div>
+        </footer>
 
-  {{!-- Modal for authentication popup --}}
-  {{> Authentication/Authentication}}
-  <main>
-    <div class="container">{{{body}}}</div>
-  </main>
+        {{! jquery }}
+        <script
+            src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+            integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
+            crossorigin="anonymous"
+        ></script>
 
+        {{!-- Popper --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.7/umd/popper.min.js"></script>
 
-  <footer class="footer footer-color2 text-black py-1">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="footer-menu">
-            <a class="scale" href="#">Trang Chủ</a>
-            {{#each Top10Categories}}
-            <a class="scale" href="/articles/categories/{{id}}">{{name}}</a>
-            {{/each}}
-            <a class="scale" href="#">Info</a>
-          </div>
-        </div>
+        {{! bootstrap }}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        <div class="col-md-3">
-          <h5>Thành viên nhóm</h5>
-          <ul class="list-unstyled">
-            <li>22127132, Lý Nghị Hoằng</li>
-            <li>21127087, Nguyễn Gia Kiệt</li>
-            <li>22127441, Thái Huyễn Tùng</li>
-            <li>22127131, Trần Nguyễn Minh Hoàng</li>
-            <li>22127123, Lê Hồ Phi Hoàng</li>
-          </ul>
-        </div>
+        {{! tagsinput}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.js"></script>
 
-        <div class="col-md-3">
-          <h5>PTUDW- 22KTPM2</h5>
-          <ul class="list-unstyled">
-            <li>Final Project</li>
-            <li>Newspaper</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </footer>
-  <footer class="footer text-white py-4 footer-color1">
-    <div class="col text-center">
-      <p class="mb-0">Powered by NewsHub - Vietnam and Global News</p>
-    </div>
-  </footer>
+        {{! summernote }}
+        <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 
-  {{! jquery }}
-  <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
-    integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+        {{! datatables }}
+        <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
 
-  {{! bootstrap }}
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        {{! custom JS }} {{#each this.customJs}}
+        <script src="/js/{{this}}"></script>
+        {{/each}}
 
-  {{! tagsinput}}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.js"></script>
+        <script>
+            $('.tagInput').tagsinput({
+                onTagExists: function (item, $tag) {
+                    console.log('test');
+                },
+            });
+            $(document).keypress(function (event) {
+                if (event.which == '13') {
+                    event.preventDefault();
+                }
+            });
+        </script>
+        <script>
+            // JavaScript to handle the top bar's visibility
+            const topbar = document.querySelector('.topbar');
+            let scrollTimeout;
+            let mouseMoveTimeout;
 
-  {{! summernote }}
-  <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
+            // Function to hide the top bar after a delay
+            const hideTopBar = () => {
+                if (window.scrollY === 0) topbar.classList.remove('hidden');
+                else topbar.classList.add('hidden');
+            };
 
-  {{! datatables }}
-  <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
+            // Function to show the top bar immediately
+            const showTopBar = () => {
+                topbar.classList.remove('hidden');
+            };
 
-  {{! custom JS }}
-  {{#each this.customJs}}
-  <script src="/js/{{this}}"></script>
-  {{/each}}
+            // Reset the timeout on scroll and mouse movement
+            const resetTimeouts = () => {
+                clearTimeout(scrollTimeout);
+                clearTimeout(mouseMoveTimeout);
+                showTopBar(); // Show the top bar on scroll or mouse movement
+                scrollTimeout = setTimeout(hideTopBar, 3000); // Hide after 3 seconds of inactivity from scrolling
+                mouseMoveTimeout = setTimeout(hideTopBar, 3000); // Hide after 3 seconds of inactivity from mouse movement
+            };
 
-  <script>
-    $('.tagInput').tagsinput({
-      onTagExists: function (item, $tag) {
-        console.log("test")
-      }
-    }); $(document).keypress(function (event) {
-      if
-        (event.which == '13') { event.preventDefault(); }
-    });
-  </script>
-  <script>
-    // JavaScript to handle the top bar's visibility
-    const topbar = document.querySelector('.topbar');
-    let scrollTimeout;
-    let mouseMoveTimeout;
+            // Handle scroll event: Always show top bar when scrolled to top
+            const handleScroll = () => {
+                if (window.scrollY === 0) {
+                    showTopBar(); // Show top bar when scrolled to the top
+                } else {
+                    resetTimeouts(); // Reset timeout on scrolling
+                }
+            };
 
-    // Function to hide the top bar after a delay
-    const hideTopBar = () => {
-      if (window.scrollY === 0)
-        topbar.classList.remove('hidden');
-      else
-        topbar.classList.add('hidden');
-    };
+            // Handle mouse move event: Show the top bar when mouse moves
+            const handleMouseMove = () => {
+                resetTimeouts(); // Reset timeout on mouse movement
+            };
 
-    // Function to show the top bar immediately
-    const showTopBar = () => {
-      topbar.classList.remove('hidden');
-    };
+            // Listen to scroll and mouse move events
+            window.addEventListener('scroll', handleScroll);
+            window.addEventListener('mousemove', handleMouseMove);
 
-    // Reset the timeout on scroll and mouse movement
-    const resetTimeouts = () => {
-      clearTimeout(scrollTimeout);
-      clearTimeout(mouseMoveTimeout);
-      showTopBar(); // Show the top bar on scroll or mouse movement
-      scrollTimeout = setTimeout(hideTopBar, 3000); // Hide after 3 seconds of inactivity from scrolling
-      mouseMoveTimeout = setTimeout(hideTopBar, 3000); // Hide after 3 seconds of inactivity from mouse movement
-    };
-
-    // Handle scroll event: Always show top bar when scrolled to top
-    const handleScroll = () => {
-      if (window.scrollY === 0) {
-        showTopBar(); // Show top bar when scrolled to the top
-      } else {
-        resetTimeouts(); // Reset timeout on scrolling
-      }
-    };
-
-    // Handle mouse move event: Show the top bar when mouse moves
-    const handleMouseMove = () => {
-      resetTimeouts(); // Reset timeout on mouse movement
-    };
-
-    // Listen to scroll and mouse move events
-    window.addEventListener('scroll', handleScroll);
-    window.addEventListener('mousemove', handleMouseMove);
-
-    // Initial setup: Hide the top bar after 3 seconds if there's no scroll or mouse movement
-    scrollTimeout = setTimeout(hideTopBar, 3000);
-    mouseMoveTimeout = setTimeout(hideTopBar, 3000);
-  </script>
-</body>
-
+            // Initial setup: Hide the top bar after 3 seconds if there's no scroll or mouse movement
+            scrollTimeout = setTimeout(hideTopBar, 3000);
+            mouseMoveTimeout = setTimeout(hideTopBar, 3000);
+        </script>
+    </body>
 </html>

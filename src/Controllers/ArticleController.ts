@@ -316,7 +316,7 @@ export class ArticleController {
     //Tạo ra một News
 
     res.render("Home/HomeGuestNews", {
-      customCss: ["News.css"],
+      customCss: ["Home.css", "News.css", "Component.css"],
       News,
     });
   }

@@ -1,261 +1,261 @@
-@import "Variable.css";
+@import 'Variable.css';
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 .writer-publish-news-title {
-  color: var(--color-gray-text);
-  font-size: 40px;
-  border-bottom: 2px solid var(--color-red-primary);
-  display: inline-block;
+    color: var(--color-gray-text);
+    font-size: 40px;
+    border-bottom: 2px solid var(--color-red-primary);
+    display: inline-block;
 }
 
 .writer-publish-news-container {
-  margin-top: 24px;
+    margin-top: 24px;
 }
 
 .input-title {
-  font-size: 20px;
-  font-weight: bold;
+    font-size: 20px;
+    font-weight: bold;
 }
 
 .input-field {
-  height: 40px;
-  font-size: 16px;
+    height: 40px;
+    font-size: 16px;
 }
 
 .textarea-field {
-  font-size: 16px;
-  resize: none;
+    font-size: 16px;
+    resize: none;
 }
 
 /* summernote */
 
 /* Resize toolbar icons */
 .note-toolbar .note-btn {
-  font-size: 18px;
-  /* Adjust toolbar icon size */
-  padding: 5px 10px;
+    font-size: 18px;
+    /* Adjust toolbar icon size */
+    padding: 5px 10px;
 }
 
 .note-toolbar i {
-  font-size: 18px;
-  /* Adjust font-awesome or glyphicon icon size */
+    font-size: 18px;
+    /* Adjust font-awesome or glyphicon icon size */
 }
 
 .note-current-fontname {
-  font-size: 18px;
+    font-size: 18px;
 }
 
 .note-dropdown-menu span {
-  font-size: 16px;
+    font-size: 16px;
 }
 
 /* Resize font size of the editor contents */
 .note-editable {
-  min-height: 800px;
+    min-height: 800px;
 }
 
 .note-editable * {
-  font-size: 16px;
-  line-height: 1.5;
+    font-size: 16px;
+    line-height: 1.5;
 }
 
 .popover-content {
-  font-size: 16px;
+    font-size: 16px;
 }
 
 /* Footer */
 
 .submit-button {
-  background-color: var(--color-blue-primary);
-  border-radius: 10px;
-  color: var(--color-white);
-  border: none;
-  padding: 8px 24px;
-  font-size: 20px;
-  font-weight: bold;
+    background-color: var(--color-blue-primary);
+    border-radius: 10px;
+    color: var(--color-white);
+    border: none;
+    padding: 8px 24px;
+    font-size: 20px;
+    font-weight: bold;
 }
 
 .back-button {
-  border-radius: 10px;
-  border: 1px solid var(--color-blue-primary);
-  background-color: var(--color-white);
-  color: var(--color-blue-primary);
-  font-size: 20px;
-  font-weight: bold;
-  padding: 8px 24px;
-  margin-right: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--color-blue-primary);
+    background-color: var(--color-white);
+    color: var(--color-blue-primary);
+    font-size: 20px;
+    font-weight: bold;
+    padding: 8px 24px;
+    margin-right: 16px;
 }
 
 .submit-button:hover,
 .back-button:hover {
-  opacity: 0.8;
+    opacity: 0.8;
 }
 
 /* WRITE HOME PAGE */
 
 .statistics .stat-item {
-  width: 250px;
-  height: 250px;
-  color: #ffffff;
+    width: 250px;
+    height: 250px;
+    color: #ffffff;
 }
 
 .statistics .stat-item#completed {
-  background-color: #b52759;
+    background-color: #b52759;
 }
 
 .statistics .stat-item#waiting {
-  background-color: #087cce;
+    background-color: #087cce;
 }
 
 .statistics .stat-item#pending {
-  background-color: #fcfaf6;
-  color: #222222;
+    background-color: #fcfaf6;
+    color: #222222;
 }
 
 .statistics .stat-item#reject {
-  background-color: #222222;
+    background-color: #222222;
 }
 
 .statistics .stat-item .stat-label {
-  width: 225px;
-  border-bottom: 2px solid #ffffff;
+    width: 225px;
+    border-bottom: 2px solid #ffffff;
 }
 
 .statistics .stat-item#pending .stat-label {
-  border-bottom: 2px solid #222222;
+    border-bottom: 2px solid #222222;
 }
 
 /* WRITER VIEW ARTICLES */
 .writer-view-articles h2 span {
-  border-bottom: 2px solid var(--color-red-primary);
+    border-bottom: 2px solid var(--color-red-primary);
 }
 
 .img-article img {
-  width: 100%;
-  height: auto;
+    width: 100%;
+    height: auto;
 }
 
 .sum-article h2 {
-  font-size: 22px;
-  text-align: justify;
+    font-size: 22px;
+    text-align: justify;
 }
 
 .sum-article p {
-  font-size: 15px;
-  text-align: justify;
+    font-size: 15px;
+    text-align: justify;
 }
 
 .publish-time {
-  background-color: color-mix(in srgb, white 95%, black 5%);
+    background-color: color-mix(in srgb, white 95%, black 5%);
 }
 
 .vertical-line {
-  width: 1px;
-  height: 24px;
-  background-color: #ccc;
+    width: 1px;
+    height: 24px;
+    background-color: #ccc;
 }
 
 .subcategory {
-  color: var(--color-red-primary);
-  font-weight: 500;
+    color: var(--color-red-primary);
+    font-weight: 500;
 }
 
 .writer-view-articles .pagination .page-link {
-  color: var(--color-red-primary) !important;
+    color: var(--color-red-primary) !important;
 }
 
 .writer-view-articles .pagination .page-item.active .page-link {
-  background-color: var(--color-red-primary) !important;
-  border-color: var(--color-red-primary) !important;
-  color: var(--color-white) !important;
+    background-color: var(--color-red-primary) !important;
+    border-color: var(--color-red-primary) !important;
+    color: var(--color-white) !important;
 }
 
 .accepted-publish-date {
-  color: var(--color-blue-primary) !important;
+    color: var(--color-blue-primary) !important;
 }
 
 #writer-decline-modal h1 {
-  color: var(--color-red-primary);
-  font-weight: 700;
-  font-style: italic;
+    color: var(--color-red-primary);
+    font-weight: 700;
+    font-style: italic;
 }
 
 #writer-decline-modal span {
-  padding-bottom: 5px;
-  border-bottom: 1px solid var(--color-red-primary);
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--color-red-primary);
 }
 
 .modal-header {
-  border-bottom: none;
+    border-bottom: none;
 }
 
 #writer-decline-modal .reasons {
-  background-color: color-mix(in srgb, var(--color-gray-text) 10%, white 90%);
+    background-color: color-mix(in srgb, var(--color-gray-text) 10%, white 90%);
 }
 
 /* Premium Switch */
 
 .switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
 }
 
 .switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
 .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
 }
 
 .slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
+    position: absolute;
+    content: '';
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
 }
 
 input:checked + .slider {
-  background-color: var(--color-red-primary);
+    background-color: var(--color-red-primary);
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px var(--color-red-primary);
+    box-shadow: 0 0 1px var(--color-red-primary);
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
 }
 
 /* Rounded sliders */
 .slider.round {
-  border-radius: 34px;
+    border-radius: 34px;
 }
 
 .slider.round:before {
-  border-radius: 50%;
+    border-radius: 50%;
 }

@@ -152,40 +152,8 @@
       </section>
     </section>
 
-    <section class="col col-lg-12 col-md-12 col-sm-12 main-news">
-      {{#each newsOfCategory}}
-        <div class="d-flex align-items-start main-news-item">
-          <div class="d-flex align-items-start w-75">
-            <img
-              style="width: 200px; height: 125px;"
-              src="{{this.img}}"
-              alt="{{this.title}}"
-            />
-            <div class="main-news-item__description">
-              <div>
-                <p>{{this.title}}</p>
-                <p>{{this.description}}</p>
-              </div>
-              <div>
-                <span>Ngày đăng: {{this.date}}</span>
-              </div>
-            </div>
-          </div>
-          <div class="w-25">
-            <div class="d-flex flex-column mb-2">
-              <span>{{this.tagTitle}}</span>
-              <span>{{this.tagDescription}}</span>
-            </div>
-            <div>
-              {{#each this.tagList}}
-                <a href="{{this.link}}">
-                  <button class="btn btn-sm tag">{{this.tag}}</button>
-                </a>
-              {{/each}}
-            </div>
-          </div>
-        </div>
-      {{/each}}
+    <section class="col col-lg-12 col-md-12 col-sm-12 main-news" style="margin-top: 100px;">
+      {{> Component/News listOfNews=newsOfCategory}}
     </section>
   </div>
   <div class="col col-lg-3 sub-news">
