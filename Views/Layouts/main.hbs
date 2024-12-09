@@ -32,7 +32,7 @@
 <body>
   <div class="sticky-top">
     <div class="topbar" style="border-bottom: 1.5px solid #c0c0c0;">
-      <a href="#"><img src="/website_logo.png" width="45px" height="45px" class="rounded"/></a>
+      <a href="#"><img src="/website_logo.png" width="45px" height="45px" class="rounded" /></a>
       <div class="textColor dateDisplay"> Thứ 2, 25/11/2024 </div>
       <form style="min-width: 320px; width: 25%" action="/search/" class="form-inline my-2 my-lg-0" method="get">
         <div class="input-group">
@@ -104,10 +104,10 @@
 
   {{!-- Modal for authentication popup --}}
   {{> Authentication/Authentication}}
+  <main>
+    <div class="container">{{{body}}}</div>
+  </main>
 
-  <div class="container">{{{body}}}</div>
-
-  <hr style="margin-top: 100px;"/>
 
   <footer class="footer footer-color2 text-black py-1">
     <div class="container">
@@ -179,6 +179,56 @@
       if
         (event.which == '13') { event.preventDefault(); }
     });
+  </script>
+  <script>
+    // JavaScript to handle the top bar's visibility
+    const topbar = document.querySelector('.topbar');
+    let scrollTimeout;
+    let mouseMoveTimeout;
+
+    // Function to hide the top bar after a delay
+    const hideTopBar = () => {
+      if (window.scrollY === 0)
+        topbar.classList.remove('hidden');
+      else
+        topbar.classList.add('hidden');
+    };
+
+    // Function to show the top bar immediately
+    const showTopBar = () => {
+      topbar.classList.remove('hidden');
+    };
+
+    // Reset the timeout on scroll and mouse movement
+    const resetTimeouts = () => {
+      clearTimeout(scrollTimeout);
+      clearTimeout(mouseMoveTimeout);
+      showTopBar(); // Show the top bar on scroll or mouse movement
+      scrollTimeout = setTimeout(hideTopBar, 3000); // Hide after 3 seconds of inactivity from scrolling
+      mouseMoveTimeout = setTimeout(hideTopBar, 3000); // Hide after 3 seconds of inactivity from mouse movement
+    };
+
+    // Handle scroll event: Always show top bar when scrolled to top
+    const handleScroll = () => {
+      if (window.scrollY === 0) {
+        showTopBar(); // Show top bar when scrolled to the top
+      } else {
+        resetTimeouts(); // Reset timeout on scrolling
+      }
+    };
+
+    // Handle mouse move event: Show the top bar when mouse moves
+    const handleMouseMove = () => {
+      resetTimeouts(); // Reset timeout on mouse movement
+    };
+
+    // Listen to scroll and mouse move events
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('mousemove', handleMouseMove);
+
+    // Initial setup: Hide the top bar after 3 seconds if there's no scroll or mouse movement
+    scrollTimeout = setTimeout(hideTopBar, 3000);
+    mouseMoveTimeout = setTimeout(hideTopBar, 3000);
   </script>
 </body>
 
