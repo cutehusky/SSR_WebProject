@@ -131,23 +131,44 @@
 }
 
 /* WRITER VIEW ARTICLES */
+.writer-view-articles h2 {
+    margin-bottom: 52px;
+}
+
 .writer-view-articles h2 span {
     border-bottom: 2px solid var(--color-red-primary);
 }
 
+.article:hover {
+    cursor: pointer;
+}
+
+.article:hover .img-article img {
+    transform: scale(1.05);
+}
+
 .img-article img {
     width: 100%;
-    height: auto;
+    min-width: 350px;
+    height: 250px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    background-position: center;
+    object-fit: cover;
+
+    transition: all 0.2s ease-in-out;
 }
 
 .sum-article h2 {
     font-size: 22px;
     text-align: justify;
+    margin-bottom: 8px;
 }
 
 .sum-article p {
-    font-size: 15px;
+    font-size: 16px;
     text-align: justify;
+    margin-bottom: 0;
 }
 
 .publish-time {

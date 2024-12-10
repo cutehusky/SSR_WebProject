@@ -1,14 +1,14 @@
 <div class="container my-5 writer-view-articles">
   {{#if (eq state "published")}}
-    <h2 class="mb-4"><span>Bài viết đã xuất bản</span></h2>
+    <h2><span>Bài viết đã xuất bản</span></h2>
   {{else if (eq state "processing")}}
-    <h2 class="mb-4"><span>Bài viết chưa được duyệt</span></h2>
+    <h2><span>Bài viết chưa được duyệt</span></h2>
   {{else if (eq state "rejected")}}
-    <h2 class="mb-4"><span>Bài viết bị từ chối</span></h2>
+    <h2><span>Bài viết bị từ chối</span></h2>
   {{else if (eq state "accepted")}}
-    <h2 class="mb-4"><span>Bài viết đã được duyệt &amp; chờ xuất bản</span></h2>
+    <h2><span>Bài viết đã được duyệt &amp; chờ xuất bản</span></h2>
   {{else}}
-    <h2 class="mb-4"><span>Trạng thái không xác định</span></h2>
+    <h2><span>Trạng thái không xác định</span></h2>
   {{/if}}
   <div class="row g-4">
     {{#each articles}}
@@ -35,7 +35,7 @@
             <p>{{this.abstract}}</p>
           </div>
         </div>
-        <div class="publish-time d-flex align-items-center">
+        <div class="publish-time d-flex align-items-center p-2">
           <p class="mb-1 mx-3 text-muted {{#if (eq ../state "accepted")}}accepted-publish-date{{/if}}">Ngày xuất bản: {{this.date}}</p>
           <div class="vertical-line mx-3"></div>
           <p class="mb-0 category">{{this.category}}</p>
@@ -45,7 +45,7 @@
       </div>
     {{/each}}
   </div>
-  <nav aria-label="Page navigation" class="mt-4">
+  {{!-- <nav aria-label="Page navigation" class="mt-4">
     <ul class="pagination justify-content-center">
       <li class="page-item">
         <a class="page-link" href="#" aria-label="Previous">
@@ -61,7 +61,8 @@
         </a>
       </li>
     </ul>
-  </nav>
+  </nav> --}}
+  {{> Component/Paging}}
 </div>
 
 <div class="modal fade" id="writer-decline-modal" tabindex="-1" aria-hidden="true">
