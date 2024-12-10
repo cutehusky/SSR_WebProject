@@ -1,64 +1,88 @@
 <div class="row d-flex justify-content-center">
-  <div class="wrapper col col-lg-12 col-md-12 col-sm-12">
-    <h1 class="editor-title">Bài viết cần duyệt</h1>
-    <div class="editor-container mt-4">
-      <ul class="editor-container-header d-flex align-items-center pb-2">
-        {{#each this.categories}}
-          <li>
-            <a class="" href="#">{{this}}</a>
-          </li>
-        {{/each}}
-      </ul>
-      <div class="editor-container-body pt-2">
-        <div
-          class="editor-container-body-heading d-flex align-items-center justify-content-between"
-        >
-          <p class="col col-4">Tiêu đề</p>
-          <p class="col col-2">Tác giả</p>
-          <p class="col col-2">Ngày viết</p>
-          <p class="col col-2">Nhãn</p>
-          <p class="col col-2">Chuyên mục</p>
-        </div>
-        <div class="editor-container-body-content">
-          {{#each this.articles}}
-            <div
-              class="editor-container-body-content-item d-flex align-items-center justify-content-between"
-            >
-              <p class="col col-4">{{this.title}}</p>
-              <p class="col col-2">{{this.author}}</p>
-              <p class="col col-2">{{this.date}}</p>
-              <p class="col col-2">{{this.tag}}</p>
-              <p class="col col-2">{{this.category}}</p>
+    <div class="wrapper col col-lg-12 col-md-12 col-sm-12 mt-4">
+        <h1 class="editor-title">Bài viết cần duyệt</h1>
+        <div class="editor-container mt-4">
+            <form method="get" action="/admin/articles/" class="mb-4">
+                <div class="categorySelection">
+                    <label
+                        for="roleSelect"
+                        class="form-label"
+                        style="padding-top: 8px; width: 200px"
+                    >
+                        Chuyên Mục
+                    </label>
+                    <select
+                        name="category"
+                        class="form-select"
+                        style="height: 40px"
+                        id="roleSelect"
+                    >
+                        <option value="-1" {{#if (eq ../selectedCategory -1 ) }}selected{{/if }}>Tất Cả</option>
+                        {{#each this.categories}}
+                        <option value="{{id}}" {{#if (eq ../selectedCategory id ) }}selected{{/if }}>{{this}}</option>
+                        {{/each}}
+                    </select>
+                    <button
+                        type="submit"
+                        class="btn actionBtn scale"
+                        style="margin-left: 30px; width: 120px"
+                    >
+                        <i
+                            class="bi bi-funnel-fill"
+                            style="margin-right: 10px"
+                        ></i
+                        >Lọc
+                    </button>
+                </div>
+            </form>
+            {{!--
+            <div class="editor-container-body pt-2">
+                <div
+                    class="editor-container-body-heading d-flex align-items-center justify-content-between"
+                >
+                    <p class="col col-4">Tiêu đề</p>
+                    <p class="col col-2">Tác giả</p>
+                    <p class="col col-2">Ngày viết</p>
+                    <p class="col col-2">Nhãn</p>
+                    <p class="col col-2">Chuyên mục</p>
+                </div>
+                <div class="editor-container-body-content">
+                    {{#each this.articles}}
+                    <div
+                        class="editor-container-body-content-item d-flex align-items-center justify-content-between"
+                    >
+                        <p class="col col-4">{{this.title}}</p>
+                        <p class="col col-2">{{this.author}}</p>
+                        <p class="col col-2">{{this.date}}</p>
+                        <p class="col col-2">{{this.tag}}</p>
+                        <p class="col col-2">{{this.category}}</p>
+                    </div>
+                    {{/each}}
+                </div>
             </div>
-          {{/each}}
+            --}}
+            <table id="editorPendingTable" class="display w-100">
+                <thead>
+                    <tr>
+                        <th>Tiêu Đề</th>
+                        <th>Tác Giả</th>
+                        <th>Ngày Viết</th>
+                        <th>Nhãn</th>
+                        <th>Chuyên Mục</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each this.articles}}
+                    <tr>
+                        <td>{{this.title}}</td>
+                        <td>{{this.author}}</td>
+                        <td>{{this.date}}</td>
+                        <td>{{this.tag}}</td>
+                        <td>{{this.category}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
         </div>
-      </div>
-      <div
-        class="editor-container-footer d-flex align-items-center justify-content-center mt-4"
-      >
-        <div class="w-30 d-flex align-items-center justify-content-between">
-          <a
-            href="#"
-            class="editor-container-footer-paging d-flex align-items-center justify-content-center"
-          >
-            <i class="bi bi-caret-left-fill page-button"></i>
-          </a>
-          {{#each this.pages}}
-            <a
-              href="#"
-              class="editor-container-footer-paging d-flex align-items-center justify-content-center"
-            >
-              <p>{{this}}</p>
-            </a>
-          {{/each}}
-          <a
-            href="#"
-            class="editor-container-footer-paging d-flex align-items-center justify-content-center"
-          >
-            <i class="bi bi-caret-right-fill page-button"></i>
-          </a>
-        </div>
-      </div>
     </div>
-  </div>
 </div>

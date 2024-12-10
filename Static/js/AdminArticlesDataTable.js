@@ -7,7 +7,18 @@ $(document).ready(function () {
             {
                 targets: 5,
                 orderable: false,
-            }
-        ]
+            },
+        ],
+    });
+    $('#editorPendingTable').DataTable({
+        responsive: true,
+        searching: false,
+        lengthChange: false,
+        columnDefs: [
+            {
+                targets: 4,
+                orderable: false,
+            },
+        ],
     });
 });
