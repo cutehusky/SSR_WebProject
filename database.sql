@@ -2,7 +2,7 @@ CREATE DATABASE NEWSPAPER;
 USE NEWSPAPER;
 
 CREATE TABLE USER (
-    UserID CHAR(5),
+    UserID INT AUTO_INCREMENT,
     FullName VARCHAR(50) COLLATE utf8_unicode_ci,
     Email VARCHAR(50),
     Password VARCHAR(50),
@@ -12,87 +12,87 @@ CREATE TABLE USER (
 );
 
 CREATE TABLE SUBSCRIBER (
-    SubscriberID CHAR(5),
+    SubscriberID INT,
     DateRegistered DATE,
     Duration INT,
     CONSTRAINT PK_SUBSCRIBER PRIMARY KEY (SubscriberID)
 );
 
 CREATE TABLE WRITER (
-    WriterID CHAR(5),
+    WriterID INT,
     Alias VARCHAR(50) COLLATE utf8_unicode_ci,
     CONSTRAINT PK_WRITER PRIMARY KEY (WriterID)
 );
 
 CREATE TABLE EDITOR (
-    EditorID CHAR(5),
+    EditorID INT,
     CONSTRAINT PK_EDITOR PRIMARY KEY (EditorID)
 );
 
 CREATE TABLE ARTICLE (
-    ArticleID CHAR(5),
+    ArticleID INT AUTO_INCREMENT,
     Title VARCHAR(255) COLLATE utf8_unicode_ci,
     DatePublished DATETIME,
     DatePosted DATETIME,
-    Content MEDIUMTEXT COLLATE utf8_unicode_ci,
+    Content LONGTEXT COLLATE utf8_unicode_ci,
     Abstract TINYTEXT COLLATE utf8_unicode_ci,
     Status CHAR(10) CHECK (Status IN ('Draft', 'Pending', 'Rejected', 'Approved', 'Published')),
     Reason TINYTEXT COLLATE utf8_unicode_ci,
     IsPremium INT DEFAULT 0 CHECK (IsPremium IN (0, 1)),
     ViewCount INT DEFAULT 0 CHECK (ViewCount >= 0),
-    EditorID CHAR(5),
-    WriterID CHAR(5),
+    EditorID INT,
+    WriterID INT,
     CONSTRAINT PK_ARTICLE PRIMARY KEY (ArticleID)
 );
 
 CREATE TABLE COMMENT (
-    CommentID CHAR(5),
+    CommentID INT AUTO_INCREMENT,
     DatePosted DATE,
     Content TEXT COLLATE utf8_unicode_ci,
-    ArticleID CHAR(5),
-    SubscriberID CHAR(5),
+    ArticleID INT,
+    SubscriberID INT,
     CONSTRAINT PK_COMMENT PRIMARY KEY (CommentID)
 );
 
 CREATE TABLE CATEGORY (
-    CategoryID CHAR(5),
+    CategoryID INT AUTO_INCREMENT,
     Name VARCHAR(50) COLLATE utf8_unicode_ci,
     CONSTRAINT PK_CATEGORY PRIMARY KEY (CategoryID)
 );
 
 CREATE TABLE EDITOR_CATEGORY (
-    EditorID CHAR(5),
-    CategoryID CHAR(5),
+    EditorID INT,
+    CategoryID INT,
     CONSTRAINT PK_EDITOR_CATEGORY PRIMARY KEY (EditorID, CategoryID)
 );
 
 CREATE TABLE SUBCATEGORY (
-    SubCategoryID CHAR(5),
+    SubCategoryID INT AUTO_INCREMENT,
     Name VARCHAR(50) COLLATE utf8_unicode_ci,
-    CategoryID CHAR(5),
+    CategoryID INT,
     CONSTRAINT PK_SUBCATEGORY PRIMARY KEY (SubCategoryID)
 );
 
 CREATE TABLE ARTICLE_SUBCATEGORY (
-    ArticleID CHAR(5),
-    SubCategoryID CHAR(5),
+    ArticleID INT,
+    SubCategoryID INT,
     CONSTRAINT PK_ARTICLE_SUBCATEGORY PRIMARY KEY (ArticleID, SubCategoryID)
 );
 
 CREATE TABLE TAG (
-    TagID CHAR(5),
+    TagID INT AUTO_INCREMENT,
     Name VARCHAR(50) COLLATE utf8_unicode_ci,
     CONSTRAINT PK_TAG PRIMARY KEY (TagID)
 );
 
 CREATE TABLE ARTICLE_TAG (
-    ArticleID CHAR(5),
-    TagID CHAR(5),
+    ArticleID INT,
+    TagID INT,
     CONSTRAINT PK_ARTICLE_TAG PRIMARY KEY (ArticleID, TagID)
 );
 
 CREATE TABLE ARTICLE_URL (
-    ArticleID CHAR(5),
+    ArticleID INT,
     STT INT,
     URL TEXT,
     CONSTRAINT PK_ARTICLE_URL PRIMARY KEY (ArticleID, STT)
