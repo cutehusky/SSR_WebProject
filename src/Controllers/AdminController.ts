@@ -1,26 +1,38 @@
 import { Response, Request } from "express";
 
+import db from "../utils/db";
+
+import { testSubCategory } from "../utils/testSubCategory";
+import { getParentNames } from "../utils/getParentNames";
+import { get } from "jquery";
+
+let tagData = [
+  { name: "test 1", id: 1 },
+  { name: "test 2", id: 2 },
+  { name: "test 3", id: 3 },
+  { name: "test 4", id: 4 },
+  { name: "test 5", id: 5 },
+];
+
+
+let subCategoryData = testSubCategory();
+
 export class AdminController {
   // /admin/categories?category=
   getCategories(req: Request, res: Response) {
     const category = (req.query.category || "-1") as string;
     const categoryId = parseInt(category);
-    let testSubCategory = [];
-    for (let i = 0; i < 20; i++) {
-      for (let j = 0; j < 20; j++) {
-        testSubCategory.push({
-          id: j,
-          name: "test subcategory " + j,
-          parentName: "test category " + i,
-          parentId: i,
-        });
-      }
+
+    let filteredSubCategoryData = subCategoryData;;
+    if(parseInt(category) != -1){
+      filteredSubCategoryData = subCategoryData.filter((subCategory) => subCategory.parentId === categoryId);
     }
+
     res.render("Admin/AdminCategoriesView", {
       customCss: ["Admin.css"],
       customJs: ["AdminCategoryDataTable.js"],
-      selectedCategory: categoryId,
-      Subcategories: testSubCategory,
+      Categories: getParentNames(subCategoryData),
+      Subcategories: filteredSubCategoryData,
     });
   }
 
@@ -29,13 +41,7 @@ export class AdminController {
     res.render("Admin/AdminTagsView", {
       customCss: ["Admin.css"],
       customJs: ["AdminTagsDataTable.js"],
-      data: [
-        { name: "test 1", id: 1 },
-        { name: "test 2", id: 2 },
-        { name: "test 3", id: 3 },
-        { name: "test 4", id: 4 },
-        { name: "test 5", id: 5 },
-      ],
+      data: tagData,
     });
   }
 
@@ -82,13 +88,62 @@ export class AdminController {
   }
 
   // /admin/tag/edit
-  editTag(req: Request, res: Response) {
-    const tagId = req.query.id as string;
+  async editTag(req: Request, res: Response) {
+    const tagId = req.body.id as string;
+    const tagName = req.body.name as string;
+    // let tagList = await db("tags").select("id", "name"); // có thể thêm nhiều mục khác
+    let tagList = tagData;
+    const tag = tagList.find((tag) => tag.id === parseInt(tagId));
+    if (!tag) {
+      res.status(404).send("Tag not found");
+      return;
+    }
+    tag.name = tagName;
+    res.render("Admin/AdminTagsView", {
+      customCss: ["Admin.css"],
+      customJs: ["AdminTagsDataTable.js"],
+      data: tagList,
+    });
+
   }
 
   // /admin/category/edit
-  editCategory(req: Request, res: Response) {
-    const categoryId = req.query.id as string;
+  async editCategory(req: Request, res: Response) {
+    // const categoryId = req.query.id as string;
+    // // let categoryList = await db("categories").select("id", "name", "parentName", "parentId"); // có thể thêm nhiều mục khác
+    // let categoryList = subCategoryData;
+    // const category = categoryList.find((category) => category.id === parseInt(categoryId));
+    // if (!category) {
+    //   res.status(404).send("Category not found");
+    //   return;
+    // }
+    // category.name = req.query.name as string;
+    const { id, name } = req.body;
+    console.log(id, name)
+    const category = subCategoryData.find((category) => category.parentId == parseInt(id));
+    if (!category) {
+      res.status(404).send("Category not found");
+      return;
+    }
+
+    console.log("chưa updata: ",category)
+
+    subCategoryData.map((category) => {
+      if(category.parentId == parseInt(id)){
+        category.parentName = name;
+      }
+    })
+
+    console.log("sau update: ",category)
+
+    
+    res.render("Admin/AdminCategoriesView", {
+      customCss: ["Admin.css"],
+      customJs: ["AdminCategoryDataTable.js"],
+      Categories: getParentNames(subCategoryData),
+      Subcategories: subCategoryData,
+    });
+  
   }
 
   // /admin/user/edit
@@ -98,10 +153,45 @@ export class AdminController {
   editArticle(req: Request, res: Response) {}
 
   // /admin/tag/new
-  newTag(req: Request, res: Response) {}
+  async newTag(req: Request, res: Response) {
+    const tagName = req.body.name as string;
+    let tagList = tagData;
+    tagList.push({ name: tagName, id: tagList.length + 1 });
+
+    // await db("tags").insert({ name: tagName });
+
+    res.render("Admin/AdminTagsView", {
+      customCss: ["Admin.css"],
+      customJs: ["AdminTagsDataTable.js"],
+      data: tagList,
+    });
+  }
 
   // /admin/category/new
-  newCategory(req: Request, res: Response) {}
+  newCategory(req: Request, res: Response) {
+    const categoryName = req.body.name as string;
+
+    const existingCategory = subCategoryData.find((category) => category.parentName === categoryName);
+    if (existingCategory) {
+      res.status(400).send("Category already exists");
+      return;
+    }
+
+    const parentId = parseInt(getParentNames(subCategoryData).length.toString());
+    const filteredSubCategoryData = subCategoryData.filter((subCategory) => subCategory.parentId === parentId);
+    subCategoryData.push({ 
+      name: "test subcategory " + filteredSubCategoryData.length, 
+      id: filteredSubCategoryData.length, 
+      parentName: categoryName, 
+      parentId: parentId 
+    });
+    res.render("Admin/AdminCategoriesView", {
+      customCss: ["Admin.css"],
+      customJs: ["AdminCategoryDataTable.js"],
+      Categories: getParentNames(subCategoryData),
+      Subcategories: subCategoryData,
+    });
+  }
 
   // /admin/user/new
   newUser(req: Request, res: Response) {}
@@ -110,10 +200,36 @@ export class AdminController {
   newArticle(req: Request, res: Response) {}
 
   // /admin/tag/delete
-  deleteTag(req: Request, res: Response) {}
+  deleteTag(req: Request, res: Response) {
+    const tagId = req.body.id as string;
+    let tagList = tagData;
+
+    const tagIndex = tagList.find((tag) => tag.id === parseInt(tagId));
+    if (!tagIndex) {
+      res.status(404).send("Tag not found");
+      return;
+    }
+    tagList = tagList.filter((tag) => tag.id !== parseInt(tagId));
+    tagData = tagList;
+    res.render("Admin/AdminTagsView", {
+      customCss: ["Admin.css"],
+      customJs: ["AdminTagsDataTable.js"],
+      data: tagList,
+    });
+  }
 
   // /admin/category/delete
-  deleteCategory(req: Request, res: Response) {}
+  deleteCategory(req: Request, res: Response) {
+    const categoryId = req.body.id as string;
+    let categoryList = subCategoryData.filter((category) => category.parentId !== parseInt(categoryId));
+    subCategoryData = categoryList;
+    res.render("Admin/AdminCategoriesView", {
+      customCss: ["Admin.css"],
+      customJs: ["AdminCategoryDataTable.js"],
+      Categories: getParentNames(categoryList),
+      Subcategories: categoryList,
+    });
+  }
 
   // /admin/user/delete
   deleteUser(req: Request, res: Response) {}
@@ -133,16 +249,70 @@ export class AdminController {
   }
 
   // /admin/subcategory/edit
+// request data{
+//   id: '0', subid
+//   category: '1', parentid
+//   name: 'test subcategory 0' name
+// }
   editSubCategory(req: Request, res: Response) {
-    res.render("Writer/WriterUpdateNews", {
-      customCss: ["Writer.css"],
-      customJs: ["Summernote.js"],
+    const { id, category, name } = req.body;
+    console.log(id, category, name)
+    const subCategory = subCategoryData.find((subcategory) => {
+      if(subcategory.id == parseInt(id) && subcategory.parentId == parseInt(category)){
+        return subcategory;
+      }
+    })
+    if (!subCategory) {
+      res.status(404).send("SubCategory not found");
+      return;
+    }
+    subCategory.name = name;
+    res.render("Admin/AdminCategoriesView", {
+      customCss: ["Admin.css"],
+      customJs: ["AdminCategoryDataTable.js"],
+      Categories: getParentNames(subCategoryData),
+      Subcategories: subCategoryData,
     });
   }
 
   // /admin/subcategory/new
-  newSubCategory(req: Request, res: Response) {}
+  // request data{ 
+  //  category: '1', parent id
+  //  name: 'ádasd' name
+  // }
+  newSubCategory(req: Request, res: Response) {
+    const { category, name } = req.body;
+    const parentId = parseInt(category);
+    const filteredSubCategoryData = subCategoryData.filter((subCategory) => subCategory.parentId === parentId);
+    subCategoryData.push({ 
+      name: name, 
+      id: filteredSubCategoryData.length, 
+      parentName: filteredSubCategoryData[0].parentName, 
+      parentId: parentId 
+    });
+    console.log(subCategoryData)
+    res.render("Admin/AdminCategoriesView", {
+      customCss: ["Admin.css"],
+      customJs: ["AdminCategoryDataTable.js"],
+      Categories: getParentNames(subCategoryData),
+      Subcategories: subCategoryData,
+    });
+  }
 
   // /admin/subcategory/delete
-  deleteSubCategory(req: Request, res: Response) {}
+  // request data{ 
+  //   parentName: '1', 
+  //   id: '0' 
+  // }
+  deleteSubCategory(req: Request, res: Response) {
+    const { parentName, id } = req.body;
+    let categoryList = subCategoryData.filter((category) => category.parentId !== parseInt(parentName) || category.id !== parseInt(id));
+    subCategoryData = categoryList;
+    res.render("Admin/AdminCategoriesView", {
+      customCss: ["Admin.css"],
+      customJs: ["AdminCategoryDataTable.js"],
+      Categories: getParentNames(subCategoryData),
+      Subcategories: subCategoryData,
+    });
+  }
 }

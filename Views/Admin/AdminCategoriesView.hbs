@@ -93,8 +93,9 @@
                     <i class="bi bi-pencil-square"></i>
                 </button>
                 <form method="post" style="margin: 0px; display: inline">
+                    <input type="text" name="parentName" value="{{parentId}}" class="visually-hidden">
                     <input name="id" type="text" value="{{id}}" style="display: none;">
-                    <button name="" class="btn actionBtn delBtn scale" formaction="/admin/category/delete"
+                    <button name="" class="btn actionBtn delBtn scale" formaction="/admin/subcategory/delete"
                         type="submit">
                         <i class="bi bi-bookmark-x-fill"></i>
                     </button>
@@ -105,3 +106,7 @@
         {{/each}}
     </tbody>
 </table>
+
+<script>
+    console.log("Hello: ", Categories)
+</script>
