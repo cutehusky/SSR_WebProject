@@ -1,325 +1,272 @@
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Web Project</title>
 
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-        />
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Project</title>
 
-        {{! datatables}}
-        <link
-            rel="stylesheet"
-            href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css"
-        />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
-        {{! bootstrap}}
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-        />
-        <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-        />
+    {{! datatables}}
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css" />
 
-        {{! tagsinput }}
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css"
-        />
+    {{! bootstrap}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
-        {{! summernote }}
-        <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css"
-        />
+    {{! tagsinput }}
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css" />
 
-        <link rel="stylesheet" href="/css/DataTable.css" />
-        <link rel="stylesheet" href="/css/main.css" />
+    {{! summernote }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" />
 
-        {{#each this.customCss}}
-        <link rel="stylesheet" href="/css/{{this}}" />
-        {{/each}}
-    </head>
+    <link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.4/css/fileinput.min.css" media="all"
+        rel="stylesheet" type="text/css" />
 
-    <body>
-        <div class="sticky-top">
-            <div class="topbar" style="border-bottom: 1.5px solid #c0c0c0">
-                <a href="/"
-                    ><img
-                        src="/website_logo.png"
-                        width="45px"
-                        height="45px"
-                        class="rounded"
-                /></a>
-                <div class="textColor dateDisplay">Thứ 2, 25/11/2024</div>
-                <form
-                    style="min-width: 320px; width: 25%"
-                    action="/search/"
-                    class="form-inline my-2 my-lg-0"
-                    method="get"
-                >
-                    <div class="input-group">
-                        <div class="input-div rounded-pill textColor">
-                            <div class="input-group-append">
-                                <button
-                                    class="btn rounded-pill searchInput"
-                                    type="submit"
-                                    id="button-addon2"
-                                >
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </div>
-                            <input
-                                type="text"
-                                name="q"
-                                class="form-control searchInput"
-                                placeholder="Search"
-                                aria-label="Search"
-                                aria-describedby="button-addon2"
-                                id="searchInput"
-                            />
-                        </div>
-                    </div>
-                </form>
-                <div style="display: flex">
-                    <div
-                        style="padding: 10px 10px 10px 10px"
-                        data-bs-toggle="modal"
-                        data-bs-target="#authenticationModal"
-                    >
-                        <a class="btn rounded-pill btn2 scale" href="#">
-                            <i
-                                class="bi bi-person-fill"
-                                style="padding-right: 10px"
-                            ></i>
-                            Đăng Nhập
-                        </a>
-                    </div>
-                    <div style="padding: 10px 10px 10px 10px">
-                        <a
-                            class="overflow-hidden btn rounded-pill btn1 scale sheen"
-                            href="#"
-                            >Nâng Cấp Premium</a
-                        >
-                    </div>
-                </div>
+    <link rel="stylesheet" href="/css/DataTable.css" />
+    <link rel="stylesheet" href="/css/main.css" />
 
-                <div class="dropdown">
-                    <button
-                        class="btn rounded-pill btn2"
-                        data-bs-auto-close="outside"
-                        type="button"
-                        id="dropdownMenuButton"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                    >
-                        <i class="bi bi-tag-fill"></i>
-                    </button>
-                    <div
-                        class="dropdown-menu mt-2"
-                        aria-labelledby="dropdownMenuButton"
-                        style="width: 300px"
-                    >
-                        <form
-                            method="get"
-                            action="/tags"
-                            style="width: 80%; padding-top: 10px"
-                            class="topbar gap-2"
-                        >
-                            <label for="tagInput">Tìm kiếm theo tags</label>
-                            <input
-                                class="tagInput"
-                                name="tag"
-                                type="text"
-                                id="tags"
-                                data-role="tagsinput"
-                                class="form-control"
-                                placeholder="Enter tags"
-                            />
-                            <button
-                                type="submit"
-                                class="btn rounded-pill btn1 scale"
-                                style="width: 100%"
-                            >
-                                Tìm
+    {{#each this.customCss}}
+    <link rel="stylesheet" href="/css/{{this}}" />
+    {{/each}}
+</head>
+
+<body>
+    <div class="sticky-top">
+        <div class="topbar" style="border-bottom: 1.5px solid #c0c0c0">
+            <a href="/"><img src="/website_logo.png" width="45px" height="45px" class="rounded" /></a>
+            <div class="textColor dateDisplay">Thứ 2, 25/11/2024</div>
+            <form style="min-width: 320px; width: 25%" action="/search/" class="form-inline my-2 my-lg-0" method="get">
+                <div class="input-group">
+                    <div class="input-div rounded-pill textColor">
+                        <div class="input-group-append">
+                            <button class="btn rounded-pill searchInput" type="submit" id="button-addon2">
+                                <i class="bi bi-search"></i>
                             </button>
-                        </form>
+                        </div>
+                        <input type="text" name="q" class="form-control searchInput" placeholder="Search"
+                            aria-label="Search" aria-describedby="button-addon2" id="searchInput" />
                     </div>
                 </div>
+            </form>
+            <div style="display: flex">
+                <div style="padding: 10px 10px 10px 10px" data-bs-toggle="modal" data-bs-target="#authenticationModal">
+                    <a class="btn rounded-pill btn2 scale" href="#">
+                        <i class="bi bi-person-fill" style="padding-right: 10px"></i>
+                        Đăng Nhập
+                    </a>
+                </div>
+                <div style="padding: 10px 10px 10px 10px">
+                    <a class="overflow-hidden btn rounded-pill btn1 scale sheen" href="#">Nâng Cấp Premium</a>
+                </div>
+            </div>
 
-                <div class="navbarBtn">
-                    <div style="padding: 10px 10px 10px 10px">
-                        <div
-                            class="btn rounded-pill btn2"
-                            style="padding-top: 12px"
-                        >
-                            <i class="bi bi-bookmarks-fill"></i>
-                        </div>
+            <div class="dropdown">
+                <button class="btn rounded-pill btn2" data-bs-auto-close="outside" type="button" id="dropdownMenuButton"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-tag-fill"></i>
+                </button>
+                <div class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton" style="width: 300px">
+                    <form method="get" action="/tags" style="width: 80%; padding-top: 10px" class="topbar gap-2">
+                        <label for="tagInput">Tìm kiếm theo tags</label>
+                        <input class="tagInput" name="tag" type="text" id="tags" data-role="tagsinput"
+                            class="form-control" placeholder="Enter tags" />
+                        <button type="submit" class="btn rounded-pill btn1 scale" style="width: 100%">
+                            Tìm
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="navbarBtn">
+                <div style="padding: 10px 10px 10px 10px">
+                    <div class="btn rounded-pill btn2" style="padding-top: 12px">
+                        <i class="bi bi-bookmarks-fill"></i>
                     </div>
-                    <div class="navbar">
-                        <div class="topbar">
-                            <a href="#" role="button" aria-expanded="false">
-                                <i class="bi bi-house-fill"></i>
-                            </a>
-                            {{#each Categories}}
-                            <div class="subnav">
-                                <button class="subnavbtn">
-                                    <a href="/articles/categories/{{id}}"
-                                        >{{name}}
-                                    </a>
-                                </button>
-                                <div class="subnav-content">
-                                    {{#each SubCategories}}
-                                    <a href="/articles/subcategories/{{id}}"
-                                        >{{name}}</a
-                                    >
-                                    {{/each}}
-                                </div>
+                </div>
+                <div class="navbar">
+                    <div class="topbar">
+                        <a href="#" role="button" aria-expanded="false">
+                            <i class="bi bi-house-fill"></i>
+                        </a>
+                        {{#each Categories}}
+                        <div class="subnav">
+                            <button class="subnavbtn">
+                                <a href="/articles/categories/{{id}}">{{name}}
+                                </a>
+                            </button>
+                            <div class="subnav-content">
+                                {{#each SubCategories}}
+                                <a href="/articles/subcategories/{{id}}">{{name}}</a>
+                                {{/each}}
                             </div>
-                            {{/each}}
                         </div>
+                        {{/each}}
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        {{!-- Modal for authentication popup --}} {{>
-        Authentication/Authentication}}
-        <main style="padding-bottom: 120px">
-            <div class="container">{{{body}}}</div>
-        </main>
+    {{!-- Modal for authentication popup --}} {{>
+    Authentication/Authentication}}
+    <main style="padding-bottom: 120px">
+        <div class="container">{{{body}}}</div>
+    </main>
 
-        <footer class="footer footer-color2 text-black py-1">
-            <div class="container">
-                <div class="row" style="padding-top: 24px">
-                    <div class="col-md-6">
-                        <div class="footer-menu">
-                            <a class="scale" href="#">Trang Chủ</a>
-                            {{#each Top10Categories}}
-                            <a class="scale" href="/articles/categories/{{id}}"
-                                >{{name}}</a
-                            >
-                            {{/each}}
-                            <a class="scale" href="#">Info</a>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <h5>Thành viên nhóm</h5>
-                        <ul class="list-unstyled">
-                            <li>22127132, Lý Nghị Hoằng</li>
-                            <li>21127087, Nguyễn Gia Kiệt</li>
-                            <li>22127441, Thái Huyễn Tùng</li>
-                            <li>22127131, Trần Nguyễn Minh Hoàng</li>
-                            <li>22127123, Lê Hồ Phi Hoàng</li>
-                        </ul>
-                    </div>
-
-                    <div class="col-md-3">
-                        <h5>PTUDW- 22KTPM2</h5>
-                        <ul class="list-unstyled">
-                            <li>Final Project</li>
-                            <li>Newspaper</li>
-                        </ul>
+    <footer class="footer footer-color2 text-black py-1">
+        <div class="container">
+            <div class="row" style="padding-top: 24px">
+                <div class="col-md-6">
+                    <div class="footer-menu">
+                        <a class="scale" href="#">Trang Chủ</a>
+                        {{#each Top10Categories}}
+                        <a class="scale" href="/articles/categories/{{id}}">{{name}}</a>
+                        {{/each}}
+                        <a class="scale" href="#">Info</a>
                     </div>
                 </div>
+
+                <div class="col-md-3">
+                    <h5>Thành viên nhóm</h5>
+                    <ul class="list-unstyled">
+                        <li>22127132, Lý Nghị Hoằng</li>
+                        <li>21127087, Nguyễn Gia Kiệt</li>
+                        <li>22127441, Thái Huyễn Tùng</li>
+                        <li>22127131, Trần Nguyễn Minh Hoàng</li>
+                        <li>22127123, Lê Hồ Phi Hoàng</li>
+                    </ul>
+                </div>
+
+                <div class="col-md-3">
+                    <h5>PTUDW- 22KTPM2</h5>
+                    <ul class="list-unstyled">
+                        <li>Final Project</li>
+                        <li>Newspaper</li>
+                    </ul>
+                </div>
             </div>
-        </footer>
-        <footer class="footer text-white py-4 footer-color1">
-            <div class="col text-center">
-                <p class="mb-0">Powered by NewsHub - Vietnam and Global News</p>
-            </div>
-        </footer>
+        </div>
+    </footer>
+    <footer class="footer text-white py-4 footer-color1">
+        <div class="col text-center">
+            <p class="mb-0">Powered by NewsHub - Vietnam and Global News</p>
+        </div>
+    </footer>
 
-        {{! jquery }}
-        <script
-            src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
-            integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
-            crossorigin="anonymous"
-        ></script>
+    {{! jquery }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-        {{!-- Popper --}}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.7/umd/popper.min.js"></script>
+    <!-- buffer.min.js and filetype.min.js are necessary in the order listed for advanced mime type parsing and more correct
+     preview. This is a feature available since v5.5.0 and is needed if you want to ensure file mime type is parsed 
+     correctly even if the local file's extension is named incorrectly. This will ensure more correct preview of the
+     selected file (note: this will involve a small processing overhead in scanning of file contents locally). If you 
+     do not load these scripts then the mime type parsing will largely be derived using the extension in the filename
+     and some basic file content parsing signatures. -->
+    <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.4/js/plugins/buffer.min.js"
+        type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.4/js/plugins/filetype.min.js"
+        type="text/javascript"></script>
 
-        {{! bootstrap }}
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- piexif.min.js is needed for auto orienting image files OR when restoring exif data in resized images and when you
+    wish to resize images before upload. This must be loaded before fileinput.min.js -->
+    <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.4/js/plugins/piexif.min.js"
+        type="text/javascript"></script>
 
-        {{! tagsinput}}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.js"></script>
+    <!-- sortable.min.js is only needed if you wish to sort / rearrange files in initial preview. 
+    This must be loaded before fileinput.min.js -->
+    <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.4/js/plugins/sortable.min.js"
+        type="text/javascript"></script>
 
-        {{! summernote }}
-        <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+    {{!-- Popper --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.7/umd/popper.min.js"></script>
 
-        {{! datatables }}
-        <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
+    {{! bootstrap }}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        {{! custom JS }} {{#each this.customJs}}
-        <script src="/js/{{this}}"></script>
-        {{/each}}
 
-        <script>
-            $('.tagInput').tagsinput({
-                onTagExists: function (item, $tag) {
-                    console.log('test');
-                },
-            });
-            $(document).keypress(function (event) {
-                if (event.which == '13') {
-                    event.preventDefault();
-                }
-            });
-        </script>
-        <script>
-            // JavaScript to handle the top bar's visibility
-            const topbar = document.querySelector('.topbar');
-            let scrollTimeout;
-            let mouseMoveTimeout;
+    <!-- the main fileinput plugin script JS file -->
+    <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.4/js/fileinput.min.js"></script>
 
-            // Function to hide the top bar after a delay
-            const hideTopBar = () => {
-                if (window.scrollY === 0) topbar.classList.remove('hidden');
-                else topbar.classList.add('hidden');
-            };
+    {{! tagsinput}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.js"></script>
 
-            // Function to show the top bar immediately
-            const showTopBar = () => {
-                topbar.classList.remove('hidden');
-            };
+    {{! summernote }}
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 
-            // Reset the timeout on scroll and mouse movement
-            const resetTimeouts = () => {
-                clearTimeout(scrollTimeout);
-                clearTimeout(mouseMoveTimeout);
-                showTopBar(); // Show the top bar on scroll or mouse movement
-                scrollTimeout = setTimeout(hideTopBar, 3000); // Hide after 3 seconds of inactivity from scrolling
-                mouseMoveTimeout = setTimeout(hideTopBar, 3000); // Hide after 3 seconds of inactivity from mouse movement
-            };
+    {{! datatables }}
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
 
-            // Handle scroll event: Always show top bar when scrolled to top
-            const handleScroll = () => {
-                if (window.scrollY === 0) {
-                    showTopBar(); // Show top bar when scrolled to the top
-                } else {
-                    resetTimeouts(); // Reset timeout on scrolling
-                }
-            };
+    {{! custom JS }}
+    {{#each this.customJs}}
+    <script src="/js/{{this}}"></script>
+    {{/each}}
 
-            // Handle mouse move event: Show the top bar when mouse moves
-            const handleMouseMove = () => {
-                resetTimeouts(); // Reset timeout on mouse movement
-            };
+    <script>
+        $('.tagInput').tagsinput({
+            onTagExists: function (item, $tag) {
+                console.log('test');
+            },
+        });
+        $(document).keypress(function (event) {
+            if (event.which == '13') {
+                event.preventDefault();
+            }
+        });
+    </script>
+    <script>
+        // JavaScript to handle the top bar's visibility
+        const topbar = document.querySelector('.topbar');
+        let scrollTimeout;
+        let mouseMoveTimeout;
 
-            // Listen to scroll and mouse move events
-            window.addEventListener('scroll', handleScroll);
-            window.addEventListener('mousemove', handleMouseMove);
+        // Function to hide the top bar after a delay
+        const hideTopBar = () => {
+            if (window.scrollY === 0) topbar.classList.remove('hidden');
+            else topbar.classList.add('hidden');
+        };
 
-            // Initial setup: Hide the top bar after 3 seconds if there's no scroll or mouse movement
-            scrollTimeout = setTimeout(hideTopBar, 3000);
-            mouseMoveTimeout = setTimeout(hideTopBar, 3000);
-        </script>
-    </body>
+        // Function to show the top bar immediately
+        const showTopBar = () => {
+            topbar.classList.remove('hidden');
+        };
+
+        // Reset the timeout on scroll and mouse movement
+        const resetTimeouts = () => {
+            clearTimeout(scrollTimeout);
+            clearTimeout(mouseMoveTimeout);
+            showTopBar(); // Show the top bar on scroll or mouse movement
+            scrollTimeout = setTimeout(hideTopBar, 3000); // Hide after 3 seconds of inactivity from scrolling
+            mouseMoveTimeout = setTimeout(hideTopBar, 3000); // Hide after 3 seconds of inactivity from mouse movement
+        };
+
+        // Handle scroll event: Always show top bar when scrolled to top
+        const handleScroll = () => {
+            if (window.scrollY === 0) {
+                showTopBar(); // Show top bar when scrolled to the top
+            } else {
+                resetTimeouts(); // Reset timeout on scrolling
+            }
+        };
+
+        // Handle mouse move event: Show the top bar when mouse moves
+        const handleMouseMove = () => {
+            resetTimeouts(); // Reset timeout on mouse movement
+        };
+
+        // Listen to scroll and mouse move events
+        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('mousemove', handleMouseMove);
+
+        // Initial setup: Hide the top bar after 3 seconds if there's no scroll or mouse movement
+        scrollTimeout = setTimeout(hideTopBar, 3000);
+        mouseMoveTimeout = setTimeout(hideTopBar, 3000);
+    </script>
+    {{{_sections.script}}}
+
+</body>
+
 </html>

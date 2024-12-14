@@ -1,9 +1,7 @@
 import { Response, Request } from "express";
 
-import db from "../utils/db";
-
-import { testSubCategory } from "../utils/testSubCategory";
-import { getParentNames } from "../utils/getParentNames";
+import { testSubCategory } from "../Utils/testSubCategory";
+import { getParentNames } from "../Utils/getParentNames";
 import { get } from "jquery";
 
 let tagData = [
@@ -91,7 +89,7 @@ export class AdminController {
   async editTag(req: Request, res: Response) {
     const tagId = req.body.id as string;
     const tagName = req.body.name as string;
-    // let tagList = await db("tags").select("id", "name"); // có thể thêm nhiều mục khác
+    // let tagList = await DBConfig("tags").select("id", "name"); // có thể thêm nhiều mục khác
     let tagList = tagData;
     const tag = tagList.find((tag) => tag.id === parseInt(tagId));
     if (!tag) {
@@ -110,7 +108,7 @@ export class AdminController {
   // /admin/category/edit
   async editCategory(req: Request, res: Response) {
     // const categoryId = req.query.id as string;
-    // // let categoryList = await db("categories").select("id", "name", "parentName", "parentId"); // có thể thêm nhiều mục khác
+    // // let categoryList = await DBConfig("categories").select("id", "name", "parentName", "parentId"); // có thể thêm nhiều mục khác
     // let categoryList = subCategoryData;
     // const category = categoryList.find((category) => category.id === parseInt(categoryId));
     // if (!category) {
@@ -158,7 +156,7 @@ export class AdminController {
     let tagList = tagData;
     tagList.push({ name: tagName, id: tagList.length + 1 });
 
-    // await db("tags").insert({ name: tagName });
+    // await DBConfig("tags").insert({ name: tagName });
 
     res.render("Admin/AdminTagsView", {
       customCss: ["Admin.css"],

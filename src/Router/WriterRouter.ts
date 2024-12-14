@@ -1,5 +1,6 @@
 import express from "express";
 import { WriterController } from "../Controllers/WriterController";
+import {bufferUploader} from "../Utils/MulterConfig";
 
 const router = express.Router();
 
@@ -10,7 +11,7 @@ router.get("/new", writerController.createArticleEditor);
 router.get("/edit/:id", writerController.editArticleEditor);
 router.get("/myArticles", writerController.getMyArticleList);
 
-router.post("/new", writerController.newArticle);
-router.post("/edit", writerController.editArticle);
+router.post("/new",bufferUploader.any(), writerController.newArticle);
+router.post("/edit",bufferUploader.any(), writerController.editArticle);
 
 export { router as WriterRouter };

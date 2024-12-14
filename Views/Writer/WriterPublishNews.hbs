@@ -2,111 +2,72 @@
     <div class="col col-lg-12 col-md-12 col-sm-12 mb-4">
         <h1 class="writer-publish-news-title">Đăng bài viết mới</h1>
     </div>
-    <form
-        id="writer-publish-news-form"
-        action=""
-        method="POST"
-        class="writer-publish-news-container col col-lg-12 col-md-12 col-sm-12"
-    >
+    <form action="" method="POST" class="writer-publish-news-container col col-lg-12 col-md-12 col-sm-12"
+        enctype="multipart/form-data">
         <div class="mb-4">
-            <label for="title" class="form-label input-title"
-                >Nhập tiêu đề</label
-            >
-            <input
-                type="text"
-                class="form-control input-field"
-                id="title"
-                name="title"
-            />
+            <label for="title" class="form-label input-title">Nhập tiêu đề</label>
+            <input type="text" class="form-control input-field" id="title" name="title" />
         </div>
         <div class="mb-4">
-            <label for="abstract" class="form-label input-title"
-                >Nhập tóm tắt nội dung</label
-            >
-            <textarea
-                class="form-control textarea-field"
-                id="abstract"
-                rows="10"
-                name="abstract"
-            ></textarea>
+            <label for="abstract" class="form-label input-title">Nhập tóm tắt nội dung</label>
+            <textarea class="form-control textarea-field" id="abstract" rows="10" name="abstract"></textarea>
         </div>
         <div class="mb-4">
-            <label for="backgroundImageArticle" class="form-label input-title"
-                >Ảnh đại diện bài viết</label
-            >
-            <input
-                type="file"
-                class="form-control textarea-field"
-                id="backgroundImageArticle"
-                rows="10"
-                name="backgroundImage"
-            />
-            <div class="d-flex justify-content-center">
-                <img
-                    id="preview"
-                    alt="Image Preview"
-                    class="w-50 mt-4"
-                    style="display: none"
-                />
-            </div>
+            <label for="backgroundImageArticle" class="form-label input-title">Ảnh đại diện bài viết</label>
+            <input type="file" accept="image/*" multiple="false" class="form-control textarea-field"
+                id="backgroundImageArticle" rows="10" />
+            <input type="text" style="display: none;" id="backgroundImageArticleBase64" name="backgroundImageArticle">
+            </input>
         </div>
 
         <div class="mb-4">
             <p class="input-title">Nhập nội dung</p>
-            <div id="summernote"></div>
+            <textarea id="summernote" name="content"></textarea>
         </div>
         <div class="mb-4">
-            <label for="category" class="form-label input-title"
-                >Nhập chuyên mục</label
-            >
-            <input
-                type="text"
-                class="form-control input-field"
-                id="category"
-                name="category"
-            />
+            <label for="category" class="form-label input-title">Nhập chuyên mục</label>
+            <input type="text" class="form-control input-field" id="category" name="category" />
         </div>
         <div class="mb-4">
             <label for="title" class="form-label input-title">Nhập Tags</label>
-            <input
-                type="text"
-                class="form-control input-field"
-                id="title"
-                name="tags"
-            />
+            <input type="text" class="form-control input-field" id="title" name="tags" />
         </div>
         <div class="mb-4 w-100 d-flex align-center justify-content-between">
             <p class="input-title">Bài báo Premium</p>
             <label class="switch">
-                <input type="checkbox" />
+                <input type="checkbox" name="isPremium" />
                 <span class="slider round"></span>
             </label>
         </div>
-        <div
-            class="writer-publish-news-footer d-flex justify-content-end w-100"
-        >
+        <div class="writer-publish-news-footer d-flex justify-content-end w-100">
             <button type="submit" formaction="#" class="submit-button">
                 Đăng
             </button>
         </div>
     </form>
 </div>
+{{#section 'script'}}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        $('#backgroundImageArticle').on('change', function (event) {
-            const file = event.target.files[0]; // Get the selected file
-            if (file) {
-                const reader = new FileReader();
+    $("#backgroundImageArticle").fileinput({
+        maxFileCount: 1,
+        showUpload: false,
+        previewFileType: 'image',
+        allowedFileTypes: ['image']
+    });
 
-                // When the file is read, display it as an image
-                reader.onload = function (e) {
-                    $('#preview')
-                        .attr('src', e.target.result) // Set the image source
-                        .show(); // Show the image
-                };
+    $("#backgroundImageArticle").on("fileloaded", function (event, file) {
+        var reader = new FileReader();
 
-                reader.readAsDataURL(file); // Read the file as a Data URL
-            }
-        });
+        reader.onload = function (e) {
+            $("#backgroundImageArticleBase64").val(e.target.result);
+        };
+
+        reader.readAsDataURL(file);
+    });
+
+    // Optional: Reset the hidden input when the file input is cleared
+    $("#backgroundImageArticle").on("fileclear", function () {
+        $("#backgroundImageArticleBase64").val("");
     });
 </script>
+{{/section}}

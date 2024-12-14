@@ -1,6 +1,8 @@
 import { Response, Request } from "express";
+import path from "path";
+import * as fs from "fs";
+import {DBConfig} from "../Utils/DBConfig";
 
-// Fake data
 const statistics = [
   {
     id: "completed",
@@ -29,16 +31,29 @@ export class WriterController {
   createArticleEditor(req: Request, res: Response) {
     res.render("Writer/WriterPublishNews", {
       customCss: ["Writer.css"],
-      customJs: ["Summernote.js"],
+      customJs: ["Summernote.js"]
     });
   }
 
   // /writer/edit/:id
-  editArticleEditor(req: Request, res: Response) {
+  async editArticleEditor(req: Request, res: Response) {
     const articleId = req.params.id;
+    const data = await DBConfig("ARTICLE").where({'ArticleID': articleId}).first();
+    const bgURL = await DBConfig("ARTICLE_URL").where({STT: 0, ArticleID: articleId}).first();
     res.render("Writer/WriterUpdateNews", {
       customCss: ["Writer.css"],
       customJs: ["Summernote.js"],
+      data: {
+        ID: articleId,
+        Title: data.Title,
+        DatePosted: data.DatePosted,
+        Content: data.Content,
+        Abstract: data.Abstract,
+        Status: data.Status,
+        IsPremium: data.IsPremium,
+        BackgroundImage: bgURL.URL.replace("Static",""),
+        BackgroundImageFileName: path.basename(bgURL.URL)
+      }
     });
   }
 
@@ -87,12 +102,82 @@ export class WriterController {
   }
 
   // /writer/new
-  newArticle(req: Request, res: Response) {
+  async newArticle(req: Request, res: Response) {
+    console.log(req.body);
+    const [id] = await DBConfig("ARTICLE").insert({
+      Title: req.body.title,
+      DatePosted: new Date(Date.now()),
+      Content: req.body.content,
+      Abstract: req.body.abstract,
+      Status:'Draft',
+      IsPremium: req.body.isPremium == 'on' ? 1: 0,
+      WriterID: 1, // for testing now
+    });
 
+    const imageData = req.body.backgroundImageArticle;
+    const matches = imageData.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/);
+
+    if (!matches || matches.length !== 3) {
+      await DBConfig("ARTICLE_URL").insert({ArticleID: id, STT: 0, URL: "null"});
+      return;
+    }
+    const fileType = matches[1];
+    const base64Data = matches[2];
+    const extension = fileType.split("/")[1];
+    const savePath = path.posix.join('./Static/uploads/article', id.toString());
+    fs.mkdirSync(savePath, {recursive: true});
+    const filePath = path.posix.join(savePath, "BackgroundImage." + extension);
+    fs.writeFile(filePath, base64Data,
+        { encoding: "base64" }, async (err) => {
+      if (err) {
+        console.error("Error saving the file:", err);
+        await DBConfig("ARTICLE_URL").insert({ArticleID: id, STT: 0, URL: "null"});
+        return;
+      }
+      await DBConfig("ARTICLE_URL").insert({ArticleID: id, STT: 0, URL: filePath});
+    });
   }
 
   // /writer/edit
-  editArticle(req: Request, res: Response) {
+  async editArticle(req: Request, res: Response) {
+    console.log(req.body);
+    const id = req.body.id;
+    await DBConfig("ARTICLE").where({'ArticleID': id}).update({
+      Title: req.body.title,
+      DatePosted: new Date(Date.now()),
+      Content: req.body.content,
+      Abstract: req.body.abstract,
+      Status:'Draft',
+      IsPremium: req.body.isPremium == 'on' ? 1: 0,
+      WriterID: 1, // for testing now
+    });
 
+    const imageData = req.body.backgroundImageArticle;
+    if (imageData === "not changed") {
+      console.log("image not change");
+      return;
+    }
+
+    const matches = imageData.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/);
+    if (!matches || matches.length !== 3) {
+      await DBConfig("ARTICLE_URL").where({ArticleID: id, STT: 0}).update({URL: "null"});
+      return;
+    }
+
+    const fileType = matches[1];
+    const base64Data = matches[2];
+    const extension = fileType.split("/")[1];
+    const savePath = path.posix.join('./Static/uploads/article', id.toString());
+    fs.mkdirSync(savePath, {recursive: true});
+    const filePath = path.posix.join(savePath, "BackgroundImage." + extension);
+    fs.writeFile(filePath, base64Data,
+        { encoding: "base64" }, async (err) => {
+          if (err) {
+            console.error("Error saving the file:", err);
+            await DBConfig("ARTICLE_URL").where({ArticleID: id, STT: 0}).update({URL: "null"});
+            return;
+          }
+          await DBConfig("ARTICLE_URL").where({ArticleID: id, STT: 0}).update({URL: filePath});
+        });
   }
 }
