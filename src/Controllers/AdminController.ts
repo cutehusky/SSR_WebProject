@@ -177,11 +177,13 @@ export class AdminController {
 
     const parentId = parseInt(getParentNames(subCategoryData).length.toString());
     const filteredSubCategoryData = subCategoryData.filter((subCategory) => subCategory.parentId === parentId);
-    subCategoryData.push({ 
-      name: "test subcategory " + filteredSubCategoryData.length, 
+    let name = "test subcategory " + filteredSubCategoryData.length;
+    subCategoryData.push({
+      name:  name,
       id: filteredSubCategoryData.length, 
       parentName: categoryName, 
-      parentId: parentId 
+      parentId: parentId,
+      fullname: `${categoryName} \ ${name}`
     });
     res.render("Admin/AdminCategoriesView", {
       customCss: ["Admin.css"],
@@ -286,7 +288,8 @@ export class AdminController {
       name: name, 
       id: filteredSubCategoryData.length, 
       parentName: filteredSubCategoryData[0].parentName, 
-      parentId: parentId 
+      parentId: parentId,
+      fullname: ""
     });
     console.log(subCategoryData)
     res.render("Admin/AdminCategoriesView", {

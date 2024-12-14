@@ -70,7 +70,7 @@
                 <div class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton" style="width: 300px">
                     <form method="get" action="/tags" style="width: 80%; padding-top: 10px" class="topbar gap-2">
                         <label for="tagInput">Tìm kiếm theo tags</label>
-                        <input class="tagInput" name="tag" type="text" id="tags" data-role="tagsinput"
+                        <input class="tagInput" name="tag" type="text" id="tagsSearch" data-role="tagsinput"
                             class="form-control" placeholder="Enter tags" />
                         <button type="submit" class="btn rounded-pill btn1 scale" style="width: 100%">
                             Tìm
@@ -109,8 +109,9 @@
         </div>
     </div>
 
-    {{!-- Modal for authentication popup --}} {{>
-    Authentication/Authentication}}
+    {{!-- Modal for authentication popup --}}
+    {{> Authentication/Authentication}}
+
     <main style="padding-bottom: 120px">
         <div class="container">{{{body}}}</div>
     </main>
@@ -206,7 +207,7 @@
     {{/each}}
 
     <script>
-        $('.tagInput').tagsinput({
+        $('#tagsSearch').tagsinput({
             onTagExists: function (item, $tag) {
                 console.log('test');
             },

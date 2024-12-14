@@ -27,8 +27,31 @@
             <textarea id="summernote" name="content">{{{data.Content}}}</textarea>
         </div>
         <div class="mb-4">
-            <label for="category" class="form-label input-title">Nhập chuyên mục</label>
-            <input type="text" class="form-control input-field" id="category" name="category" />
+            <label class="form-label input-title">Chọn chuyên mục</label>
+            <div class="form-label" id="selectedCategory">Bạn đã chọn: </div>
+            <div class="tree">
+                <ul>
+                    <li onclick="toggleNode(event)"> Chọn chuyên mục
+                        <ul>
+                            {{#each Categories}}
+                            <li onclick="toggleNode(event)">
+                                <label class="form-label">{{name}}</label>
+                                <ul>
+                                    {{#each SubCategories}}
+                                    <li class="leaf">
+                                        <label class="form-label" for="subcategory_{{id}}">{{name}}</label>
+                                        <input type="radio" data-category-fullname="{{fullname}}" name="category"
+                                            value="{{id}}" id="subcategory_{{id}}" {{#if (eq ../../data.selectedCategory
+                                            id)}} checked {{/if}}>
+                                    </li>
+                                    {{/each}}
+                                </ul>
+                            </li>
+                            {{/each}}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
         <div class="mb-4">
             <label for="tag" class="form-label input-title">Nhập Tags</label>
@@ -52,6 +75,33 @@
     </form>
 </div>
 {{#section 'script'}}
+<script>
+    function toggleNode(event) {
+        event.stopPropagation();
+        const li = event.target.closest('li');
+        if (li.classList.contains('leaf')) {
+            return;
+        }
+        li.classList.toggle('expanded');
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const radioButtons = document.querySelectorAll('.leaf input[type="radio"]');
+
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', function () {
+                if (this.checked) {
+                    onRadioSelect(this.getAttribute("data-category-fullname"));
+                }
+            });
+        });
+    });
+
+    function onRadioSelect(value) {
+        document.getElementById("selectedCategory").innerHTML = "Bạn đã chọn: " + value;
+    }
+    document.getElementById("selectedCategory").innerHTML = "Bạn đã chọn: {{data.selectedCategoryName}}";
+
+</script>
 {{#if (neq data.BackgroundImage 'null')}}
 <script>
     $("#backgroundImageArticle").fileinput({

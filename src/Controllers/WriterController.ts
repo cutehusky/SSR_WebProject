@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 import path from "path";
 import * as fs from "fs";
 import {DBConfig} from "../Utils/DBConfig";
+import {testSubCategory} from "../Utils/testSubCategory";
 
 const statistics = [
   {
@@ -39,7 +40,9 @@ export class WriterController {
   async editArticleEditor(req: Request, res: Response) {
     const articleId = req.params.id;
     const data = await DBConfig("ARTICLE").where({'ArticleID': articleId}).first();
+    const category = await DBConfig("ARTICLE_SUBCATEGORY").where({'ArticleID': articleId}).first();
     const bgURL = await DBConfig("ARTICLE_URL").where({STT: 0, ArticleID: articleId}).first();
+    console.log(category)
     res.render("Writer/WriterUpdateNews", {
       customCss: ["Writer.css"],
       customJs: ["Summernote.js"],
@@ -52,7 +55,9 @@ export class WriterController {
         Status: data.Status,
         IsPremium: data.IsPremium,
         BackgroundImage: bgURL.URL.replace("Static",""),
-        BackgroundImageFileName: path.basename(bgURL.URL)
+        BackgroundImageFileName: path.basename(bgURL.URL),
+        selectedCategory: category.SubCategoryID,
+        selectedCategoryName: testSubCategory().find((data)=> data.id==category.SubCategoryID)?.fullname
       }
     });
   }
@@ -113,6 +118,10 @@ export class WriterController {
       IsPremium: req.body.isPremium == 'on' ? 1: 0,
       WriterID: 1, // for testing now
     });
+    await DBConfig("ARTICLE_SUBCATEGORY").insert({
+      ArticleID: id,
+      SubCategoryID: req.body.category
+    });
 
     const imageData = req.body.backgroundImageArticle;
     const matches = imageData.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/);
@@ -148,7 +157,7 @@ export class WriterController {
       Content: req.body.content,
       Abstract: req.body.abstract,
       Status:'Draft',
-      IsPremium: req.body.isPremium == 'on' ? 1: 0,
+      IsPremium: req.body.isPremium === 'on' ? 1: 0,
       WriterID: 1, // for testing now
     });
 

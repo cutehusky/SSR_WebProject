@@ -280,3 +280,53 @@ input:checked+.slider:before {
 .slider.round:before {
     border-radius: 50%;
 }
+
+.tree {
+    min-height: 300px;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.tree ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+.tree li {
+    cursor: pointer;
+    margin: 5px 0;
+}
+
+.tree li::before {
+    content: "\23F5";
+    padding-right: 5px;
+    color: #007bff;
+}
+
+.tree .expanded::before {
+    content: "\23F7";
+    padding-right: 5px;
+}
+
+.tree li ul {
+    display: none;
+}
+
+.tree li.expanded>ul {
+    display: block;
+}
+
+.radio-container {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.leaf {
+    cursor: default !important;
+    /* No pointer cursor for leaf nodes */
+}
+
+.leaf::before {
+    content: "" !important;
+    /* No triangle for leaf nodes */
+}
