@@ -262,3 +262,12 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+insert into USER value (0, "test user", "abc@email.com", "123", "2024-1-1", 0);
+
+insert into WRITER value (1, "hello");
+
+insert into category(Name) value ("test category");
+
+insert into subcategory(Name,CategoryID) value ("test subcategory", 1);

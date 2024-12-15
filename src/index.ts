@@ -1,6 +1,7 @@
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { title } from 'process';
+import session from "express-session";
 import express, { Express } from 'express';
 import { engine } from 'express-handlebars';
 import { Response, Request } from 'express';
@@ -13,15 +14,33 @@ import { EditorRouter } from './Router/EditorRouter';
 import Handlebars from 'handlebars';
 import { MiddlewareController } from './Controllers/Middleware';
 
+import sections from "express-handlebars-sections";
+
+
 const app: Express = express();
 const port: number = 3000;
 
-app.use(express.urlencoded({ extended: false }));
-app.use(express.static('Static'));
+
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
+app.use(express.static("Static"));
+
+app.use(session({
+    secret: 'your-secret-key',
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        secure: false,
+        maxAge: 60000
+    }
+}));
 
 app.engine(
     '.hbs',
     engine({
+        helpers: {
+            section: sections(),
+        },
         extname: '.hbs',
         layoutsDir: './Views/Layouts',
         partialsDir: './Views/Partials',
@@ -63,13 +82,20 @@ app.use(
     EditorRouter
 );
 
-Handlebars.registerHelper(
-    'eq',
-    function (this: any, arg1: any, arg2: any, options) {
-        // return arg1 === arg2 ? options.fn(this) : options.inverse(this);
-        return arg1 === arg2;
+Handlebars.registerHelper('eq', function (this: any, arg1: any, arg2: any) {
+    return arg1 === arg2;
+});
+
+Handlebars.registerHelper('neq', function (this: any, arg1: any, arg2: any) {
+    return arg1 !== arg2;
+});
+
+Handlebars.registerHelper('slice', function(array: any, start: any, end: any) {
+    if (!Array.isArray(array)) {
+        return [];
     }
-);
+    return array.slice(start, end);
+});
 
 app.get('/', (req: Request, res: Response) => {
     res.redirect('/home/');

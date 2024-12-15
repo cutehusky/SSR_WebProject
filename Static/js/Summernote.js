@@ -13,7 +13,7 @@ $(document).ready(function () {
             // ['table', ['table']],
             ['insert', ['link', 'picture', 'video']],
             ['view', ['codeview', 'help']],
-        ],
+        ]
     });
 
     // // Fix Bootstrap dropdowns inside Summernote

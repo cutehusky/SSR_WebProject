@@ -4,13 +4,21 @@ import {NextFunction, Request, Response} from "express";
 export class MiddlewareController {
     getCategory(req: Request, res: Response, next: NextFunction) {
         let testCategory = [];
+        let k = 0;
         for (let i = 0; i < 20; i++) {
             let testSubCategory = [];
-            for (let j = 0; j < 20; j++)
+            for (let j = 0; j < 20; j++){
+                let parentName = "test category " + i;
+                let name = "test subcategory " + k;
                 testSubCategory.push({
-                    id: j,
-                    name: "test subcategory " + j
+                    id: k,
+                    name: name,
+                    parentName: parentName,
+                    parentId: i,
+                    fullname: `${parentName} \\ ${name}`
                 });
+                k++;
+            }
             testCategory.push({
                 id: i,
                 name: "test category " + i,
