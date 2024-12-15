@@ -251,8 +251,56 @@ function getFirstTwoTags(data: { tagList: { tag: string; link: string }[] }[]) {
 export class ArticleController {
   // /home
   getHome(req: Request, res: Response) {
+    const top_articles = [];
+    for (let i = 0; i < 7; i++) {
+      top_articles.push({
+        img: '../logo.jpg',
+        category: 'business',
+        date: '01/01/2045',
+        title: 'Lorem ipsum dolor sit amet elit...'
+      });
+    }
+    const view_articles = []
+    for (let i = 0; i < 10; i++) {
+      view_articles.push({
+        img: '../logo.jpg',
+        category: 'business',
+        date: '01/01/2045',
+        title: i + 1
+      });
+    }
+    const category_articles = [];
+    for (let i = 0; i < 10; i++) {
+      category_articles.push({
+        img: '../logo.jpg',
+        category: 'business',
+        date: '01/01/2045',
+        title: 'Lorem ipsum dolor sit amet elit...'
+      });
+    }
+    const latest_articles = [];
+    for (let i = 0; i < 10; i++) {
+      latest_articles.push({
+        img: '../logo.jpg',
+        category: 'business',
+        date: '01/01/2045',
+        author: 'John Doe',
+        viewCount: 100,
+        commentCount: 10,
+        title: 'Lorem ipsum dolor sit amet elit...',
+        abstract: 'Dolor lorem eos dolor duo et eirmod sea. Dolor sit magna rebum clita rebum dolor stet amet justo'
+      });
+    }
+    const tags = ['Politics', 'Business', 'Corporate', 'Business', 'Health', 'Education', 'Science', 'Business', 'Foods', 'Travel'
+    ]
     res.render("Home/HomeView", {
-      customCss: ["Home.css"],
+      customCss: ["HomePage.css"],
+      customJs: ["HomeView.js"],
+      top_articles,
+      view_articles,
+      latest_articles,
+      category_articles,
+      tags
     });
   }
 

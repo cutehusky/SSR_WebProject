@@ -90,6 +90,13 @@ Handlebars.registerHelper('neq', function (this: any, arg1: any, arg2: any) {
     return arg1 !== arg2;
 });
 
+Handlebars.registerHelper('slice', function(array: any, start: any, end: any) {
+    if (!Array.isArray(array)) {
+        return [];
+    }
+    return array.slice(start, end);
+});
+
 app.get('/', (req: Request, res: Response) => {
     res.redirect('/home/');
 });

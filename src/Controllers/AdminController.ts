@@ -21,7 +21,7 @@ export class AdminController {
     const category = (req.query.category || "-1") as string;
     const categoryId = parseInt(category);
 
-    let filteredSubCategoryData = subCategoryData;;
+    let filteredSubCategoryData = subCategoryData;
     if(parseInt(category) != -1){
       filteredSubCategoryData = subCategoryData.filter((subCategory) => subCategory.parentId === categoryId);
     }
