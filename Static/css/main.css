@@ -347,9 +347,9 @@ ref: https://www.w3schools.com/howto/howto_css_subnav.asp
 }
 
 main {
-    width: 80%;
+    width: 90%;
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.75);
     padding: 20px;
     /* Adds some padding to the content */
 }

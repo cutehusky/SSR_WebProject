@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 
-import { testSubCategory } from "../Utils/testSubCategory";
+import { GetSubCategories } from "../Utils/getSubCategories";
 import { getParentNames } from "../Utils/getParentNames";
 import { get } from "jquery";
 
@@ -15,7 +15,14 @@ let tagData = [
 ];
 
 
-let subCategoryData = testSubCategory();
+//let subCategoryData = await GetSubCategories();
+let subCategoryData: {
+  id: number;
+  name: string;
+  parentName: string;
+  parentId: number;
+  fullname: string
+}[]  = [];
 
 export class AdminController {
   // /admin/categories?category=

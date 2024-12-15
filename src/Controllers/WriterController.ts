@@ -2,7 +2,7 @@ import { Response, Request } from "express";
 import path from "path";
 import * as fs from "fs";
 import {DBConfig} from "../Utils/DBConfig";
-import {testSubCategory} from "../Utils/testSubCategory";
+import {GetSubCategories} from "../Utils/getSubCategories";
 import {createArticle} from "../Services/articleService";
 
 const statistics = [
@@ -41,10 +41,25 @@ export class WriterController {
   async editArticleEditor(req: Request, res: Response) {
     const articleId = req.params.id;
     const data = await DBConfig("ARTICLE").where({'ArticleID': articleId}).first();
-    const category = await DBConfig("ARTICLE_SUBCATEGORY").where({'ArticleID': articleId}).first();
-    const bgURL = await DBConfig("ARTICLE_URL").where({STT: 0, ArticleID: articleId}).first();
-    const tag = await DBConfig("TAG").join('ARTICLE_TAG', 'ARTICLE_TAG.TagID','=', 'TAG.TagID').where({'ArticleID': articleId}).select("Name as name", "TAG.TagID as id");
-    console.log(category)
+    if (!data) {
+      res.redirect("/404");
+      return;
+    }
+    let category = await DBConfig("ARTICLE_SUBCATEGORY")
+        .join("SUBCATEGORY",'ARTICLE_SUBCATEGORY.SubCategoryID', '=', 'SUBCATEGORY.SubCategoryID')
+        .join("CATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
+        .where({'ArticleID': articleId})
+        .select("ARTICLE_SUBCATEGORY.SubCategoryID as id", DBConfig.raw("CONCAT(CATEGORY.Name, \" / \", SUBCATEGORY.Name) as fullname")).first();
+    category = category ? category : {id: 0, fullname: ""};
+    let bgURL = await DBConfig("ARTICLE_URL")
+        .where({STT: 0, ArticleID: articleId}).first();
+    bgURL = bgURL ? bgURL : {URL: "null"};
+    let tag = await DBConfig("TAG")
+        .join('ARTICLE_TAG', 'ARTICLE_TAG.TagID','=', 'TAG.TagID')
+        .where({'ArticleID': articleId})
+        .select("Name as name", "TAG.TagID as id");
+    tag = tag ? tag : [];
+    console.log(category);
     res.render("Writer/WriterUpdateNews", {
       customCss: ["Writer.css"],
       customJs: ["Summernote.js"],
@@ -58,42 +73,33 @@ export class WriterController {
         IsPremium: data.IsPremium,
         BackgroundImage: bgURL.URL.replace("Static",""),
         BackgroundImageFileName: path.basename(bgURL.URL),
-        selectedCategory: category.SubCategoryID,
-        selectedCategoryName: testSubCategory().find((data)=> data.id==category.SubCategoryID)?.fullname,
+        selectedCategory: category.id,
+        selectedCategoryName: category.fullname,
         tags: tag
       }
     });
   }
 
   // /writer/myArticles?state=
-  getMyArticleList(req: Request, res: Response) {
-    const state = (req.query.state as string) || "all";
-    const articles = [
-      {
-        title: "Lorem ipsum",
-        abstract: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum aperiam illo omnis quas, aut facilis error. Enim numquam explicabo sed distinctio natus hic illum molestias assumenda, ducimus excepturi architecto beatae?",
-        date: "01/01/2024",
-        category: "Lorem, ipsum",
-        subcategory: "Lorem, ipsum",
-        cover: '/logo.jpg'
-      },
-      {
-        title: "Lorem ipsum",
-        abstract: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum aperiam illo omnis quas, aut facilis error. Enim numquam explicabo sed distinctio natus hic illum molestias assumenda, ducimus excepturi architecto beatae?",
-        date: "01/01/2024",
-        category: "Lorem, ipsum",
-        subcategory: "Lorem, ipsum",
-        cover: '/logo.jpg'
-      },
-      {
-        title: "Lorem ipsum",
-        abstract: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum aperiam illo omnis quas, aut facilis error. Enim numquam explicabo sed distinctio natus hic illum molestias assumenda, ducimus excepturi architecto beatae?",
-        date: "01/01/2024",
-        category: "Lorem, ipsum",
-        subcategory: "Lorem, ipsum",
-        cover: '/logo.jpg'
-      }
-    ] 
+  async getMyArticleList(req: Request, res: Response) {
+    const state = (req.query.state as string);
+    let states:string[] = [];
+    if (!state || state == "all" || (state != 'Draft' && state != 'Pending'
+        && state != 'Rejected' && state != 'Approved' && state != 'Published'))
+      states = ['Draft', 'Pending', 'Rejected', 'Approved', 'Published'];
+    else
+      states = [state];
+    const articles = await DBConfig("ARTICLE")
+        .join("ARTICLE_SUBCATEGORY", "ARTICLE_SUBCATEGORY.ArticleID","=","ARTICLE.ArticleID")
+        .join("SUBCATEGORY",'ARTICLE_SUBCATEGORY.SubCategoryID', '=', 'SUBCATEGORY.SubCategoryID')
+        .join("CATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
+        .join("ARTICLE_URL", "ARTICLE_URL.ArticleID", "=","ARTICLE.ArticleID")
+        .where({STT: 0})
+        .where({'WriterID': 1})
+        .whereIn("Status", states)
+        .select("Title as title", "Abstract as abstract",
+            "DatePosted as date", "CATEGORY.Name as category",
+            "SUBCATEGORY.Name as subcategory", "URL as cover");
     res.render("Writer/WriterViewArticles", {
       customCss: ["Writer.css"],
       state,
@@ -121,38 +127,46 @@ export class WriterController {
       IsPremium: req.body.isPremium == 'on' ? 1: 0,
       WriterID: 1, // for testing now
     });
-    await DBConfig("ARTICLE_SUBCATEGORY").insert({
-      ArticleID: id,
-      SubCategoryID: req.body.category
-    });
+
+    if (req.body.category) {
+      await DBConfig("ARTICLE_SUBCATEGORY").insert({
+        ArticleID: id,
+        SubCategoryID: req.body.category
+      })
+    }
 
     const tags = req.body.tags;
     const listOfTags = tags ? tags.split(","): [];
-    const insertData = listOfTags.map((tagId: any) => ({ArticleID: id, TagID: tagId }));
-    await DBConfig('ARTICLE_TAG').insert(insertData);
+    if (listOfTags.length > 0) {
+      const insertData = listOfTags.map((tagId: any) => ({ArticleID: id, TagID: tagId}));
+      await DBConfig('ARTICLE_TAG').insert(insertData);
+    }
 
     const imageData = req.body.backgroundImageArticle;
-    const matches = imageData.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/);
-
-    if (!matches || matches.length !== 3) {
+    if (!imageData) {
       await DBConfig("ARTICLE_URL").insert({ArticleID: id, STT: 0, URL: "null"});
-      return;
-    }
-    const fileType = matches[1];
-    const base64Data = matches[2];
-    const extension = fileType.split("/")[1];
-    const savePath = path.posix.join('./Static/uploads/article', id.toString());
-    fs.mkdirSync(savePath, {recursive: true});
-    const filePath = path.posix.join(savePath, "BackgroundImage." + extension);
-    fs.writeFile(filePath, base64Data,
-        { encoding: "base64" }, async (err) => {
-      if (err) {
-        console.error("Error saving the file:", err);
+    } else {
+      const matches = imageData.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/);
+      if (!matches || matches.length !== 3) {
         await DBConfig("ARTICLE_URL").insert({ArticleID: id, STT: 0, URL: "null"});
-        return;
+      } else {
+        const fileType = matches[1];
+        const base64Data = matches[2];
+        const extension = fileType.split("/")[1];
+        const savePath = path.posix.join('./Static/uploads/article', id.toString());
+        fs.mkdirSync(savePath, {recursive: true});
+        const filePath = path.posix.join(savePath, "BackgroundImage." + extension);
+        fs.writeFile(filePath, base64Data,
+            {encoding: "base64"}, async (err) => {
+              if (err) {
+                console.error("Error saving the file:", err);
+                await DBConfig("ARTICLE_URL").insert({ArticleID: id, STT: 0, URL: "null"});
+                return;
+              }
+              await DBConfig("ARTICLE_URL").insert({ArticleID: id, STT: 0, URL: filePath.replace("Static","")});
+            });
       }
-      await DBConfig("ARTICLE_URL").insert({ArticleID: id, STT: 0, URL: filePath});
-    });
+    }
   }
 
   // /writer/edit
@@ -164,43 +178,53 @@ export class WriterController {
       DatePosted: new Date(Date.now()),
       Content: req.body.content,
       Abstract: req.body.abstract,
-      Status:'Draft',
+      Status: 'Draft',
       IsPremium: req.body.isPremium === 'on' ? 1: 0,
       WriterID: 1, // for testing now
     });
 
+    if (req.body.category) {
+      await DBConfig("ARTICLE_SUBCATEGORY").where({
+        ArticleID: id
+      }).update({
+        SubCategoryID: req.body.category
+      });
+    }
+
     const tags = req.body.tags;
     const listOfTags = tags ? tags.split(","): [];
     await DBConfig('ARTICLE_TAG').where({'ArticleID': id}).del();
-    const insertData = listOfTags.map((tagId: any) => ({ArticleID: id, TagID: tagId }));
-    await DBConfig('ARTICLE_TAG').insert(insertData);
+    if (listOfTags.length > 0) {
+      const insertData = listOfTags.map((tagId: any) => ({ArticleID: id, TagID: tagId}));
+      await DBConfig('ARTICLE_TAG').insert(insertData);
+    }
 
     const imageData = req.body.backgroundImageArticle;
-    if (imageData === "not changed") {
-      console.log("image not change");
-      return;
-    }
-
-    const matches = imageData.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/);
-    if (!matches || matches.length !== 3) {
+    if (!imageData) {
       await DBConfig("ARTICLE_URL").where({ArticleID: id, STT: 0}).update({URL: "null"});
-      return;
+    } else if (imageData === "not changed") {
+      console.log("image not change");
+    } else {
+      const matches = imageData.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/);
+      if (!matches || matches.length !== 3) {
+        await DBConfig("ARTICLE_URL").where({ArticleID: id, STT: 0}).update({URL: "null"});
+      } else {
+        const fileType = matches[1];
+        const base64Data = matches[2];
+        const extension = fileType.split("/")[1];
+        const savePath = path.posix.join('./Static/uploads/article', id.toString());
+        fs.mkdirSync(savePath, {recursive: true});
+        const filePath = path.posix.join(savePath, "BackgroundImage." + extension);
+        fs.writeFile(filePath, base64Data,
+            {encoding: "base64"}, async (err) => {
+              if (err) {
+                console.error("Error saving the file:", err);
+                await DBConfig("ARTICLE_URL").where({ArticleID: id, STT: 0}).update({URL: "null"});
+                return;
+              }
+              await DBConfig("ARTICLE_URL").where({ArticleID: id, STT: 0}).update({URL: filePath.replace("Static","")});
+            });
+      }
     }
-
-    const fileType = matches[1];
-    const base64Data = matches[2];
-    const extension = fileType.split("/")[1];
-    const savePath = path.posix.join('./Static/uploads/article', id.toString());
-    fs.mkdirSync(savePath, {recursive: true});
-    const filePath = path.posix.join(savePath, "BackgroundImage." + extension);
-    fs.writeFile(filePath, base64Data,
-        { encoding: "base64" }, async (err) => {
-          if (err) {
-            console.error("Error saving the file:", err);
-            await DBConfig("ARTICLE_URL").where({ArticleID: id, STT: 0}).update({URL: "null"});
-            return;
-          }
-          await DBConfig("ARTICLE_URL").where({ArticleID: id, STT: 0}).update({URL: filePath});
-        });
   }
 }

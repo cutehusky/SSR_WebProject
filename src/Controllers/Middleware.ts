@@ -1,44 +1,28 @@
 import {NextFunction, Request, Response} from "express";
+import {DBConfig} from "../Utils/DBConfig";
 
 
 export class MiddlewareController {
-    getCategory(req: Request, res: Response, next: NextFunction) {
-        let testCategory = [];
-        let k = 1;
-        for (let i = 1; i <= 20; i++) {
-            let testSubCategory = [];
-            for (let j = 0; j < 20; j++){
-                let parentName = "test category " + i;
-                let name = "test subcategory " + k;
-                testSubCategory.push({
-                    id: k,
-                    name: name,
-                    parentName: parentName,
-                    parentId: i,
-                    fullname: `${parentName} / ${name}`
-                });
-                k++;
-            }
-            testCategory.push({
-                id: i,
-                name: "test category " + i,
-                SubCategories: testSubCategory
-            });
+    async getCategory(req: Request, res: Response, next: NextFunction) {
+        let categories = await DBConfig("CATEGORY").select("CategoryID as id", "Name as name");
+
+        for (let i = 0; i < categories.length;i ++) {
+            categories[i].SubCategories = await DBConfig("CATEGORY")
+                .where("CATEGORY.CategoryID","=", categories[i].id)
+                .join("SUBCATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
+                .select("SubCategoryID as id",
+                    "CATEGORY.CategoryID as parentId",
+                    "SUBCATEGORY.Name as name", "CATEGORY.Name as parentName",
+                    DBConfig.raw("CONCAT(CATEGORY.Name, \" / \", SUBCATEGORY.Name) as fullname"));
         }
-        res.locals.Categories = testCategory;
-        res.locals.Top10Categories = testCategory.slice(0, 10);
+        res.locals.Categories = categories;
+        res.locals.Top10Categories = categories.slice(0, 10);
         next();
     }
 
-    getTags(req: Request, res: Response, next: NextFunction) {
-        let testTags = [];
-        for (let i = 1; i <= 20; i++) {
-            testTags.push({
-                id: i,
-                name: "test tag " + i
-            });
-        }
-        res.locals.tags = testTags;
+    async getTags(req: Request, res: Response, next: NextFunction) {
+        let tags = await DBConfig("TAG").select("TagID as id", "Name as name");
+        res.locals.tags = tags;
         next();
     }
 

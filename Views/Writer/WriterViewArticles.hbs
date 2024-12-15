@@ -1,48 +1,52 @@
 <div class="container my-5 writer-view-articles">
   {{#if (eq state "published")}}
-    <h2><span>Bài viết đã xuất bản</span></h2>
+  <h2><span>Bài viết đã xuất bản</span></h2>
   {{else if (eq state "processing")}}
-    <h2><span>Bài viết chưa được duyệt</span></h2>
+  <h2><span>Bài viết chưa được duyệt</span></h2>
   {{else if (eq state "rejected")}}
-    <h2><span>Bài viết bị từ chối</span></h2>
+  <h2><span>Bài viết bị từ chối</span></h2>
   {{else if (eq state "accepted")}}
-    <h2><span>Bài viết đã được duyệt &amp; chờ xuất bản</span></h2>
+  <h2><span>Bài viết đã được duyệt &amp; chờ xuất bản</span></h2>
   {{else}}
-    <h2><span>Trạng thái không xác định</span></h2>
+  <h2><span>Tất cả</span></h2>
   {{/if}}
   <div class="row g-4">
     {{#each articles}}
-      <div class="col-12 col-md-6">
-        <div class="article d-flex align-items-start position-relative">
-          {{#if (eq ../state "processing")}}
-            <button class="btn btn-dark rounded-circle position-absolute top-0 start-0 m-2" style="width: 40px; height: 40px;">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-          {{/if}}
-          {{#if (eq ../state "rejected")}}
-            <button class="btn btn-dark rounded-circle position-absolute top-0 start-0 m-2" style="width: 40px; height: 40px;">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-            <button class="btn btn-dark rounded-circle position-absolute start-0 m-2" style="width: 40px; height: 40px; top: 60px;" data-bs-toggle="modal" data-bs-target="#writer-decline-modal">
-              <i class="bi bi-eye-fill"></i>
-            </button>
-          {{/if}}
-          <div class="img-article me-3">
-            <img src={{this.cover}} alt="Logo" class="img-fluid">
-          </div>
-          <div class="sum-article">
-            <h2>{{this.title}}</h2>
-            <p>{{this.abstract}}</p>
-          </div>
+    <div class="col-12 col-md-6">
+      <div class="article d-flex align-items-start position-relative">
+        {{#if (eq ../state "processing")}}
+        <button class="btn btn-dark rounded-circle position-absolute top-0 start-0 m-2"
+          style="width: 40px; height: 40px;">
+          <i class="bi bi-pencil-square"></i>
+        </button>
+        {{/if}}
+        {{#if (eq ../state "rejected")}}
+        <button class="btn btn-dark rounded-circle position-absolute top-0 start-0 m-2"
+          style="width: 40px; height: 40px;">
+          <i class="bi bi-pencil-square"></i>
+        </button>
+        <button class="btn btn-dark rounded-circle position-absolute start-0 m-2"
+          style="width: 40px; height: 40px; top: 60px;" data-bs-toggle="modal" data-bs-target="#writer-decline-modal">
+          <i class="bi bi-eye-fill"></i>
+        </button>
+        {{/if}}
+        <div class="img-article me-3">
+          <img src={{this.cover}} alt="Logo" class="img-fluid">
         </div>
-        <div class="publish-time d-flex align-items-center p-2">
-          <p class="mb-1 mx-3 text-muted {{#if (eq ../state "accepted")}}accepted-publish-date{{/if}}">Ngày xuất bản: {{this.date}}</p>
-          <div class="vertical-line mx-3"></div>
-          <p class="mb-0 category">{{this.category}}</p>
-          <div class="vertical-line mx-3"></div>
-          <p class="mb-0 subcategory">{{this.subcategory}}</p>
+        <div class="sum-article">
+          <h2>{{this.title}}</h2>
+          <p>{{this.abstract}}</p>
         </div>
       </div>
+      <div class="publish-time d-flex align-items-center p-2">
+        <p class="mb-1 mx-3 text-muted {{#if (eq ../state " accepted")}}accepted-publish-date{{/if}}">Ngày xuất bản:
+          {{this.date}}</p>
+        <div class="vertical-line mx-3"></div>
+        <p class="mb-0 category">{{this.category}}</p>
+        <div class="vertical-line mx-3"></div>
+        <p class="mb-0 subcategory">{{this.subcategory}}</p>
+      </div>
+    </div>
     {{/each}}
   </div>
   {{!-- <nav aria-label="Page navigation" class="mt-4">
@@ -74,8 +78,10 @@
       </div>
       <div class="modal-body pt-1 reasons mx-5 mb-5">
         <ul>
-          <li class="mb-2">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Modi sequi, quod accusamus consequatur sed quis quibusdam quaerat nisi? </li>
-          <li class="mb-2">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Modi sequi, quod accusamus consequatur sed quis quibusdam quaerat nisi? </li>
+          <li class="mb-2">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Modi sequi, quod accusamus
+            consequatur sed quis quibusdam quaerat nisi? </li>
+          <li class="mb-2">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Modi sequi, quod accusamus
+            consequatur sed quis quibusdam quaerat nisi? </li>
         </ul>
       </div>
     </div>

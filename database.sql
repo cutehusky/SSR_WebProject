@@ -267,28 +267,3 @@ DELIMITER ;
 insert into USER value (0, "test user", "abc@email.com", "123", "2024-1-1", 0);
 
 insert into WRITER value (1, "hello");
-
-insert into category(Name) value ("test category");
-insert into subcategory(Name,CategoryID) value ("test subcategory", 1);
-
-insert into tag(Name) value ("test tag 1");
-insert into tag(Name) value ("test tag 2");
-insert into tag(Name) value ("test tag 3");
-insert into tag(Name) value ("test tag 4");
-insert into tag(Name) value ("test tag 5");
-insert into tag(Name) value ("test tag 6");
-insert into tag(Name) value ("test tag 7");
-insert into tag(Name) value ("test tag 8");
-insert into tag(Name) value ("test tag 9");
-insert into tag(Name) value ("test tag 10");
-
-insert into tag(Name) value ("test tag 11");
-insert into tag(Name) value ("test tag 12");
-insert into tag(Name) value ("test tag 13");
-insert into tag(Name) value ("test tag 14");
-insert into tag(Name) value ("test tag 15");
-insert into tag(Name) value ("test tag 16");
-insert into tag(Name) value ("test tag 17");
-insert into tag(Name) value ("test tag 18");
-insert into tag(Name) value ("test tag 19");
-insert into tag(Name) value ("test tag 20");
