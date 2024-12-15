@@ -54,30 +54,35 @@ let middlewareController = new MiddlewareController();
 app.use(
     '/',
     middlewareController.getCategory,
+    middlewareController.getTags,
     middlewareController.getProfile,
     ArticleRouter
 );
 app.use(
     '/writer',
     middlewareController.getCategory,
+    middlewareController.getTags,
     middlewareController.getProfile,
     WriterRouter
 );
 app.use(
     '/user',
     middlewareController.getCategory,
+    middlewareController.getTags,
     middlewareController.getProfile,
     UserRouter
 );
 app.use(
     '/admin',
     middlewareController.getCategory,
+    middlewareController.getTags,
     middlewareController.getProfile,
     AdminRouter
 );
 app.use(
     '/editor',
     middlewareController.getCategory,
+    middlewareController.getTags,
     middlewareController.getProfile,
     EditorRouter
 );

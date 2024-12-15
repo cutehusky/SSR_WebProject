@@ -272,7 +272,7 @@ ref: https://www.w3schools.com/howto/howto_css_subnav.asp
     border-bottom: #c7c7c7 1px solid;
 }
 
-.navbarBtn:hover ~ .dropdown-menu {
+.navbarBtn:hover~.dropdown-menu {
     display: none !important;
 }
 
@@ -400,4 +400,9 @@ body {
     left: 120%;
     transition: all 2s cubic-bezier(0.19, 1, 0.22, 1);
     z-index: 0;
+}
+
+.tagScrollView {
+    overflow-y: auto;
+    max-height: 100px;
 }

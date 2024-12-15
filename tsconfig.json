@@ -3,7 +3,7 @@
     "Static/**/*"
   ],
   "include": [
-    "src/types/**/*.d.ts",
+    "src/types/*.d.ts",
     "src/**/*.ts"
   ],
   "ts-node": {
@@ -11,7 +11,7 @@
   },
   "files": [
     "src/index.ts",
-    "src/types/*.d.ts"
+    "src/types/express-handlebars-sections.d.ts"
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */

@@ -1,25 +1,15 @@
-<div
-    class="container d-flex align-items-center justify-content-between mt-4 editor-option"
->
+<div class="container d-flex align-items-center justify-content-between mt-4 editor-option">
     <div class="d-flex align-items-center">
         <i class="bi bi-reply-fill me-2"></i>
         <p class="mb-0">Duyệt bài viết</p>
     </div>
     <div class="d-flex">
-        <button
-            type="button"
-            class="btn btn-danger me-2 editor-decline flex-grow-1"
-            data-bs-toggle="modal"
-            data-bs-target="#editor-decline-modal"
-        >
+        <button type="button" class="btn btn-danger me-2 editor-decline flex-grow-1" data-bs-toggle="modal"
+            data-bs-target="#editor-decline-modal">
             Từ chối
         </button>
-        <button
-            type="button"
-            class="btn btn-primary editor-accept flex-grow-1"
-            data-bs-toggle="modal"
-            data-bs-target="#editor-adjust-modal"
-        >
+        <button type="button" class="btn btn-primary editor-accept flex-grow-1" data-bs-toggle="modal"
+            data-bs-target="#editor-adjust-modal">
             Phê duyệt
         </button>
     </div>
@@ -44,24 +34,15 @@
         <span class="fw-bold me-2">Tags:</span>
         <div class="d-flex flex-wrap">
             {{#each article.tags}}
-            <span class="badge border border-primary text-primary me-2"
-                >{{this}}</span
-            >
+            <span class="badge border border-primary text-primary me-2">{{name}}</span>
             {{/each}}
         </div>
     </div>
 </div>
 <div class="container editor-content-view mt-3">
     <div class="text-center mb-3">
-        <img
-            src="{{article.cover}}"
-            alt="Logo"
-            class="img-fluid"
-            style="max-width: 750px"
-        />
-        <span class="d-inline-block text-center w-100 image-description"
-            >Hình gái a-li-me. Ảnh: Lý Nghị Hoằng</span
-        >
+        <img src="{{article.cover}}" alt="Logo" class="img-fluid" style="max-width: 750px" />
+        <span class="d-inline-block text-center w-100 image-description">Hình gái a-li-me. Ảnh: Lý Nghị Hoằng</span>
     </div>
     <hr />
     <div class="text-content">
@@ -69,46 +50,25 @@
     </div>
 </div>
 
-<div
-    class="modal fade"
-    id="editor-decline-modal"
-    tabindex="-1"
-    aria-hidden="true"
->
+<div class="modal fade" id="editor-decline-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5 text-center w-100">
                     <span>Lý do từ chối bài viết</span>
                 </h1>
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                ></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body pt-1">
                 <p class="mb-2 fw-bold">Phản hồi:</p>
-                <textarea
-                    class="form-control"
-                    rows="10"
-                    placeholder="Bài viết bị từ chối vì..."
-                ></textarea>
+                <textarea class="form-control" rows="10" placeholder="Bài viết bị từ chối vì..."></textarea>
             </div>
             <div class="modal-footer">
                 <div class="d-flex">
-                    <button
-                        type="button"
-                        class="btn editor-modal-return flex-grow-1 me-2"
-                        data-bs-dismiss="modal"
-                    >
+                    <button type="button" class="btn editor-modal-return flex-grow-1 me-2" data-bs-dismiss="modal">
                         Quay về
                     </button>
-                    <button
-                        type="button"
-                        class="btn editor-modal-send flex-grow-1"
-                    >
+                    <button type="button" class="btn editor-modal-send flex-grow-1">
                         Gửi
                     </button>
                 </div>
@@ -117,118 +77,61 @@
     </div>
 </div>
 
-<form
-    action=""
-    class="modal fade"
-    id="editor-adjust-modal"
-    tabindex="-1"
-    aria-hidden="true"
->
+<form action="" class="modal fade" id="editor-adjust-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5 text-center w-100">
                     <span>Hiệu chỉnh bài viết</span>
                 </h1>
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                ></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body pt-1">
                 <div class="mb-2">
-                    <label for="editor-category" class="form-label fw-bold"
-                        >Chuyên mục</label
-                    >
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="editor-category"
-                        placeholder="{{article.category}}/{{article.subcategory}}"
-                    />
+                    <label for="editor-category" class="form-label fw-bold">Chuyên mục</label>
+                    <input type="text" class="form-control" id="editor-category"
+                        placeholder="{{article.category}}/{{article.subcategory}}" />
                 </div>
                 {{! Tags }}
                 <div class="mb-2">
-                    <label for="editor-tags" class="form-label fw-bold"
-                        >Tags</label
-                    >
-                    <div
-                        class="d-flex flex-wrap align-items-center"
-                        id="tag-container"
-                    >
+                    <label for="editor-tags" class="form-label fw-bold">Tags</label>
+                    <div class="tagScrollView d-flex flex-wrap align-items-center" id="tag-container">
                         {{#each article.tags}}
                         <div
-                            class="badge border border-primary text-primary me-2 mb-1 d-flex justify-content-between align-items-center"
-                        >
-                            <p>{{this}}</p>
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-link text-danger p-0 delete-tag-button"
-                            >
+                            class="badge border border-primary text-primary me-2 mb-1 d-flex justify-content-between align-items-center">
+                            <p data-id="{{id}}">{{name}}</p>
+                            <button type="button" class="btn btn-sm btn-link text-danger p-0 delete-tag-button">
                                 <i class="bi bi-x-circle ms-1"></i>
                             </button>
                         </div>
                         {{/each}}
                     </div>
                     <div class="d-flex mt-2">
-                        <input
-                            type="text"
-                            class="d-none"
-                            id="tags-submission"
-                            name="tags"
-                        />
-
-                        <input
-                            type="text"
-                            class="form-control form-control-sm me-2"
-                            id="editor-tags"
-                            placeholder="Add tag"
-                        />
-                        <button
-                            type="button"
-                            id="add-tag-icon"
-                            class="btn btn-sm editor-add-tag"
-                        >
+                        <input type="text" class="d-none" id="tags-submission" name="tags" />
+                        <select id="editor-tags" class="form-control">
+                            {{#each tags}}
+                            <option value="{{id}}">{{name}}</option>
+                            {{/each}}
+                        </select>
+                        <button type="button" id="add-tag-icon" class="btn btn-sm editor-add-tag">
                             <i class="bi bi-plus"></i>
                         </button>
                     </div>
                 </div>
                 <div class="mb-2">
-                    <label for="editor-time" class="form-label fw-bold"
-                        >Time</label
-                    >
+                    <label for="editor-time" class="form-label fw-bold">Time</label>
                     <div class="d-flex">
-                        <input
-                            type="date"
-                            class="form-control me-2"
-                            id="editor-date"
-                            value="2025-01-27"
-                        />
-                        <input
-                            type="time"
-                            class="form-control"
-                            id="editor-time"
-                            value="20:00"
-                        />
+                        <input type="date" class="form-control me-2" id="editor-date" value="2025-01-27" />
+                        <input type="time" class="form-control" id="editor-time" value="20:00" />
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <div class="d-flex">
-                    <button
-                        type="button"
-                        class="btn editor-modal-return flex-grow-1 me-2"
-                        data-bs-dismiss="modal"
-                    >
+                    <button type="button" class="btn editor-modal-return flex-grow-1 me-2" data-bs-dismiss="modal">
                         Quay về
                     </button>
-                    <button
-                        type="submit"
-                        class="btn editor-modal-send flex-grow-1"
-                        formaction="#"
-                    >
+                    <button type="submit" class="btn editor-modal-send flex-grow-1" formaction="#">
                         Lưu
                     </button>
                 </div>
@@ -239,32 +142,32 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        function getAllTagValues() {
-            var tagValues = [];
+        function getAllTagIds() {
+            var tagIds = [];
             $('#tag-container .badge p').each(function () {
-                var tagValue = $(this).text().trim();
-                tagValues.push(tagValue);
+                var tagId = $(this).attr("data-id");
+                tagIds.push(tagId);
             });
-            return tagValues;
+            return tagIds;
         }
 
         // Add tag
         const addTagButton = $('#add-tag-icon');
 
         addTagButton.on('click', function () {
-            let allTagValues = getAllTagValues();
-            const tagValue = $('#editor-tags').val();
+            let allTagIds = getAllTagIds();
+            console.log(allTagIds);
+            const tagValue = $('#editor-tags option:selected').text();
+            const tagId = $('#editor-tags').val();
 
-            if (allTagValues.includes(tagValue) || !tagValue.trim()) {
-                $('#editor-tags').val('');
+            if (allTagIds.includes(tagId))
                 return;
-            }
 
             const html = `
                 <div
                     class="badge border border-primary text-primary me-2 mb-1 d-flex justify-content-between align-items-center"
                 >
-                    <p>${tagValue}</p>
+                    <p data-id="${tagId}">${tagValue}</p>
                     <button
                         type="button"
                         class="btn btn-sm btn-link text-danger p-0 delete-tag-button"
@@ -275,10 +178,9 @@
             `;
             const tagsContainer = $('#tag-container');
             tagsContainer.append(html);
-            $('#editor-tags').val('');
 
-            allTagValues.push(tagValue);
-            $('#tags-submission').val(allTagValues.join(','));
+            allTagIds.push(tagId);
+            $('#tags-submission').val(allTagIds.join(','));
             //console.log('Add: ', $('#tags-submission').val());
         });
 

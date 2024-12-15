@@ -51,9 +51,29 @@
             </div>
         </div>
         <div class="mb-4">
-            <label for="title" class="form-label input-title">Nhập Tags</label>
-            <input name="tag" type="text" id="tagsInput" data-role="tagsinput" class="form-control"
-                placeholder="Enter tags" />
+            <label for="editor-tags" class="form-label fw-bold">Tags</label>
+            <div class="d-flex mt-2">
+                <input type="text" class="d-none" id="tags-submission" name="tags" />
+                <select id="editor-tags" class="form-control">
+                    {{#each tags}}
+                    <option value="{{id}}">{{name}}</option>
+                    {{/each}}
+                </select>
+                <button type="button" id="add-tag-icon" class="btn btn-sm editor-add-tag">
+                    <i class="bi bi-plus"></i>
+                </button>
+            </div>
+            <div class="tagScrollView d-flex flex-wrap align-items-center" id="tag-container">
+                {{#each data.tags}}
+                <div
+                    class="badge border border-primary text-primary me-2 mb-1 d-flex justify-content-between align-items-center">
+                    <p data-id="{{id}}">{{name}}</p>
+                    <button type="button" class="btn btn-sm btn-link text-danger p-0 delete-tag-button">
+                        <i class="bi bi-x-circle ms-1"></i>
+                    </button>
+                </div>
+                {{/each}}
+            </div>
         </div>
         <div class="mb-4 w-100 d-flex align-center justify-content-between">
             <p class="input-title">Bài báo Premium</p>
@@ -70,6 +90,69 @@
     </form>
 </div>
 {{#section 'script'}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function getAllTagIds() {
+            var tagIds = [];
+            $('#tag-container .badge p').each(function () {
+                var tagId = $(this).attr("data-id");
+                tagIds.push(tagId);
+            });
+            return tagIds;
+        }
+
+        // Add tag
+        const addTagButton = $('#add-tag-icon');
+
+        addTagButton.on('click', function () {
+            let allTagIds = getAllTagIds();
+            console.log(allTagIds);
+            const tagValue = $('#editor-tags option:selected').text();
+            const tagId = $('#editor-tags').val();
+
+            if (allTagIds.includes(tagId))
+                return;
+
+            const html = `
+                <div
+                    class="badge border border-primary text-primary me-2 mb-1 d-flex justify-content-between align-items-center"
+                >
+                    <p data-id="${tagId}">${tagValue}</p>
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-link text-danger p-0 delete-tag-button"
+                    >
+                        <i class="bi bi-x-circle ms-1"></i>
+                    </button>
+                </div>
+            `;
+            const tagsContainer = $('#tag-container');
+            tagsContainer.append(html);
+
+            allTagIds.push(tagId);
+            $('#tags-submission').val(allTagIds.join(','));
+            //console.log('Add: ', $('#tags-submission').val());
+        });
+
+        // Delete tag
+        $('#tag-container').on('click', '.delete-tag-button', function () {
+            const parentDiv = $(this).parent();
+            const tagValue = parentDiv.find('p').text().trim();
+
+            parentDiv.remove();
+
+            let allTagValues = $('#tags-submission').val().split(',');
+            const index = allTagValues.indexOf(tagValue);
+
+            if (index > -1) {
+                allTagValues.splice(index, 1);
+            }
+
+            $('#tags-submission').val(allTagValues.join(','));
+            //console.log('Del: ', $('#tags-submission').val());
+        });
+    });
+</script>
 <script>
     $('#tagsInput').tagsinput({
         onTagExists: function (item, $tag) {

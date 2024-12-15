@@ -15,7 +15,7 @@ export const testSubCategory = (): { id: number; name: string; parentName: strin
         name: name,
         parentName: parentName,
         parentId: i,
-        fullname: `${parentName} \\\\ ${name} `
+        fullname: `${parentName} / ${name} `
       });
       k++;
     }

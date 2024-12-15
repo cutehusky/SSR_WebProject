@@ -4,8 +4,8 @@ import {NextFunction, Request, Response} from "express";
 export class MiddlewareController {
     getCategory(req: Request, res: Response, next: NextFunction) {
         let testCategory = [];
-        let k = 0;
-        for (let i = 0; i < 20; i++) {
+        let k = 1;
+        for (let i = 1; i <= 20; i++) {
             let testSubCategory = [];
             for (let j = 0; j < 20; j++){
                 let parentName = "test category " + i;
@@ -15,7 +15,7 @@ export class MiddlewareController {
                     name: name,
                     parentName: parentName,
                     parentId: i,
-                    fullname: `${parentName} \\ ${name}`
+                    fullname: `${parentName} / ${name}`
                 });
                 k++;
             }
@@ -27,6 +27,18 @@ export class MiddlewareController {
         }
         res.locals.Categories = testCategory;
         res.locals.Top10Categories = testCategory.slice(0, 10);
+        next();
+    }
+
+    getTags(req: Request, res: Response, next: NextFunction) {
+        let testTags = [];
+        for (let i = 1; i <= 20; i++) {
+            testTags.push({
+                id: i,
+                name: "test tag " + i
+            });
+        }
+        res.locals.tags = testTags;
         next();
     }
 

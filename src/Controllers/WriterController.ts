@@ -3,6 +3,7 @@ import path from "path";
 import * as fs from "fs";
 import {DBConfig} from "../Utils/DBConfig";
 import {testSubCategory} from "../Utils/testSubCategory";
+import {createArticle} from "../Services/articleService";
 
 const statistics = [
   {
@@ -42,6 +43,7 @@ export class WriterController {
     const data = await DBConfig("ARTICLE").where({'ArticleID': articleId}).first();
     const category = await DBConfig("ARTICLE_SUBCATEGORY").where({'ArticleID': articleId}).first();
     const bgURL = await DBConfig("ARTICLE_URL").where({STT: 0, ArticleID: articleId}).first();
+    const tag = await DBConfig("TAG").join('ARTICLE_TAG', 'ARTICLE_TAG.TagID','=', 'TAG.TagID').where({'ArticleID': articleId}).select("Name as name", "TAG.TagID as id");
     console.log(category)
     res.render("Writer/WriterUpdateNews", {
       customCss: ["Writer.css"],
@@ -57,7 +59,8 @@ export class WriterController {
         BackgroundImage: bgURL.URL.replace("Static",""),
         BackgroundImageFileName: path.basename(bgURL.URL),
         selectedCategory: category.SubCategoryID,
-        selectedCategoryName: testSubCategory().find((data)=> data.id==category.SubCategoryID)?.fullname
+        selectedCategoryName: testSubCategory().find((data)=> data.id==category.SubCategoryID)?.fullname,
+        tags: tag
       }
     });
   }
@@ -123,6 +126,11 @@ export class WriterController {
       SubCategoryID: req.body.category
     });
 
+    const tags = req.body.tags;
+    const listOfTags = tags ? tags.split(","): [];
+    const insertData = listOfTags.map((tagId: any) => ({ArticleID: id, TagID: tagId }));
+    await DBConfig('ARTICLE_TAG').insert(insertData);
+
     const imageData = req.body.backgroundImageArticle;
     const matches = imageData.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/);
 
@@ -160,6 +168,12 @@ export class WriterController {
       IsPremium: req.body.isPremium === 'on' ? 1: 0,
       WriterID: 1, // for testing now
     });
+
+    const tags = req.body.tags;
+    const listOfTags = tags ? tags.split(","): [];
+    await DBConfig('ARTICLE_TAG').where({'ArticleID': id}).del();
+    const insertData = listOfTags.map((tagId: any) => ({ArticleID: id, TagID: tagId }));
+    await DBConfig('ARTICLE_TAG').insert(insertData);
 
     const imageData = req.body.backgroundImageArticle;
     if (imageData === "not changed") {

@@ -1,4 +1,5 @@
-import db from '../utils/db';
+import {DBConfig as db} from "../Utils/DBConfig";
+
 
 export interface UserData {
   id: number;

@@ -282,7 +282,7 @@ input:checked+.slider:before {
 }
 
 .tree {
-    min-height: 300px;
+    min-height: 100px;
     overflow-y: auto;
     max-height: 300px;
 }
@@ -329,4 +329,33 @@ input:checked+.slider:before {
 .leaf::before {
     content: "" !important;
     /* No triangle for leaf nodes */
+}
+
+.badge {
+    color: var(--color-red-primary) !important;
+    border: 1px solid var(--color-red-primary) !important;
+    font-weight: 400;
+    min-width: 70px;
+}
+
+.editor-add-tag {
+    background-color: var(--color-red-primary);
+    color: var(--color-white);
+    border: 1px solid var(--color-red-primary);
+}
+
+.editor-add-tag:hover {
+    background-color: var(--color-red-link);
+    color: var(--color-white);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+p {
+    font-size: 16px;
+    margin-bottom: 0;
 }
