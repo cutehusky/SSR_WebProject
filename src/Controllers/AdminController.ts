@@ -6,6 +6,8 @@ import { testSubCategory } from "../utils/testSubCategory";
 import { getParentNames } from "../utils/getParentNames";
 import { get } from "jquery";
 
+import { ArticleData, createArticle, deleteArticle, updateArticle } from "../Services/articleService";
+import { UserData, createUser, deleteUser, updateUser } from "../Services/userService";
 let tagData = [
   { name: "test 1", id: 1 },
   { name: "test 2", id: 2 },
@@ -147,10 +149,88 @@ export class AdminController {
   }
 
   // /admin/user/edit
-  editUser(req: Request, res: Response) {}
+  // request datatest{
+  //         "id": 4,
+  // "username": "johnupdated",
+  // "fullname": "John Doe Updated",
+  // "email": "johnupdated@example.com",
+  // "password": "newpassword123",
+  // "dob": "1990-01-01",
+  // "role": 1
+  // }
+  editUser(req: Request, res: Response) {
+    try {
+      const userData : UserData = req.body;
+      console.log('Request body:', req.body);
+      // Validation cơ bản
+      if (userData.id == null || isNaN(userData.id)) {
+        res.status(400).json({
+          error: 'ID is required and must be a valid number.',
+        });
+        return;
+      }
+  
+      // Gọi Service để tạo user
+      updateUser(userData);
+      // Thông báo đã tạo user thành công
+      res.status(201).json({
+        message: 'User updated successfully!',
+      });
+    } catch (error) {
+      // Bắt lỗi nếu có
+      console.error('Error updating user:', error);
+      res.status(500).json({
+        error: 'Internal Server Error.',
+      });
+    }
+  }
 
   // /admin/article/edit
-  editArticle(req: Request, res: Response) {}
+  // request datatest ={
+  //   "articleID": 5,
+  //   "title": "Updated Title",
+  //   "content": "Updated content of the article.",
+  //   "abstract": "Updated abstract of the article.",
+  //   "status": "published", 
+  //   "isPremium": true,
+  //   "writerID": 1,
+  //   "editorID": 2
+  // }
+
+  editArticle(req: Request, res: Response) {
+    try {
+      const {id, title, datePosted, content, abstract, status, isPremium, writerID, editorID } = req.body;
+  
+       // Log dữ liệu để kiểm tra
+      console.log('Request body:', req.body);
+      // Validation cơ bản
+      
+  
+      // Gọi Service để tạo bài viết
+      const articleID = updateArticle({
+        id,
+        title,
+        datePosted,
+        content,
+        abstract,
+        status,
+        isPremium,
+        writerID,
+        editorID,
+      });
+      // Thông báo đã tạo bài viết thành công
+      res.status(201).json({
+        message: 'Article created successfully!',
+        articleID,
+      });
+    } catch (error) {
+      // Bắt lỗi nếu có
+      console.error('Error creating article:', error);
+      res.status(500).json({
+        error: 'Internal Server Error.',
+      });
+    }
+  }
 
   // /admin/tag/new
   async newTag(req: Request, res: Response) {
@@ -194,10 +274,73 @@ export class AdminController {
   }
 
   // /admin/user/new
-  newUser(req: Request, res: Response) {}
+  // request datatest{
+  //     "id": 4,
+  //     "username": "johndoe",
+  //     "fullname": "John Doe",
+  //     "email": "johndoe@example.com",
+  //     "password": "password123",
+  //     "dob": "1990-01-01",
+  //     "role": 0
+  // }
+  newUser(req: Request, res: Response) {
+    try {
+      const userData : UserData = req.body;
+      console.log('Request body:', req.body);
+      // Validation cơ bản
+      if (userData.id == null || isNaN(userData.id)) {
+        res.status(400).json({
+          error: 'ID is required and must be a valid number.',
+        });
+        return;
+      }
+  
+      // Gọi Service để tạo user
+      createUser(userData);
+      // Thông báo đã tạo user thành công
+      res.status(201).json({
+        message: 'User created successfully!',
+      });
+    } catch (error) {
+      // Bắt lỗi nếu có
+      console.error('Error creating user:', error);
+      res.status(500).json({
+        error: 'Internal Server Error.',
+      });
+    }
+  }
 
   // /admin/article/new
-  newArticle(req: Request, res: Response) {}
+  // request datatest{
+  //   "title": "New Article Title",
+  //   "datePosted": "2024-12-14",
+  //   "content": "This is the content of the new article.",
+  //   "abstract": "A brief summary of the article.",
+  //   "status": "draft",
+  //   "isPremium": true,
+  //   "writerID": "1",
+  //   "editorID": "2"
+  // }
+  async newArticle(req: Request, res: Response) {
+    try {
+      const article : ArticleData = req.body;
+  
+       // Log dữ liệu để kiểm tra
+      console.log('Request body:', req.body);
+  
+      // Gọi Service để tạo bài viết
+      await createArticle(article);
+  
+      res.status(201).json({
+        message: 'Article created successfully!',
+      });
+    } catch (error) {
+      console.error('Error creating article:', error);
+      res.status(500).json({
+        error: 'Internal Server Error.',
+      });
+    }
+  }
 
   // /admin/tag/delete
   deleteTag(req: Request, res: Response) {
@@ -232,10 +375,46 @@ export class AdminController {
   }
 
   // /admin/user/delete
-  deleteUser(req: Request, res: Response) {}
+  // request datatest{
+  //     "id": 4
+  // }
+  deleteUser(req: Request, res: Response) {
+    try {
+      const id = req.body.id;
+      console.log('Request body:', req.body);
+      // Validation cơ bản
+      if (id == null || isNaN(id)) {
+        res.status(400).json({
+          error: 'ID is required and must be a valid number.',
+        });
+        return;
+      }
+  
+      // Gọi Service để xóa user
+      deleteUser(id);
+      // Thông báo đã xóa user thành công
+      res.status(204).json({
+        message: 'User deleted successfully!',
+      });
+    } catch (error) {
+      // Bắt lỗi nếu có
+      console.error('Error deleting user:', error);
+      res.status(500).json({
+        error: 'Internal Server Error.',
+      });
+    }
+  }
 
   // /admin/article/delete
-  deleteArticle(req: Request, res: Response) {}
+  // request datatest = {
+  // "id" : 5  
+  // }
+  deleteArticle(req: Request, res: Response) {
+    const articleId = Number(req.body.id);
+    console.log("articleId: ", articleId);
+    deleteArticle(articleId);
+    res.status(204).send("Article deleted");
+  }
 
   // /admin/article/edit/:id
   editArticleEditor(req: Request, res: Response) {}

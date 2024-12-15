@@ -2,6 +2,7 @@ import express from 'express';
 import { AdminController } from '../Controllers/AdminController';
 
 const router = express.Router();
+router.use(express.json());
 
 const adminController = new AdminController();
 
