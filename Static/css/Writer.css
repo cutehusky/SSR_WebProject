@@ -1,5 +1,9 @@
 @import 'Variable.css';
 
+:root {
+    --upper-article-height: 250px;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -139,24 +143,38 @@
     border-bottom: 2px solid var(--color-red-primary);
 }
 
+.article {
+    height: var(--upper-article-height);
+}
+
 .article:hover {
     cursor: pointer;
 }
 
 .article:hover .img-article img {
-    transform: scale(1.05);
+    transform: scale(1.25);
+}
+
+.img-article {
+    overflow: hidden;
+    height: var(--upper-article-height);
+    background-color: var(--color-black);
+    border-top-left-radius: 10px;
 }
 
 .img-article img {
     width: 100%;
-    min-width: 350px;
-    height: 250px;
-    border-top-right-radius: 10px;
-    border-top-left-radius: 10px;
+    height: 100%;
     background-position: center;
     object-fit: cover;
 
-    transition: all 0.2s ease-in-out;
+    transition: all 0.6s ease-in-out;
+}
+
+.sum-article {
+    background-color: rgba(255, 255, 255, 0.6);
+    border-top-right-radius: 10px;
+    flex: 1 0 auto;
 }
 
 .sum-article h2 {
@@ -258,15 +276,15 @@
     transition: 0.4s;
 }
 
-input:checked+.slider {
+input:checked + .slider {
     background-color: var(--color-red-primary);
 }
 
-input:focus+.slider {
+input:focus + .slider {
     box-shadow: 0 0 1px var(--color-red-primary);
 }
 
-input:checked+.slider:before {
+input:checked + .slider:before {
     -webkit-transform: translateX(26px);
     -ms-transform: translateX(26px);
     transform: translateX(26px);
@@ -298,13 +316,13 @@ input:checked+.slider:before {
 }
 
 .tree li::before {
-    content: "\23F5";
+    content: '\23F5';
     padding-right: 5px;
     color: #007bff;
 }
 
 .tree .expanded::before {
-    content: "\23F7";
+    content: '\23F7';
     padding-right: 5px;
 }
 
@@ -312,7 +330,7 @@ input:checked+.slider:before {
     display: none;
 }
 
-.tree li.expanded>ul {
+.tree li.expanded > ul {
     display: block;
 }
 
@@ -327,7 +345,7 @@ input:checked+.slider:before {
 }
 
 .leaf::before {
-    content: "" !important;
+    content: '' !important;
     /* No triangle for leaf nodes */
 }
 

@@ -1,0 +1,55 @@
+<!-- Modal -->
+<link rel="stylesheet" href="/css/Authentication.css" />
+
+{{#section 'script'}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const confirmButton = $('#confirm-button');
+
+    confirmButton.on('click', function () {
+        Swal.fire({
+            icon: 'success',
+            title: 'Cảm ơn bạn đã đăng ký gói Premium',
+            text: 'Hãy tận hưởng những trải nghiệm Premium nào!',
+        });
+    });
+</script>
+{{/section}}
+
+<div
+    class="modal fade"
+    id="premiumModal"
+    tabindex="-1"
+    aria-labelledby="premiumModalLabel"
+    aria-hidden="true"
+>
+    <div
+        class="modal-dialog modal-dialog-centered modal-lg modal-container-config"
+        style="width: 500px"
+    >
+        <div class="modal-content">
+            <button
+                type="button"
+                class="btn-close button-close-modal"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+            ></button>
+            <h4 class="text-center text-light text-bg-dark p-4">
+                Đăng ký tài khoản Premium
+            </h4>
+            <div
+                class="d-flex align-items-center justify-content-center flex-column p-4"
+            >
+                <img src="/qrcode.png" alt="" width="300" height="300" />
+                <p class="ps-4 pe-4 text-center">
+                    Sau khi quét mã QR thanh toán, hãy nhấn
+                    <strong>xác nhận</strong> để hoàn thành nâng cấp tài khoản
+                    của bạn lên Premium.
+                </p>
+                <button id="confirm-button" class="btn btn-success mt-4">
+                    Xác nhận
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
