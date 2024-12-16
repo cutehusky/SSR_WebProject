@@ -5,6 +5,13 @@ import { data } from 'jquery';
 import { title } from 'process';
 import { DBConfig } from '../Utils/DBConfig';
 import path from "path";
+import {
+    AddComment, AddViewCount,
+    GetArticleById,
+    GetBackgroundImageOfArticle,
+    GetCategoryOfArticle, GetCommentOfArticle, GetRelativeArticle, GetTagsOfArticle,
+    SearchArticle
+} from "../Services/articleService";
 
 
 const News = {
@@ -294,58 +301,28 @@ export class ArticleController {
     async getArticle(req: Request, res: Response) {
         const articleId = req.params.id;
         console.log(articleId);
-        const data = await DBConfig("ARTICLE").where({'ArticleID': articleId}).first();
+        const data = await GetArticleById(articleId);
         if (!data) {
             res.redirect("/404");
             return;
         }
-        let category = await DBConfig("ARTICLE_SUBCATEGORY")
-            .join("SUBCATEGORY",'ARTICLE_SUBCATEGORY.SubCategoryID', '=', 'SUBCATEGORY.SubCategoryID')
-            .join("CATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
-            .where({'ArticleID': articleId})
-            .select("ARTICLE_SUBCATEGORY.SubCategoryID as id",
-                "CATEGORY.Name as categoryName",
-                "SUBCATEGORY.Name as subcategoryName",
-                "CATEGORY.CategoryID as categoryId",
-                "SUBCATEGORY.SubCategoryID as subcategoryId",
-                DBConfig.raw("CONCAT(CATEGORY.Name, \" / \", SUBCATEGORY.Name) as fullname")).first();
+
+        let category = await GetCategoryOfArticle(articleId);
         category = category ? category : {id: 0, fullname: "", categoryName: "",
             subcategoryName: "", categoryId: "", subcategoryId: ""};
-        let bgURL = await DBConfig("ARTICLE_URL")
-            .where({STT: 0, ArticleID: articleId}).first();
-        bgURL = bgURL ? bgURL : {URL: "null"};
-        let tag = await DBConfig("TAG")
-            .join('ARTICLE_TAG', 'ARTICLE_TAG.TagID','=', 'TAG.TagID')
-            .where({'ArticleID': articleId})
-            .select("Name as name", "TAG.TagID as id");
-        tag = tag ? tag : [];
 
-        let relativeNews = await DBConfig("ARTICLE")
-            .join("ARTICLE_SUBCATEGORY",'ARTICLE_SUBCATEGORY.ArticleID', '=', 'ARTICLE.ArticleID')
-            .where("ARTICLE.ArticleID", "!=", articleId)
-            .where('CATEGORY.CategoryID',"=", category.categoryId)
-            .join("SUBCATEGORY",'ARTICLE_SUBCATEGORY.SubCategoryID', '=', 'SUBCATEGORY.SubCategoryID')
-            .join("CATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
-            .join("ARTICLE_URL","ARTICLE_URL.ArticleID", "=","ARTICLE.ArticleID")
-            .where("STT", "=", "0").orderByRaw('RAND()')
-            .select("ARTICLE.ArticleID", "Title","DatePosted",
-                "Abstract","IsPremium", "ViewCount",
-                "CATEGORY.Name as category",
-                "SUBCATEGORY.Name as subcategory",
-                "CATEGORY.CategoryID as categoryId",
-                "SUBCATEGORY.SubCategoryID as subcategoryId", "URL")
-            .limit(5);
+        let bgURL = await GetBackgroundImageOfArticle(articleId);
 
-        for (let i = 0; i < relativeNews.length;i++) {
-            relativeNews[i].tags =  await DBConfig("TAG")
-                .join('ARTICLE_TAG', 'ARTICLE_TAG.TagID','=', 'TAG.TagID')
-                .where({'ArticleID': relativeNews[i].ArticleID})
-                .select("Name as name", "TAG.TagID as id")
-        }
+        let tag = await GetTagsOfArticle(articleId);
 
-        const commentList = await DBConfig("COMMENT").where({
-            ArticleId: articleId
-        }).orderBy("DatePosted", "desc");
+        let relativeNews = await GetRelativeArticle(category.categoryId, articleId);
+
+        for (let i = 0; i < relativeNews.length;i++)
+            relativeNews[i].tags =  await GetTagsOfArticle(relativeNews[i].ArticleID);
+
+        const commentList = await GetCommentOfArticle(articleId);
+
+        await AddViewCount(articleId);
 
         res.render("Home/HomeGuestNews", {
             customCss: ["Home.css", "News.css", "Component.css"],
@@ -356,8 +333,8 @@ export class ArticleController {
                 Content: data.Content,
                 Abstract: data.Abstract,
                 IsPremium: data.IsPremium,
-                BackgroundImage: bgURL.URL.replace("Static",""),
-                BackgroundImageFileName: path.basename(bgURL.URL),
+                BackgroundImage: bgURL.replace("Static",""),
+                BackgroundImageFileName: path.basename(bgURL),
                 category: category.categoryName,
                 subcategory: category.subcategoryName,
                 categoryId: category.categoryId,
@@ -373,26 +350,10 @@ export class ArticleController {
     async searchArticle(req: Request, res: Response) {
         const searchValue = (req.query.q as string) || '';
         const page = (req.query.page as string) || '0';
-        console.log(searchValue);
-        console.log(page);
-
-        let relativeNews = await DBConfig("ARTICLE")
-            .whereRaw('MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)', [searchValue])
-            .join("ARTICLE_SUBCATEGORY",'ARTICLE_SUBCATEGORY.ArticleID', '=', 'ARTICLE.ArticleID')
-            .join("SUBCATEGORY",'ARTICLE_SUBCATEGORY.SubCategoryID', '=', 'SUBCATEGORY.SubCategoryID')
-            .join("CATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
-            .join("ARTICLE_URL","ARTICLE_URL.ArticleID", "=","ARTICLE.ArticleID")
-            .where("STT", "=", "0").orderBy('DatePosted', "desc")
-            .select("ARTICLE.ArticleID", "Title","DatePosted",
-                "Abstract","IsPremium", "ViewCount",
-                "CATEGORY.Name as category",
-                "SUBCATEGORY.Name as subcategory",
-                "CATEGORY.CategoryID as categoryId",
-                "SUBCATEGORY.SubCategoryID as subcategoryId","Content", "URL");
 
         res.render('Home/HomeGuestSearch', {
             customCss: ['Home.css', 'News.css', 'Component.css'],
-            result: relativeNews,
+            result: await SearchArticle(searchValue, parseInt(page) || 0),
             searchValue: searchValue
         });
     }
@@ -406,19 +367,13 @@ export class ArticleController {
     // /comment
     async commentArticle(req: Request, res: Response) {
         let date = new Date(Date.now());
-        console.log(req.body);
-        await DBConfig("COMMENT").insert({
+        // console.log(req.body);
+        await AddComment(req.body.id, req.body.content, date);
+        /*res.json({
             ArticleId: req.body.id,
             Content: req.body.content,
             DatePosted: date
-        });
-        /*
-        res.json({
-            ArticleId: req.body.id,
-            Content: req.body.content,
-            DatePosted: date
-        });
-         */
+        });*/
         const referer = req.get('Referer') || '/'; 
         res.redirect(referer);
     }

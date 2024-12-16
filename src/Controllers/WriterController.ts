@@ -3,7 +3,13 @@ import path from "path";
 import * as fs from "fs";
 import {DBConfig} from "../Utils/DBConfig";
 import {GetSubCategories} from "../Utils/getSubCategories";
-import {createArticle} from "../Services/articleService";
+import {
+  AddBackgroundImageOfArticle,
+  createArticle,
+  GetArticleById,
+  GetBackgroundImageOfArticle,
+  GetCategoryFullNameOfArticle, GetTagsOfArticle, UpdateBackgroundImageOfArticle
+} from "../Services/articleService";
 
 
 export class WriterController {
@@ -18,26 +24,19 @@ export class WriterController {
   // /writer/edit/:id
   async editArticleEditor(req: Request, res: Response) {
     const articleId = req.params.id;
-    const data = await DBConfig("ARTICLE").where({'ArticleID': articleId}).first();
+    const data = await GetArticleById(articleId);
     if (!data) {
       res.redirect("/404");
       return;
     }
-    let category = await DBConfig("ARTICLE_SUBCATEGORY")
-        .join("SUBCATEGORY",'ARTICLE_SUBCATEGORY.SubCategoryID', '=', 'SUBCATEGORY.SubCategoryID')
-        .join("CATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
-        .where({'ArticleID': articleId})
-        .select("ARTICLE_SUBCATEGORY.SubCategoryID as id", DBConfig.raw("CONCAT(CATEGORY.Name, \" / \", SUBCATEGORY.Name) as fullname")).first();
+
+    let category = await GetCategoryFullNameOfArticle(articleId);
     category = category ? category : {id: 0, fullname: ""};
-    let bgURL = await DBConfig("ARTICLE_URL")
-        .where({STT: 0, ArticleID: articleId}).first();
-    bgURL = bgURL ? bgURL : {URL: "null"};
-    let tag = await DBConfig("TAG")
-        .join('ARTICLE_TAG', 'ARTICLE_TAG.TagID','=', 'TAG.TagID')
-        .where({'ArticleID': articleId})
-        .select("Name as name", "TAG.TagID as id");
-    tag = tag ? tag : [];
-    console.log(category);
+
+    let bgURL = await GetBackgroundImageOfArticle(articleId);
+
+    let tag = await GetTagsOfArticle(articleId);
+
     res.render("Writer/WriterUpdateNews", {
       customCss: ["Writer.css"],
       customJs: ["Summernote.js"],
@@ -49,8 +48,8 @@ export class WriterController {
         Abstract: data.Abstract,
         Status: data.Status,
         IsPremium: data.IsPremium,
-        BackgroundImage: bgURL.URL.replace("Static",""),
-        BackgroundImageFileName: path.basename(bgURL.URL),
+        BackgroundImage: bgURL.replace("Static",""),
+        BackgroundImageFileName: path.basename(bgURL),
         selectedCategory: category.id,
         selectedCategoryName: category.fullname,
         tags: tag
@@ -149,11 +148,11 @@ export class WriterController {
 
     const imageData = req.body.backgroundImageArticle;
     if (!imageData) {
-      await DBConfig("ARTICLE_URL").insert({ArticleID: id, STT: 0, URL: "null"});
+      await AddBackgroundImageOfArticle(id);
     } else {
       const matches = imageData.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/);
       if (!matches || matches.length !== 3) {
-        await DBConfig("ARTICLE_URL").insert({ArticleID: id, STT: 0, URL: "null"});
+        await AddBackgroundImageOfArticle(id);
       } else {
         const fileType = matches[1];
         const base64Data = matches[2];
@@ -165,11 +164,11 @@ export class WriterController {
             {encoding: "base64"}, async (err) => {
               if (err) {
                 console.error("Error saving the file:", err);
-                await DBConfig("ARTICLE_URL").insert({ArticleID: id, STT: 0, URL: "null"});
+                await AddBackgroundImageOfArticle(id);
                 return;
               }
-              await DBConfig("ARTICLE_URL").insert({ArticleID: id, STT: 0, URL: filePath.replace("Static","")});
-            });
+              await AddBackgroundImageOfArticle(id, filePath.replace("Static", ""));
+        });
       }
     }
     res.redirect("/writer/myArticles?state=Draft");
@@ -212,13 +211,13 @@ export class WriterController {
 
     const imageData = req.body.backgroundImageArticle;
     if (!imageData) {
-      await DBConfig("ARTICLE_URL").where({ArticleID: id, STT: 0}).update({URL: "null"});
+       await UpdateBackgroundImageOfArticle(id);
     } else if (imageData === "not changed") {
       console.log("image not change");
     } else {
       const matches = imageData.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/);
       if (!matches || matches.length !== 3) {
-        await DBConfig("ARTICLE_URL").where({ArticleID: id, STT: 0}).update({URL: "null"});
+        await UpdateBackgroundImageOfArticle(id);
       } else {
         const fileType = matches[1];
         const base64Data = matches[2];
@@ -230,11 +229,11 @@ export class WriterController {
             {encoding: "base64"}, async (err) => {
               if (err) {
                 console.error("Error saving the file:", err);
-                await DBConfig("ARTICLE_URL").where({ArticleID: id, STT: 0}).update({URL: "null"});
+                await UpdateBackgroundImageOfArticle(id);
                 return;
               }
-              await DBConfig("ARTICLE_URL").where({ArticleID: id, STT: 0}).update({URL: filePath.replace("Static","")});
-            });
+              await UpdateBackgroundImageOfArticle(id, filePath.replace("Static",""));
+        });
       }
     }
     res.redirect("/writer/myArticles?state=Draft");
