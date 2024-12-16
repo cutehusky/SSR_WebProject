@@ -1,8 +1,8 @@
 import { Response, Request } from "express";
 
-import { GetSubCategories } from "../utils/getSubCategories";
-import { getCategories } from "../utils/getCategories";
-import { DBConfig } from "../utils/DBConfig";
+import { GetSubCategories } from "../Utils/getSubCategories";
+import { getCategories } from "../Utils/getCategories";
+import { DBConfig } from "../Utils/DBConfig";
 
 import { ArticleData, createArticle, deleteArticle, updateArticle } from "../Services/articleService";
 import { UserData, createUser, deleteUser, updateUser } from "../Services/userService";

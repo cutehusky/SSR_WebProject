@@ -1,6 +1,6 @@
 import express from "express";
 import { WriterController } from "../Controllers/WriterController";
-import {bufferUploader} from "../utils/MulterConfig";
+import {bufferUploader} from "../Utils/MulterConfig";
 
 const router = express.Router();
 

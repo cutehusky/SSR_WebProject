@@ -3,79 +3,9 @@ import { Response, Request } from 'express';
 import { get } from 'http';
 import { data } from 'jquery';
 import { title } from 'process';
-import { DBConfig } from '../utils/DBConfig';
+import { DBConfig } from '../Utils/DBConfig';
 import path from "path";
 
-// Fake data
-const RelatedNews = [
-    {
-        img: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
-        description:
-            'Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.',
-        date: '10/10/2024',
-        tagTitle: 'Khoa học',
-        tagDescription: 'Khoa học trong nước',
-        tagList: [
-            { tag: 'Địa lý', link: '#' },
-            { tag: 'Khoa học', link: '#' },
-            { tag: 'Hiện tượng siêu nhiên', link: '#' },
-        ],
-    },
-    {
-        img: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
-        description:
-            'Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.',
-        date: '10/10/2024',
-        tagTitle: 'Khoa học',
-        tagDescription: 'Khoa học trong nước',
-        tagList: [
-            { tag: 'Địa lý', link: '#' },
-            { tag: 'Khoa học', link: '#' },
-            { tag: 'Hiện tượng siêu nhiên', link: '#' },
-            { tag: 'Viễn tưởng', link: '#' },
-            { tag: 'Tâm linh', link: '#' },
-        ],
-    },
-    {
-        img: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
-        description:
-            'Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.',
-        date: '10/10/2024',
-        tagTitle: 'Khoa học',
-        tagDescription: 'Khoa học trong nước',
-        tagList: [
-            { tag: 'Địa lý', link: '#' },
-            { tag: 'Khoa học', link: '#' },
-            { tag: 'Hiện tượng siêu nhiên', link: '#' },
-            { tag: 'Viễn tưởng', link: '#' },
-            { tag: 'Tâm linh', link: '#' },
-        ],
-    },
-];
-
-const commentList = [
-    {
-        avatar: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        name: 'Nguyễn Văn A',
-        date: '10/10/2024',
-        content: 'Cây này ăn được không mọi người? Ăn vô có hẹo không :v',
-    },
-    {
-        avatar: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        name: 'Nguyễn Văn B',
-        date: '10/10/2024',
-        content: 'Hồi còn sống mình hay ăn cây này.',
-    },
-    {
-        avatar: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        name: 'Nguyễn Văn C',
-        date: '10/10/2024',
-        content: 'Tôi mới ra MV, ủng hộ tôi với <3',
-    },
-];
 
 const News = {
     title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
@@ -111,8 +41,6 @@ const News = {
     category: 'Khoa học',
     subcategory: 'Khoa học trong nước',
     writer: 'Pham Thanh Đạt',
-    RelatedNews: RelatedNews,
-    comments: commentList,
 };
 
 const listCardResult = [
@@ -442,14 +370,30 @@ export class ArticleController {
     }
 
     // /search?q=&page=
-    searchArticle(req: Request, res: Response) {
+    async searchArticle(req: Request, res: Response) {
         const searchValue = (req.query.q as string) || '';
         const page = (req.query.page as string) || '0';
         console.log(searchValue);
         console.log(page);
+
+        let relativeNews = await DBConfig("ARTICLE")
+            .whereRaw('MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)', [searchValue])
+            .join("ARTICLE_SUBCATEGORY",'ARTICLE_SUBCATEGORY.ArticleID', '=', 'ARTICLE.ArticleID')
+            .join("SUBCATEGORY",'ARTICLE_SUBCATEGORY.SubCategoryID', '=', 'SUBCATEGORY.SubCategoryID')
+            .join("CATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
+            .join("ARTICLE_URL","ARTICLE_URL.ArticleID", "=","ARTICLE.ArticleID")
+            .where("STT", "=", "0").orderBy('DatePosted', "desc")
+            .select("ARTICLE.ArticleID", "Title","DatePosted",
+                "Abstract","IsPremium", "ViewCount",
+                "CATEGORY.Name as category",
+                "SUBCATEGORY.Name as subcategory",
+                "CATEGORY.CategoryID as categoryId",
+                "SUBCATEGORY.SubCategoryID as subcategoryId","Content", "URL");
+
         res.render('Home/HomeGuestSearch', {
             customCss: ['Home.css', 'News.css', 'Component.css'],
-            listCardResult,
+            result: relativeNews,
+            searchValue: searchValue
         });
     }
 

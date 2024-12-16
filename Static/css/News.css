@@ -51,7 +51,7 @@ a {
   overflow: hidden;
   height: var(--upper-article-height);
   background-color: var(--color-black);
-  border-top-left-radius: 10px;
+  border-radius: 20px;
 }
 
 .img-article img {

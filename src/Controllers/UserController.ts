@@ -1,5 +1,5 @@
 import {Response, Request, NextFunction} from "express";
-import {DBConfig} from "../utils/DBConfig";
+import {DBConfig} from "../Utils/DBConfig";
 import bcrypt from "bcryptjs";
 import {getUserByEmail, createUser, UserData} from "../Services/userService";
 

@@ -1,4 +1,4 @@
-import {DBConfig as db} from "../utils/DBConfig";
+import {DBConfig as db} from "../Utils/DBConfig";
 
 
 export interface UserData {

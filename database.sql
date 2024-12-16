@@ -263,6 +263,8 @@ END$$
 
 DELIMITER ;
 
+ALTER TABLE ARTICLE
+ADD FULLTEXT(Title, Content, Abstract);
 
 insert into USER value (0, "test user", "abc@email.com", "123", "2024-1-1", 0);
 
