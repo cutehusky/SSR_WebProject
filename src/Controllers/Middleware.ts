@@ -1,14 +1,15 @@
-import {NextFunction, Request, Response} from "express";
-import {DBConfig} from "../Utils/DBConfig";
+// MiddlewareController
+import { NextFunction, Request, Response } from "express";
+import session from "express-session";
 
-
+import { DBConfig } from "../utils/DBConfig";
 export class MiddlewareController {
     async getCategory(req: Request, res: Response, next: NextFunction) {
         let categories = await DBConfig("CATEGORY").select("CategoryID as id", "Name as name");
 
-        for (let i = 0; i < categories.length;i ++) {
+        for (let i = 0; i < categories.length; i++) {
             categories[i].SubCategories = await DBConfig("CATEGORY")
-                .where("CATEGORY.CategoryID","=", categories[i].id)
+                .where("CATEGORY.CategoryID", "=", categories[i].id)
                 .join("SUBCATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
                 .select("SubCategoryID as id",
                     "CATEGORY.CategoryID as parentId",
@@ -27,14 +28,11 @@ export class MiddlewareController {
     }
 
     getProfile(req: Request, res: Response, next: NextFunction) {
-        res.locals.profile = {
-            name: 'hello',
-            dateOfBirth: "2088-11-11",
-            email: "abc@gmail.com",
-            id: 1,
-            penName: "xyz",
-            role: "writer",
-            time: 20
+        if (req.session.authUser) {
+            res.locals.profile = req.session.authUser;
+        }
+        else {
+            res.locals.profile = null
         }
         next();
     }

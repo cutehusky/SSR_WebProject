@@ -1,4 +1,4 @@
-import {DBConfig as db} from "../Utils/DBConfig";
+import {DBConfig as db} from "../utils/DBConfig";
 
 
 export interface UserData {
@@ -10,9 +10,22 @@ export interface UserData {
   isAdministator: number;
 }
 
+export const getUserByEmail = async (email: string): Promise<UserData | null> => {
+  const user = await db("USER").where("Email", email).first();
+  if (!user) return null;
+  return {
+    id: user.UserID,
+    fullname: user.Fullname,
+    email: user.Email,
+    password: user.Password,
+    dob: user.DOB,
+    isAdministator: user.isAdministator,
+  };
+};
+
 export const createUser = async (userData: UserData): Promise<void> => {
   // Kiểm tra xem user đã tồn tại chưa
-  const userExists = await db('USER').where('UserID', userData.id).first();
+  const userExists = await db('USER').where('Email', userData.email).first();
   if (userExists) {
     throw new Error(`User with ID ${userData.id} already exists.`);
   }
@@ -20,7 +33,6 @@ export const createUser = async (userData: UserData): Promise<void> => {
   try {
     // Insert user vào database
     await db('USER').insert({
-        UserID: userData.id,
         Fullname: userData.fullname,
         Email: userData.email,
         Password: userData.password,

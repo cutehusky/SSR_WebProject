@@ -1,4 +1,4 @@
-import {DBConfig as db} from "../Utils/DBConfig";
+import {DBConfig as db} from "../utils/DBConfig";
 
 export interface ArticleData {
   id: number;

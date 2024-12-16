@@ -5,7 +5,7 @@ CREATE TABLE USER (
     UserID INT AUTO_INCREMENT,
     FullName VARCHAR(50) COLLATE utf8_unicode_ci,
     Email VARCHAR(50),
-    Password VARCHAR(50),
+    Password VARCHAR(250),
     DoB DATE,
     isAdministator INT DEFAULT 0 CHECK (isAdministator IN (0, 1)),
     CONSTRAINT PK_USER PRIMARY KEY (UserID)

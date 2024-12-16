@@ -1,4 +1,4 @@
-import {DBConfig} from "./Utils/DBConfig";
+import {DBConfig} from "./utils/DBConfig";
 
 async function InitialDatabase()
 {

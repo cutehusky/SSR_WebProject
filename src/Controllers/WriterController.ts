@@ -1,8 +1,8 @@
 import { Response, Request } from "express";
 import path from "path";
 import * as fs from "fs";
-import {DBConfig} from "../Utils/DBConfig";
-import {GetSubCategories} from "../Utils/getSubCategories";
+import {DBConfig} from "../utils/DBConfig";
+import {GetSubCategories} from "../utils/getSubCategories";
 import {createArticle} from "../Services/articleService";
 
 
