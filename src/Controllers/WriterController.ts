@@ -5,28 +5,6 @@ import {DBConfig} from "../Utils/DBConfig";
 import {GetSubCategories} from "../Utils/getSubCategories";
 import {createArticle} from "../Services/articleService";
 
-const statistics = [
-  {
-    id: "completed",
-    label: "Số lượng bài viết đã xuất bảng",
-    value: 0,
-  },
-  {
-    id: "waiting",
-    label: "Số lượng bài viết chờ xuất bảng",
-    value: 0,
-  },
-  {
-    id: "pending",
-    label: "Số lượng bài viết chưa phê duyệt",
-    value: 0,
-  },
-  {
-    id: "reject",
-    label: "Số lượng bài viết bị từ chối",
-    value: 0,
-  },
-]
 
 export class WriterController {
   // /writer/new
@@ -82,12 +60,13 @@ export class WriterController {
 
   // /writer/myArticles?state=
   async getMyArticleList(req: Request, res: Response) {
-    const state = (req.query.state as string);
+    let state = (req.query.state as string);
     let states:string[] = [];
-    if (!state || state == "all" || (state != 'Draft' && state != 'Pending'
-        && state != 'Rejected' && state != 'Approved' && state != 'Published'))
-      states = ['Draft', 'Pending', 'Rejected', 'Approved', 'Published'];
-    else
+    if (!state || state == "all" || (state != 'Draft'
+        && state != 'Rejected' && state != 'Approved' && state != 'Published')) {
+      states = ['Draft', 'Rejected', 'Approved', 'Published'];
+      state = "all";
+    }else
       states = [state];
     const articles = await DBConfig("ARTICLE")
         .join("ARTICLE_SUBCATEGORY", "ARTICLE_SUBCATEGORY.ArticleID","=","ARTICLE.ArticleID")
@@ -98,8 +77,10 @@ export class WriterController {
         .where({'WriterID': 1})
         .whereIn("Status", states)
         .select("Title as title", "Abstract as abstract",
-            "DatePosted as date", "CATEGORY.Name as category",
-            "SUBCATEGORY.Name as subcategory", "URL as cover");
+            "DatePublished as datePublished",
+            "DatePosted as datePosted", "CATEGORY.Name as category",
+            "SUBCATEGORY.Name as subcategory", "URL as cover",
+            "Status as state", "ARTICLE.ArticleID as id").orderBy("DatePosted", "desc");
     res.render("Writer/WriterViewArticles", {
       customCss: ["Writer.css"],
       state,
@@ -107,9 +88,33 @@ export class WriterController {
     });
   }
 
+  countArticleInState = async (writerId: number, states: string[]) =>  {
+     let res = await DBConfig("ARTICLE")
+        .where({'WriterID': writerId})
+        .whereIn("Status", states).count("* as count").first();
+     return res?.count || 0;
+  }
 
-  getWriterHome(req: Request, res: Response) {
-    res.render("Writer/WriterHome", { 
+  getWriterHome = async (req: Request, res: Response) =>  {
+    const writerId = 1; // Example writer ID
+    const states = [
+      { id: "Published", label: "Số lượng bài viết đã xuất bảng", states: ["Published"] },
+      { id: "Approved", label: "Số lượng bài viết chờ xuất bảng", states: ["Approved"] },
+      { id: "Draft", label: "Số lượng bài viết chưa phê duyệt", states: ["Draft"] },
+      { id: "Rejected", label: "Số lượng bài viết bị từ chối", states: ["Rejected"] },
+      { id: "All", label: "Tổng số bài viết đã đăng", states: ["Draft", "Rejected", "Approved", "Published"] },
+    ];
+
+    // Use Promise.all to resolve all promises concurrently
+    const statistics = await Promise.all(
+        states.map(async (state) => ({
+          id: state.id,
+          label: state.label,
+          value: await this.countArticleInState(writerId, state.states),
+        }))
+    );
+
+    res.render("Writer/WriterHome", {
       statistics,
       customCss: ["Writer.css", "User.css"],
      });
@@ -167,6 +172,7 @@ export class WriterController {
             });
       }
     }
+    res.redirect("/writer/myArticles?state=Draft");
   }
 
   // /writer/edit
@@ -184,11 +190,16 @@ export class WriterController {
     });
 
     if (req.body.category) {
-      await DBConfig("ARTICLE_SUBCATEGORY").where({
+      const affectedRows  = await DBConfig("ARTICLE_SUBCATEGORY").where({
         ArticleID: id
       }).update({
         SubCategoryID: req.body.category
       });
+      if (affectedRows == 0)
+        await DBConfig("ARTICLE_SUBCATEGORY").insert({
+          SubCategoryID: req.body.category,
+          ArticleID: id
+        });
     }
 
     const tags = req.body.tags;
@@ -226,5 +237,6 @@ export class WriterController {
             });
       }
     }
+    res.redirect("/writer/myArticles?state=Draft");
   }
 }

@@ -4,6 +4,7 @@ import { get } from 'http';
 import { data } from 'jquery';
 import { title } from 'process';
 import { DBConfig } from '../Utils/DBConfig';
+import path from "path";
 
 // Fake data
 const RelatedNews = [
@@ -375,16 +376,48 @@ export class ArticleController {
     }
 
     // /article/:id
-    getArticle(req: Request, res: Response) {
+    async getArticle(req: Request, res: Response) {
         const articleId = req.params.id;
         console.log(articleId);
-        // Tìm article theo id
+        const data = await DBConfig("ARTICLE").where({'ArticleID': articleId}).first();
+        if (!data) {
+            res.redirect("/404");
+            return;
+        }
+        let category = await DBConfig("ARTICLE_SUBCATEGORY")
+            .join("SUBCATEGORY",'ARTICLE_SUBCATEGORY.SubCategoryID', '=', 'SUBCATEGORY.SubCategoryID')
+            .join("CATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
+            .where({'ArticleID': articleId})
+            .select("ARTICLE_SUBCATEGORY.SubCategoryID as id",
+                "CATEGORY.Name as categoryName",
+                "SUBCATEGORY.Name as subcategoryName",
+                DBConfig.raw("CONCAT(CATEGORY.Name, \" / \", SUBCATEGORY.Name) as fullname")).first();
+        category = category ? category : {id: 0, fullname: "", categoryName: "", subcategoryName: ""};
+        let bgURL = await DBConfig("ARTICLE_URL")
+            .where({STT: 0, ArticleID: articleId}).first();
+        bgURL = bgURL ? bgURL : {URL: "null"};
+        let tag = await DBConfig("TAG")
+            .join('ARTICLE_TAG', 'ARTICLE_TAG.TagID','=', 'TAG.TagID')
+            .where({'ArticleID': articleId})
+            .select("Name as name", "TAG.TagID as id");
+        tag = tag ? tag : [];
 
-        //Tạo ra một News
-
-        res.render('Home/HomeGuestNews', {
-            customCss: ['Home.css', 'News.css', 'Component.css'],
-            News,
+        res.render("Home/HomeGuestNews", {
+            customCss: ["Home.css", "News.css", "Component.css"],
+            data: {
+                ID: articleId,
+                Title: data.Title,
+                DatePosted: data.DatePosted,
+                Content: data.Content,
+                Abstract: data.Abstract,
+                Status: data.Status,
+                IsPremium: data.IsPremium,
+                BackgroundImage: bgURL.URL.replace("Static",""),
+                BackgroundImageFileName: path.basename(bgURL.URL),
+                category: category.categoryName,
+                subcategory: category.subcategoryName,
+                tags: tag
+            }
         });
     }
 
