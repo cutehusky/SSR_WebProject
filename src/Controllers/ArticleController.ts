@@ -291,26 +291,13 @@ export class ArticleController {
                     'Dolor lorem eos dolor duo et eirmod sea. Dolor sit magna rebum clita rebum dolor stet amet justo',
             });
         }
-        const tags = [
-            'Politics',
-            'Business',
-            'Corporate',
-            'Business',
-            'Health',
-            'Education',
-            'Science',
-            'Business',
-            'Foods',
-            'Travel',
-        ];
         res.render('Home/HomeView', {
             customCss: ['HomePage.css'],
             customJs: ['HomeView.js'],
             top_articles,
             view_articles,
             latest_articles,
-            category_articles,
-            tags,
+            category_articles
         });
     }
 
@@ -335,7 +322,7 @@ export class ArticleController {
         });
     }
 
-    // /category/subcategories/:id?page=
+    // /category/subcategory/:id?page=
     getArticleListBySubCategory(req: Request, res: Response) {
         const categoryName = req.params.category;
         const subCategoryId = req.params.id;
@@ -391,8 +378,11 @@ export class ArticleController {
             .select("ARTICLE_SUBCATEGORY.SubCategoryID as id",
                 "CATEGORY.Name as categoryName",
                 "SUBCATEGORY.Name as subcategoryName",
+                "CATEGORY.CategoryID as categoryId",
+                "SUBCATEGORY.SubCategoryID as subcategoryId",
                 DBConfig.raw("CONCAT(CATEGORY.Name, \" / \", SUBCATEGORY.Name) as fullname")).first();
-        category = category ? category : {id: 0, fullname: "", categoryName: "", subcategoryName: ""};
+        category = category ? category : {id: 0, fullname: "", categoryName: "",
+            subcategoryName: "", categoryId: "", subcategoryId: ""};
         let bgURL = await DBConfig("ARTICLE_URL")
             .where({STT: 0, ArticleID: articleId}).first();
         bgURL = bgURL ? bgURL : {URL: "null"};
@@ -402,6 +392,33 @@ export class ArticleController {
             .select("Name as name", "TAG.TagID as id");
         tag = tag ? tag : [];
 
+        let relativeNews = await DBConfig("ARTICLE")
+            .join("ARTICLE_SUBCATEGORY",'ARTICLE_SUBCATEGORY.ArticleID', '=', 'ARTICLE.ArticleID')
+            .where("ARTICLE.ArticleID", "!=", articleId)
+            .where('CATEGORY.CategoryID',"=", category.categoryId)
+            .join("SUBCATEGORY",'ARTICLE_SUBCATEGORY.SubCategoryID', '=', 'SUBCATEGORY.SubCategoryID')
+            .join("CATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
+            .join("ARTICLE_URL","ARTICLE_URL.ArticleID", "=","ARTICLE.ArticleID")
+            .where("STT", "=", "0").orderByRaw('RAND()')
+            .select("ARTICLE.ArticleID", "Title","DatePosted",
+                "Abstract","IsPremium", "ViewCount",
+                "CATEGORY.Name as category",
+                "SUBCATEGORY.Name as subcategory",
+                "CATEGORY.CategoryID as categoryId",
+                "SUBCATEGORY.SubCategoryID as subcategoryId", "URL")
+            .limit(5);
+
+        for (let i = 0; i < relativeNews.length;i++) {
+            relativeNews[i].tags =  await DBConfig("TAG")
+                .join('ARTICLE_TAG', 'ARTICLE_TAG.TagID','=', 'TAG.TagID')
+                .where({'ArticleID': relativeNews[i].ArticleID})
+                .select("Name as name", "TAG.TagID as id")
+        }
+
+        const commentList = await DBConfig("COMMENT").where({
+            ArticleId: articleId
+        }).orderBy("DatePosted", "desc");
+
         res.render("Home/HomeGuestNews", {
             customCss: ["Home.css", "News.css", "Component.css"],
             data: {
@@ -410,13 +427,16 @@ export class ArticleController {
                 DatePosted: data.DatePosted,
                 Content: data.Content,
                 Abstract: data.Abstract,
-                Status: data.Status,
                 IsPremium: data.IsPremium,
                 BackgroundImage: bgURL.URL.replace("Static",""),
                 BackgroundImageFileName: path.basename(bgURL.URL),
                 category: category.categoryName,
                 subcategory: category.subcategoryName,
-                tags: tag
+                categoryId: category.categoryId,
+                subcategoryId: category.subcategoryId,
+                tags: tag,
+                relativeNews: relativeNews,
+                comments: commentList
             }
         });
     }
@@ -440,5 +460,22 @@ export class ArticleController {
     }
 
     // /comment
-    commentArticle(req: Request, res: Response) {}
+    async commentArticle(req: Request, res: Response) {
+        let date = new Date(Date.now());
+        console.log(req.body);
+        await DBConfig("COMMENT").insert({
+            ArticleId: req.body.id,
+            Content: req.body.content,
+            DatePosted: date
+        });
+        /*
+        res.json({
+            ArticleId: req.body.id,
+            Content: req.body.content,
+            DatePosted: date
+        });
+         */
+        const referer = req.get('Referer') || '/'; 
+        res.redirect(referer);
+    }
 }

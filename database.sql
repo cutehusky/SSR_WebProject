@@ -47,7 +47,7 @@ CREATE TABLE ARTICLE (
 
 CREATE TABLE COMMENT (
     CommentID INT AUTO_INCREMENT,
-    DatePosted DATE,
+    DatePosted DATETIME,
     Content TEXT COLLATE utf8_unicode_ci,
     ArticleID INT,
     SubscriberID INT,

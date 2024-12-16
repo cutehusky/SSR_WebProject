@@ -1,11 +1,19 @@
-<div class="d-flex justify-content-center" style="background-color: rgba(255, 255, 255, 0.4);">
+<div class="w-100 d-flex justify-content-center" style="background-color: rgba(255, 255, 255, 0.4);">
   <div class="w-75">
     <section class="mt-5">
       <div class="header-content mb-1 d-flex justify-content-between">
         <ul class="d-flex list-unstyled">
-          <li class="text-primary">{{data.category}}</li>
+          <li class="text-primary">
+            <a href="/category/{{data.categoryId}}">
+              {{data.category}}
+            </a>
+          </li>
           <li style="margin: 0 12px;">/</li>
-          <li>{{data.subcategory}}</li>
+          <li>
+            <a href="/category/subcategory/{{data.subcategoryId}}">
+              {{data.subcategory}}
+            </a>
+          </li>
         </ul>
 
         <div>
@@ -31,7 +39,7 @@
       <p class="fw-bold me-2">Tags:</p>
       <div class="card-item-tags" style="width:90%">
         {{#each data.tags}}
-        <a href="" class="me-1">
+        <a href="/tags?tag={{id}}" class="me-1">
           <button class="btn btn-sm tag">{{name}}</button>
         </a>
         {{/each}}
@@ -42,7 +50,7 @@
       <h2 class="pb-2 d-inline"
         style="border-bottom: 1px solid var(--color-red-primary); color: var(--color-gray-text);">Bài viết liên quan
       </h2>
-      <div class="container mt-5 d-flex flex-column justify-content-center align-items-center">
+      <div class=" mt-5 d-flex flex-column justify-content-center align-items-center">
         {{!-- {{#each data.RelatedNews}}
         <div class="card d-flex flex-row justify-content-center align-items-center"
           style="width: 750px; height: 150px;">
@@ -68,7 +76,7 @@
           </div>
         </div>
         {{/each}} --}}
-        {{> Component/News listOfNews=data.RelatedNews}}
+        {{> Component/News listOfNews=data.relativeNews}}
       </div>
 
     </section>
@@ -78,29 +86,81 @@
     <section class="mt-5">
       <h2 class="pb-2 d-inline" style="border-bottom: 1px solid var(--color-red-primary);">Bình luận</h2>
       <div class="mt-5">
-        <div class="input-group mb-5 w-100">
+        <form enctype="application/x-www-form-urlencoded" id="commentForm" class="input-group mb-5 w-100" method="post">
           <div class="me-2">
             <img src="https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0"
               alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;" />
           </div>
-          <input type="text" class="form-control" placeholder="Viết bình luận" />
-        </div>
+          <input type="text" class="d-none" value="{{data.ID}}" name="id" />
+          <input type="text" class="form-control" placeholder="Viết bình luận" name="content" />
+          <button type="submit" class="btn btn1" formaction="/comment">Gửi</button>
+        </form>
 
-        {{#each data.comments}}
-        <div class="d-flex mt-3">
-          <div class="me-2">
-            <img src="{{this.avatar}}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;" />
-          </div>
-          <div class="d-flex flex-column">
-            <div class="d-flex">
-              <div class="fw-bold me-2">{{this.name}}</div>
-              <div class="text-muted">{{this.date}}</div>
+        <div class="row" id="commentList">
+          {{#each data.comments}}
+          <div class="d-flex mt-3">
+            <div class="me-2">
+              {{#if (notnull Name)}}
+              <img src="{{this.Avatar}}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;" />
+              {{else}}
+              <img src="/98650216.jpg" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;" />
+              {{/if}}
             </div>
-            <div>{{this.content}}</div>
+            <div class="d-flex flex-column">
+              <div class="d-flex">
+                {{#if (notnull Name)}}
+                <div class="fw-bold me-2">{{this.Name}}</div>
+                {{else}}
+                <div class="fw-bold me-2">Anonymous</div>
+                {{/if}}
+                <div class="text-muted">{{this.DatePosted}}</div>
+              </div>
+              <div>{{this.Content}}</div>
+            </div>
           </div>
+          {{/each}}
         </div>
-        {{/each}}
       </div>
     </section>
   </div>
 </div>
+<script>
+  /*
+  document.getElementById('commentForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    const commentList = document.getElementById('commentList');
+
+
+    try {
+      const response = await fetch('/comment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(Object.fromEntries(formData)),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log(`Success: ${result.message}`);
+        commentList.innerHTML = ` <div class="d-flex mt-3">
+            <div class="me-2">
+              <img src="/98650216.jpg" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;" />
+            </div>
+            <div class="d-flex flex-column">
+              <div class="d-flex">
+                <div class="fw-bold me-2">Anonymous</div>
+                <div class="text-muted">${result.DatePosted}</div>
+              </div>
+              <div>${result.Content}</div>
+            </div>
+          </div>` + commentList.innerHTML;
+      } else {
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  });
+  */
+</script>

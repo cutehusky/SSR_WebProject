@@ -169,7 +169,7 @@
         }
         li.classList.toggle('expanded');
     }
-    document.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('pageshow', () => {
         const radioButtons = document.querySelectorAll('.leaf input[type="radio"]');
 
         radioButtons.forEach(radio => {
@@ -178,6 +178,8 @@
                     onRadioSelect(this.getAttribute("data-category-fullname"));
                 }
             });
+            if (radio.checked)
+                onRadioSelect(radio.getAttribute("data-category-fullname"));
         });
     });
 

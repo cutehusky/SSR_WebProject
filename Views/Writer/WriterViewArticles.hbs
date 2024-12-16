@@ -45,6 +45,10 @@
         <p class="mb-1 text-center text-muted accepted-publish-date">Ngày xuất bản:
           {{this.datePublished}}</p>
         {{/if}}
+        {{#if (eq state "Approved")}}
+        <p class="mb-1 text-center text-muted accepted-publish-date">Ngày xuất bản:
+          {{this.datePublished}}</p>
+        {{/if}}
         <p class="mb-1 text-center text-muted">Ngày Đăng:
           {{this.datePosted}}</p>
         <div class="vertical-line mx-3"></div>
