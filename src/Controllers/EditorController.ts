@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { getEditorCategories } from '../Utils/getEditorCategories';
 import { getArticlesCategories } from '../Utils/getArticlesCategories';
-import { getCategories } from '../Utils/getCategories';
 
 export class EditorController {
     // /editor/:editorID/articles
@@ -29,7 +28,6 @@ export class EditorController {
             ],
             customJs: ['AdminArticlesDataTable.js'],
             categories,
-            selectedCategory,
             articles,
             pages,
             editorID,
