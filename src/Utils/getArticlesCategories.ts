@@ -7,6 +7,7 @@ export const getArticlesCategories = (categories: any[]): Promise<any[]> => {
         .join('CATEGORY as c', 's.CategoryID', 'c.CategoryID')
         .join('WRITER as w', 'a.WriterID', 'w.WriterID')
         .whereIn('c.CategoryID', categories.map((category) => category.id))
+        .whereNull('a.EditorID')
         .select(
             'a.ArticleID as id',
             'a.Title as title',
