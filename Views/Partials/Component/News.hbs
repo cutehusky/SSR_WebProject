@@ -1,35 +1,40 @@
-<section class="col col-lg-12 col-md-12 col-sm-12 main-news">
+<section class="row g-4">
   {{#each listOfNews}}
-    <div class="d-flex align-items-start main-news-item">
-      <div class="d-flex align-items-start w-75">
-        <img
-          style="width: 200px; height: 125px;"
-          src="{{this.img}}"
-          alt="{{this.title}}"
-        />
-        <div class="main-news-item__description">
-          <div>
-            <p>{{this.title}}</p>
-            <p>{{this.description}}</p>
-          </div>
-          <div>
-            <span>Ngày đăng: {{this.date}}</span>
-          </div>
+  <div class="d-flex align-items-start article position-relative"
+    style="padding:0px;background-color: rgba(255, 255, 255, 0.5); border-radius: 20px;">
+
+    <a class="d-flex align-items-start w-75" style="text-decoration: none;color:unset;" href="/article/{{ArticleID}}">
+      <div class="img-article w-50">
+        <img src={{this.URL}} alt="Logo" class="img-fluid">
+      </div>
+      <div class="main-news-item__description w-50 sum-article d-flex justify-content-between flex-column">
+        <div>
+          <h5>{{this.Title}}</h5>
+          <p>{{this.Abstract}}</p>
+        </div>
+        <div>
+          <span>Ngày đăng: {{this.DatePosted}}</span>
         </div>
       </div>
-      <div class="w-25">
-        <div class="d-flex flex-column mb-2">
-          <span>{{this.tagTitle}}</span>
-          <span>{{this.tagDescription}}</span>
-        </div>
-        <div class="main-news-item__tags-container">
-          {{#each this.tagList}}
-            <a href="{{this.link}}">
-              <button class="btn btn-sm tag">{{this.tag}}</button>
-            </a>
-          {{/each}}
-        </div>
+    </a>
+
+    <div class="w-25 h-100">
+      <div class="d-flex flex-column mb-2">
+        <a href="/category/{{this.categoryId}}">
+          <span>{{this.category}} /</span>
+        </a>
+        <a href="/category/subcategory/{{this.subcategoryId}}">
+          <span>{{this.subcategory}}</span>
+        </a>
+      </div>
+      <div class="main-news-item__tags-container">
+        {{#each this.tags}}
+        <a href="/tags?tag={{id}}">
+          <button class="btn btn-sm tag">{{name}}</button>
+        </a>
+        {{/each}}
       </div>
     </div>
+  </div>
   {{/each}}
 </section>

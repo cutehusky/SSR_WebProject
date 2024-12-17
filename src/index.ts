@@ -91,6 +91,10 @@ Handlebars.registerHelper('eq', function (this: any, arg1: any, arg2: any) {
     return arg1 === arg2;
 });
 
+Handlebars.registerHelper('notnull', function (this: any, arg1: any) {
+    return Boolean(arg1);
+});
+
 Handlebars.registerHelper('neq', function (this: any, arg1: any, arg2: any) {
     return arg1 !== arg2;
 });

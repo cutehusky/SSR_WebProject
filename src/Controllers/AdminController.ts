@@ -1,11 +1,12 @@
 import { Response, Request } from "express";
 
 import { GetSubCategories } from "../Utils/getSubCategories";
-import { getParentNames } from "../Utils/getParentNames";
-import { get } from "jquery";
+import { getCategories } from "../Utils/getCategories";
+import { DBConfig } from "../Utils/DBConfig";
 
 import { ArticleData, createArticle, deleteArticle, updateArticle } from "../Services/articleService";
 import { UserData, createUser, deleteUser, updateUser } from "../Services/userService";
+import { get } from "jquery";
 let tagData = [
   { name: "test 1", id: 1 },
   { name: "test 2", id: 2 },
@@ -15,31 +16,25 @@ let tagData = [
 ];
 
 
-//let subCategoryData = await GetSubCategories();
-let subCategoryData: {
-  id: number;
-  name: string;
-  parentName: string;
-  parentId: number;
-  fullname: string
-}[]  = [];
-
 export class AdminController {
   // /admin/categories?category=
-  getCategories(req: Request, res: Response) {
+  async getCategories(req: Request, res: Response) {
+    console.log(req.session.authUser)
     const category = (req.query.category || "-1") as string;
     const categoryId = parseInt(category);
+    const CategoryList = res.locals.Categories
+    let subCategoryList = await GetSubCategories();
+    console.log('subCategoryList:', subCategoryList);
 
-    let filteredSubCategoryData = subCategoryData;
-    if(parseInt(category) != -1){
-      filteredSubCategoryData = subCategoryData.filter((subCategory) => subCategory.parentId === categoryId);
+    if(categoryId !== -1){
+      subCategoryList = subCategoryList.filter((category: { parentId: number }) => category.parentId === categoryId);
     }
 
     res.render("Admin/AdminCategoriesView", {
       customCss: ["Admin.css"],
       customJs: ["AdminCategoryDataTable.js"],
-      Categories: getParentNames(subCategoryData),
-      Subcategories: filteredSubCategoryData,
+      Categories: CategoryList,
+      Subcategories: subCategoryList,
     });
   }
 
@@ -116,39 +111,26 @@ export class AdminController {
 
   // /admin/category/edit
   async editCategory(req: Request, res: Response) {
-    // const categoryId = req.query.id as string;
-    // // let categoryList = await DBConfig("categories").select("id", "name", "parentName", "parentId"); // có thể thêm nhiều mục khác
-    // let categoryList = subCategoryData;
-    // const category = categoryList.find((category) => category.id === parseInt(categoryId));
-    // if (!category) {
-    //   res.status(404).send("Category not found");
-    //   return;
-    // }
-    // category.name = req.query.name as string;
     const { id, name } = req.body;
-    console.log(id, name)
-    const category = subCategoryData.find((category) => category.parentId == parseInt(id));
-    if (!category) {
+    let Categories = res.locals.Categories
+    const existCategory = Categories.find((category: { id: number }) => category.id === parseInt(id));
+
+    if (!existCategory) {
       res.status(404).send("Category not found");
       return;
     }
 
-    console.log("chưa updata: ",category)
+    await DBConfig("CATEGORY").where("CategoryID", "=", id).update({ Name: name });
 
-    subCategoryData.map((category) => {
-      if(category.parentId == parseInt(id)){
-        category.parentName = name;
-      }
-    })
-
-    console.log("sau update: ",category)
+    let subCategoryResponse = await GetSubCategories();
+    Categories = getCategories()
 
     
     res.render("Admin/AdminCategoriesView", {
       customCss: ["Admin.css"],
       customJs: ["AdminCategoryDataTable.js"],
-      Categories: getParentNames(subCategoryData),
-      Subcategories: subCategoryData,
+      Categories: Categories,
+      Subcategories: subCategoryResponse,
     });
   
   }
@@ -253,31 +235,28 @@ export class AdminController {
   }
 
   // /admin/category/new
-  newCategory(req: Request, res: Response) {
+  async newCategory(req: Request, res: Response) {
     const categoryName = req.body.name as string;
+    
+    try{
+      await DBConfig("category").insert({ name: categoryName });
 
-    const existingCategory = subCategoryData.find((category) => category.parentName === categoryName);
-    if (existingCategory) {
-      res.status(400).send("Category already exists");
-      return;
+      const Categories = getCategories()
+      let subCategoryData = await GetSubCategories(); 
+
+      res.render("Admin/AdminCategoriesView", {
+        customCss: ["Admin.css"],
+        customJs: ["AdminCategoryDataTable.js"],
+        Categories: Categories,
+        Subcategories: subCategoryData,
+      });
+
+    } catch(error){
+      console.error('Error creating category:', error);
+      res.status(500).json({
+        error: 'Internal Server Error with message: ' + (error as Error).message,
+      });
     }
-
-    const parentId = parseInt(getParentNames(subCategoryData).length.toString());
-    const filteredSubCategoryData = subCategoryData.filter((subCategory) => subCategory.parentId === parentId);
-    let name = "test subcategory " + filteredSubCategoryData.length;
-    subCategoryData.push({
-      name:  name,
-      id: filteredSubCategoryData.length, 
-      parentName: categoryName, 
-      parentId: parentId,
-      fullname: `${categoryName} \ ${name}`
-    });
-    res.render("Admin/AdminCategoriesView", {
-      customCss: ["Admin.css"],
-      customJs: ["AdminCategoryDataTable.js"],
-      Categories: getParentNames(subCategoryData),
-      Subcategories: subCategoryData,
-    });
   }
 
   // /admin/user/new
@@ -369,15 +348,27 @@ export class AdminController {
   }
 
   // /admin/category/delete
-  deleteCategory(req: Request, res: Response) {
+  async deleteCategory(req: Request, res: Response) {
     const categoryId = req.body.id as string;
-    let categoryList = subCategoryData.filter((category) => category.parentId !== parseInt(categoryId));
-    subCategoryData = categoryList;
+    let categoryList = res.locals.Categories;
+
+    const categoryIndex = categoryList.find((category: { id: number }) => category.id === parseInt(categoryId));
+
+    if (!categoryIndex) {
+      res.status(404).send("Category not found");
+      return;
+    }
+    await DBConfig("CATEGORY").where("CategoryID", "=", categoryId).del();
+    await DBConfig("subcategory").where("CategoryID", "=", categoryId).del();
+
+    const subCategories = await GetSubCategories();
+    const Categories = getCategories()
+
     res.render("Admin/AdminCategoriesView", {
       customCss: ["Admin.css"],
       customJs: ["AdminCategoryDataTable.js"],
-      Categories: getParentNames(categoryList),
-      Subcategories: categoryList,
+      Categories: Categories,
+      Subcategories:  subCategories,
     });
   }
 
@@ -440,23 +431,21 @@ export class AdminController {
 //   category: '1', parentid
 //   name: 'test subcategory 0' name
 // }
-  editSubCategory(req: Request, res: Response) {
+  async editSubCategory(req: Request, res: Response) {
     const { id, category, name } = req.body;
-    console.log(id, category, name)
-    const subCategory = subCategoryData.find((subcategory) => {
-      if(subcategory.id == parseInt(id) && subcategory.parentId == parseInt(category)){
-        return subcategory;
-      }
-    })
-    if (!subCategory) {
-      res.status(404).send("SubCategory not found");
-      return;
-    }
-    subCategory.name = name;
+    await DBConfig("subcategory")
+      .where("SubCategoryID", id) // Điều kiện SubCategoryID = id
+      .andWhere("CategoryID", category) // Điều kiện CategoryID = category
+      .update({ Name: name}); // Cập nhật tên và CategoryID
+
+    let subCategoryData = await GetSubCategories();
+    let Categories = getCategories()
+
+
     res.render("Admin/AdminCategoriesView", {
       customCss: ["Admin.css"],
       customJs: ["AdminCategoryDataTable.js"],
-      Categories: getParentNames(subCategoryData),
+      Categories: Categories,
       Subcategories: subCategoryData,
     });
   }
@@ -466,39 +455,42 @@ export class AdminController {
   //  category: '1', parent id
   //  name: 'ádasd' name
   // }
-  newSubCategory(req: Request, res: Response) {
+  async newSubCategory(req: Request, res: Response) {
     const { category, name } = req.body;
     const parentId = parseInt(category);
-    const filteredSubCategoryData = subCategoryData.filter((subCategory) => subCategory.parentId === parentId);
-    subCategoryData.push({ 
-      name: name, 
-      id: filteredSubCategoryData.length, 
-      parentName: filteredSubCategoryData[0].parentName, 
-      parentId: parentId,
-      fullname: ""
-    });
-    console.log(subCategoryData)
+
+    await DBConfig("subcategory").insert({ name: name, CategoryID: parentId });
+    const subCategoryResponse = await GetSubCategories();
+    const Categories = getCategories()
+
     res.render("Admin/AdminCategoriesView", {
       customCss: ["Admin.css"],
       customJs: ["AdminCategoryDataTable.js"],
-      Categories: getParentNames(subCategoryData),
-      Subcategories: subCategoryData,
+      Categories: Categories,
+      Subcategories: subCategoryResponse,
     });
   }
 
   // /admin/subcategory/delete
   // request data{ 
-  //   parentName: '1', 
-  //   id: '0' 
+  //   parentName: '1', categoryId
+  //   id: '0' subCateforyId
   // }
-  deleteSubCategory(req: Request, res: Response) {
+  async deleteSubCategory(req: Request, res: Response) {
     const { parentName, id } = req.body;
-    let categoryList = subCategoryData.filter((category) => category.parentId !== parseInt(parentName) || category.id !== parseInt(id));
-    subCategoryData = categoryList;
+
+    await DBConfig("subcategory")
+      .where("SubCategoryID", id)
+      .andWhere("CategoryID", parentName)
+      .del();
+    
+    let subCategoryData = await GetSubCategories();
+    let Categories = getCategories()
+    
     res.render("Admin/AdminCategoriesView", {
       customCss: ["Admin.css"],
       customJs: ["AdminCategoryDataTable.js"],
-      Categories: getParentNames(subCategoryData),
+      Categories: Categories,
       Subcategories: subCategoryData,
     });
   }

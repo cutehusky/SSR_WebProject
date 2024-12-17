@@ -4,81 +4,20 @@ import { get } from 'http';
 import { data } from 'jquery';
 import { title } from 'process';
 import { DBConfig } from '../Utils/DBConfig';
+import path from 'path';
 import {
+    AddComment,
+    AddViewCount,
+    GetArticleById,
+    GetBackgroundImageOfArticle,
+    GetCategoryOfArticle,
+    GetCommentOfArticle,
+    GetRelativeArticle,
+    GetTagsOfArticle,
+    SearchArticle,
     countArticlesByTagID,
     findPageByTagID,
 } from '../Services/articleService';
-
-// Fake data
-const RelatedNews = [
-    {
-        img: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
-        description:
-            'Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.',
-        date: '10/10/2024',
-        tagTitle: 'Khoa học',
-        tagDescription: 'Khoa học trong nước',
-        tagList: [
-            { tag: 'Địa lý', link: '#' },
-            { tag: 'Khoa học', link: '#' },
-            { tag: 'Hiện tượng siêu nhiên', link: '#' },
-        ],
-    },
-    {
-        img: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
-        description:
-            'Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.',
-        date: '10/10/2024',
-        tagTitle: 'Khoa học',
-        tagDescription: 'Khoa học trong nước',
-        tagList: [
-            { tag: 'Địa lý', link: '#' },
-            { tag: 'Khoa học', link: '#' },
-            { tag: 'Hiện tượng siêu nhiên', link: '#' },
-            { tag: 'Viễn tưởng', link: '#' },
-            { tag: 'Tâm linh', link: '#' },
-        ],
-    },
-    {
-        img: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
-        description:
-            'Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.',
-        date: '10/10/2024',
-        tagTitle: 'Khoa học',
-        tagDescription: 'Khoa học trong nước',
-        tagList: [
-            { tag: 'Địa lý', link: '#' },
-            { tag: 'Khoa học', link: '#' },
-            { tag: 'Hiện tượng siêu nhiên', link: '#' },
-            { tag: 'Viễn tưởng', link: '#' },
-            { tag: 'Tâm linh', link: '#' },
-        ],
-    },
-];
-
-const commentList = [
-    {
-        avatar: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        name: 'Nguyễn Văn A',
-        date: '10/10/2024',
-        content: 'Cây này ăn được không mọi người? Ăn vô có hẹo không :v',
-    },
-    {
-        avatar: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        name: 'Nguyễn Văn B',
-        date: '10/10/2024',
-        content: 'Hồi còn sống mình hay ăn cây này.',
-    },
-    {
-        avatar: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        name: 'Nguyễn Văn C',
-        date: '10/10/2024',
-        content: 'Tôi mới ra MV, ủng hộ tôi với <3',
-    },
-];
 
 const News = {
     title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
@@ -114,8 +53,6 @@ const News = {
     category: 'Khoa học',
     subcategory: 'Khoa học trong nước',
     writer: 'Pham Thanh Đạt',
-    RelatedNews: RelatedNews,
-    comments: commentList,
 };
 
 const listCardResult = [
@@ -296,18 +233,6 @@ export class ArticleController {
                     'Dolor lorem eos dolor duo et eirmod sea. Dolor sit magna rebum clita rebum dolor stet amet justo',
             });
         }
-        const tags = [
-            'Politics',
-            'Business',
-            'Corporate',
-            'Business',
-            'Health',
-            'Education',
-            'Science',
-            'Business',
-            'Foods',
-            'Travel',
-        ];
         res.render('Home/HomeView', {
             customCss: ['HomePage.css'],
             customJs: ['HomeView.js'],
@@ -315,7 +240,6 @@ export class ArticleController {
             view_articles,
             latest_articles,
             category_articles,
-            tags,
         });
     }
 
@@ -340,7 +264,7 @@ export class ArticleController {
         });
     }
 
-    // /category/subcategories/:id?page=
+    // /category/subcategory/:id?page=
     getArticleListBySubCategory(req: Request, res: Response) {
         const categoryName = req.params.category;
         const subCategoryId = req.params.id;
@@ -479,28 +403,76 @@ export class ArticleController {
     }
 
     // /article/:id
-    getArticle(req: Request, res: Response) {
+    async getArticle(req: Request, res: Response) {
         const articleId = req.params.id;
         console.log(articleId);
-        // Tìm article theo id
+        const data = await GetArticleById(articleId);
+        if (!data) {
+            res.redirect('/404');
+            return;
+        }
 
-        //Tạo ra một News
+        let category = await GetCategoryOfArticle(articleId);
+        category = category
+            ? category
+            : {
+                  id: 0,
+                  fullname: '',
+                  categoryName: '',
+                  subcategoryName: '',
+                  categoryId: '',
+                  subcategoryId: '',
+              };
+
+        let bgURL = await GetBackgroundImageOfArticle(articleId);
+
+        let tag = await GetTagsOfArticle(articleId);
+
+        let relativeNews = await GetRelativeArticle(
+            category.categoryId,
+            articleId
+        );
+
+        for (let i = 0; i < relativeNews.length; i++)
+            relativeNews[i].tags = await GetTagsOfArticle(
+                relativeNews[i].ArticleID
+            );
+
+        const commentList = await GetCommentOfArticle(articleId);
+
+        await AddViewCount(articleId);
 
         res.render('Home/HomeGuestNews', {
             customCss: ['Home.css', 'News.css', 'Component.css'],
-            News,
+            data: {
+                ID: articleId,
+                Title: data.Title,
+                DatePosted: data.DatePosted,
+                Content: data.Content,
+                Abstract: data.Abstract,
+                IsPremium: data.IsPremium,
+                BackgroundImage: bgURL.replace('Static', ''),
+                BackgroundImageFileName: path.basename(bgURL),
+                category: category.categoryName,
+                subcategory: category.subcategoryName,
+                categoryId: category.categoryId,
+                subcategoryId: category.subcategoryId,
+                tags: tag,
+                relativeNews: relativeNews,
+                comments: commentList,
+            },
         });
     }
 
     // /search?q=&page=
-    searchArticle(req: Request, res: Response) {
+    async searchArticle(req: Request, res: Response) {
         const searchValue = (req.query.q as string) || '';
         const page = (req.query.page as string) || '0';
-        console.log(searchValue);
-        console.log(page);
+
         res.render('Home/HomeGuestSearch', {
             customCss: ['Home.css', 'News.css', 'Component.css'],
-            listCardResult,
+            result: await SearchArticle(searchValue, parseInt(page) || 0),
+            searchValue: searchValue,
         });
     }
 
@@ -511,5 +483,16 @@ export class ArticleController {
     }
 
     // /comment
-    commentArticle(req: Request, res: Response) {}
+    async commentArticle(req: Request, res: Response) {
+        let date = new Date(Date.now());
+        // console.log(req.body);
+        await AddComment(req.body.id, req.body.content, date);
+        /*res.json({
+            ArticleId: req.body.id,
+            Content: req.body.content,
+            DatePosted: date
+        });*/
+        const referer = req.get('Referer') || '/';
+        res.redirect(referer);
+    }
 }

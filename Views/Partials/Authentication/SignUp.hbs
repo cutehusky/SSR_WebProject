@@ -4,7 +4,7 @@
   >
     <h6 class="mb-4">Tạo tài khoản mới</h6>
     {{! Form submit for sign in with email }}
-    <form action="#" class="w-75">
+    <form action="http://localhost:3000/user/register" class="w-75" method="POST">
       <div class="mb-3">
         <input
           type="email"
@@ -20,7 +20,7 @@
           class="form-control mb-4 sign-in-form-input"
           id="sign-in-form-username"
           placeholder="Họ và tên"
-          name="username"
+          name="fullname"
         />
       </div>
       <div class="mb-3">

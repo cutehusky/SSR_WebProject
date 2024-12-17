@@ -1,4 +1,4 @@
-import { DBConfig as db, DBConfig } from '../Utils/DBConfig';
+import { DBConfig, DBConfig as db } from '../Utils/DBConfig';
 
 export interface ArticleData {
     id: number;
@@ -220,4 +220,212 @@ export const countArticlesByTagID = async (
     console.log('TT: ', total);
 
     return total ? (total as { total: number }).total : 0;
+};
+
+export const SearchArticle = async (searchValue: string, page: number) => {
+    return DBConfig('ARTICLE')
+        .whereRaw(
+            'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
+            [searchValue]
+        )
+        .join(
+            'ARTICLE_SUBCATEGORY',
+            'ARTICLE_SUBCATEGORY.ArticleID',
+            '=',
+            'ARTICLE.ArticleID'
+        )
+        .join(
+            'SUBCATEGORY',
+            'ARTICLE_SUBCATEGORY.SubCategoryID',
+            '=',
+            'SUBCATEGORY.SubCategoryID'
+        )
+        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+        .where('STT', '=', '0')
+        .orderBy('DatePosted', 'desc')
+        .select(
+            'ARTICLE.ArticleID',
+            'Title',
+            'DatePosted',
+            'Abstract',
+            'IsPremium',
+            'ViewCount',
+            'CATEGORY.Name as category',
+            'SUBCATEGORY.Name as subcategory',
+            'CATEGORY.CategoryID as categoryId',
+            'SUBCATEGORY.SubCategoryID as subcategoryId',
+            'Content',
+            'URL'
+        );
+};
+
+export const GetArticleById = async (articleId: string) => {
+    return DBConfig('ARTICLE').where({ ArticleID: articleId }).first();
+};
+
+export interface Tag {
+    id: string;
+    name: string;
+}
+
+export const GetTagsOfArticle = async (
+    articleId: string
+): Promise<Array<Tag>> => {
+    let tags = await DBConfig('TAG')
+        .join('ARTICLE_TAG', 'ARTICLE_TAG.TagID', '=', 'TAG.TagID')
+        .where({ ArticleID: articleId })
+        .select('Name as name', 'TAG.TagID as id');
+    return tags ? tags : [];
+};
+
+export const AddViewCount = async (articleId: string) => {
+    let currentCnt = await DBConfig('ARTICLE')
+        .where({ ArticleId: articleId })
+        .select('ViewCount')
+        .first();
+    if (!currentCnt) return;
+    await DBConfig('ARTICLE')
+        .where({ ArticleId: articleId })
+        .update({ ViewCount: currentCnt.ViewCount++ });
+};
+
+export const GetRelativeArticle = async (
+    categoryId: string,
+    articleId: string
+) => {
+    return DBConfig('ARTICLE')
+        .join(
+            'ARTICLE_SUBCATEGORY',
+            'ARTICLE_SUBCATEGORY.ArticleID',
+            '=',
+            'ARTICLE.ArticleID'
+        )
+        .where('ARTICLE.ArticleID', '!=', articleId)
+        .where('CATEGORY.CategoryID', '=', categoryId)
+        .join(
+            'SUBCATEGORY',
+            'ARTICLE_SUBCATEGORY.SubCategoryID',
+            '=',
+            'SUBCATEGORY.SubCategoryID'
+        )
+        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+        .where('STT', '=', '0')
+        .orderByRaw('RAND()')
+        .select(
+            'ARTICLE.ArticleID',
+            'Title',
+            'DatePosted',
+            'Abstract',
+            'IsPremium',
+            'ViewCount',
+            'CATEGORY.Name as category',
+            'SUBCATEGORY.Name as subcategory',
+            'CATEGORY.CategoryID as categoryId',
+            'SUBCATEGORY.SubCategoryID as subcategoryId',
+            'URL'
+        )
+        .limit(5);
+};
+
+export const UpdateBackgroundImageOfArticle = async (
+    articleId: string,
+    value: string = 'null'
+) => {
+    return DBConfig('ARTICLE_URL')
+        .where({ ArticleID: articleId, STT: 0 })
+        .update({ URL: value });
+};
+
+export const AddBackgroundImageOfArticle = async (
+    articleId: number,
+    value: string = 'null'
+) => {
+    return DBConfig('ARTICLE_URL').insert({
+        ArticleID: articleId,
+        STT: 0,
+        URL: value,
+    });
+};
+
+export const GetCategoryFullNameOfArticle = async (articleId: string) => {
+    return DBConfig('ARTICLE_SUBCATEGORY')
+        .join(
+            'SUBCATEGORY',
+            'ARTICLE_SUBCATEGORY.SubCategoryID',
+            '=',
+            'SUBCATEGORY.SubCategoryID'
+        )
+        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+        .where({ ArticleID: articleId })
+        .select(
+            'ARTICLE_SUBCATEGORY.SubCategoryID as id',
+            DBConfig.raw(
+                'CONCAT(CATEGORY.Name, " / ", SUBCATEGORY.Name) as fullname'
+            )
+        )
+        .first();
+};
+
+export const GetCategoryOfArticle = async (articleId: string) => {
+    return DBConfig('ARTICLE_SUBCATEGORY')
+        .join(
+            'SUBCATEGORY',
+            'ARTICLE_SUBCATEGORY.SubCategoryID',
+            '=',
+            'SUBCATEGORY.SubCategoryID'
+        )
+        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+        .where({ ArticleID: articleId })
+        .select(
+            'ARTICLE_SUBCATEGORY.SubCategoryID as id',
+            'CATEGORY.Name as categoryName',
+            'SUBCATEGORY.Name as subcategoryName',
+            'CATEGORY.CategoryID as categoryId',
+            'SUBCATEGORY.SubCategoryID as subcategoryId',
+            DBConfig.raw(
+                'CONCAT(CATEGORY.Name, " / ", SUBCATEGORY.Name) as fullname'
+            )
+        )
+        .first();
+};
+
+export interface Comment {
+    DatePosted: Date;
+    Content: string;
+    ArticleID: number;
+    SubscriberID: number;
+}
+
+export const GetCommentOfArticle = async (
+    articleId: string
+): Promise<Array<Comment>> => {
+    let comment = await DBConfig('COMMENT')
+        .where({
+            ArticleId: articleId,
+        })
+        .orderBy('DatePosted', 'desc');
+    return comment ? comment : [];
+};
+
+export const GetBackgroundImageOfArticle = async (
+    articleId: string
+): Promise<string> => {
+    let bgURL = await DBConfig('ARTICLE_URL')
+        .where({ STT: 0, ArticleID: articleId })
+        .first();
+    return bgURL && bgURL.URL ? bgURL.URL : 'null';
+};
+
+export const AddComment = async (
+    articleId: string,
+    content: string,
+    date: Date
+) => {
+    await DBConfig('COMMENT').insert({
+        ArticleId: articleId,
+        Content: content,
+        DatePosted: date,
+    });
 };

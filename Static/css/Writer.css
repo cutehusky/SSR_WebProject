@@ -108,21 +108,25 @@
     color: #ffffff;
 }
 
-.statistics .stat-item#completed {
+.statistics .stat-item#Published {
     background-color: #b52759;
 }
 
-.statistics .stat-item#waiting {
+.statistics .stat-item#Approved {
     background-color: #087cce;
 }
 
-.statistics .stat-item#pending {
+.statistics .stat-item#Draft {
     background-color: #fcfaf6;
     color: #222222;
 }
 
-.statistics .stat-item#reject {
+.statistics .stat-item#Rejected {
     background-color: #222222;
+}
+
+.statistics .stat-item#All {
+    background-color: #a4a4a4;
 }
 
 .statistics .stat-item .stat-label {
@@ -130,7 +134,7 @@
     border-bottom: 2px solid #ffffff;
 }
 
-.statistics .stat-item#pending .stat-label {
+.statistics .stat-item#Draft .stat-label {
     border-bottom: 2px solid #222222;
 }
 
