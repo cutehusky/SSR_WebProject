@@ -289,3 +289,8 @@ p {
     );
     color: var(--color-white);
 }
+
+.row-link {
+    text-decoration: none;
+    color: inherit;
+}

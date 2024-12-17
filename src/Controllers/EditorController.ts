@@ -1,54 +1,23 @@
 import { Request, Response } from 'express';
 import { getEditorCategories } from '../Utils/getEditorCategories';
+import { getArticlesCategories } from '../Utils/getArticlesCategories';
+import { getCategories } from '../Utils/getCategories';
 
 export class EditorController {
     // /editor/:editorID/articles
     async getArticles(req: Request, res: Response) {
         const editorID = Number(req.params.editorID);
         const categories = await getEditorCategories(editorID);
-        const articles: {
-            title: string;
-            author: string;
-            date: string;
-            tag: string;
-            category: string;
-        }[] = [
-            {
-                title: 'Phát hiện gần 150 bộ hài cốt trên phố trung tâm Hà Nội',
-                author: 'Phi Hoàng',
-                date: '21/11/2024',
-                tag: 'Chính trị',
-                category: 'Thời sự',
-            },
-            {
-                title: 'Phát hiện gần 150 bộ hài cốt trên phố trung tâm Hà Nội',
-                author: 'Phi Hoàng',
-                date: '21/11/2024',
-                tag: 'Chính trị',
-                category: 'Thời sự',
-            },
-            {
-                title: 'Phát hiện gần 150 bộ hài cốt trên phố trung tâm Hà Nội',
-                author: 'Phi Hoàng',
-                date: '21/11/2024',
-                tag: 'Chính trị',
-                category: 'Thời sự',
-            },
-            {
-                title: 'Phát hiện gần 150 bộ hài cốt trên phố trung tâm Hà Nội',
-                author: 'Phi Hoàng',
-                date: '21/11/2024',
-                tag: 'Chính trị',
-                category: 'Thời sự',
-            },
-            {
-                title: 'Phát hiện gần 150 bộ hài cốt trên phố trung tâm Hà Nội',
-                author: 'Phi Hoàng',
-                date: '21/11/2024',
-                tag: 'Chính trị',
-                category: 'Thời sự',
-            },
-        ];
+        let selectedCategory = undefined;
+        if (!isNaN(Number(req.query.category)) && Number(req.query.category) !== -1)
+            selectedCategory = categories.filter(
+                (category) => category.id === Number(req.query.category)
+            );
+        let articles;
+        if (selectedCategory === undefined)
+            articles = await getArticlesCategories(categories);
+        else 
+            articles = await getArticlesCategories(selectedCategory);
         const pages = ['1', '2', '3', '4', '5'];
 
         res.render('Editor/EditorListPendingApproveView', {
@@ -60,8 +29,10 @@ export class EditorController {
             ],
             customJs: ['AdminArticlesDataTable.js'],
             categories,
+            selectedCategory,
             articles,
             pages,
+            editorID,
         });
     }
 
@@ -79,7 +50,7 @@ export class EditorController {
         res.send(`Article ${articleId} rejected`);
     }
 
-    // /editor/article/:id/
+    // /editor/articles/:id
     viewArticle(req: Request, res: Response) {
         const articleId = req.params.id;
         const article = {

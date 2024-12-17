@@ -2,7 +2,7 @@
     <div class="wrapper col col-lg-12 col-md-12 col-sm-12 mt-4">
         <h1 class="editor-title">Bài viết cần duyệt</h1>
         <div class="editor-container mt-4">
-            <form method="get" action="/admin/articles/" class="mb-4">
+            <form method="get" action="/editor/{{editorID}}/articles/" class="mb-4">
                 <div class="categorySelection">
                     <label
                         for="roleSelect"
@@ -67,21 +67,21 @@
                         <th>Tiêu Đề</th>
                         <th>Tác Giả</th>
                         <th>Ngày Viết</th>
-                        <th>Nhãn</th>
                         <th>Chuyên Mục</th>
+                        <th>Chuyên Mục Con</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {{#each this.articles}}
-                    <tr>
-                        <td>{{this.title}}</td>
-                        <td>{{this.author}}</td>
-                        <td>{{this.date}}</td>
-                        <td>{{this.tag}}</td>
-                        <td>{{this.category}}</td>
-                    </tr>
-                    {{/each}}
-                </tbody>
+                    <tbody>
+                        {{#each this.articles}}
+                        <tr>
+                            <td><a href="/editor/{{../editorID}}/articles/{{this.id}}" class="row-link">{{this.title}}</a></td>
+                            <td><a href="/editor/{{../editorID}}/articles/{{this.id}}" class="row-link">{{this.author}}</a></td>
+                            <td><a href="/editor/{{../editorID}}/articles/{{this.id}}" class="row-link">{{this.date}}</a></td>
+                            <td><a href="/editor/{{../editorID}}/articles/{{this.id}}" class="row-link">{{this.category}}</a></td>
+                            <td><a href="/editor/{{../editorID}}/articles/{{this.id}}" class="row-link">{{this.subcategory}}</a></td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
             </table>
         </div>
     </div>
