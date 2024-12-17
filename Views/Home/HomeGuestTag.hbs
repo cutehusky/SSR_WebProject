@@ -9,7 +9,7 @@
     <div class="input-group rounded mt-5">
         <form
             method="get"
-            action="/articles/tags"
+            action="/tags"
             style="width: 100%"
             class="topbar gap-2"
         >
@@ -17,29 +17,31 @@
                 <input
                     class="tagInput form-control pe-5"
                     id="tagsInputSearch"
-                    name="tags"
+                    name="tag"
                     type="text"
                     data-role="tagsinput"
                     placeholder="Enter tags"
                     value="{{tags}}"
                 />
-                <a href="#">
-                    <i
-                        class="bi bi-search position-absolute end-0 top-50 translate-middle-y me-3 text-muted"
-                    ></i>
-                </a>
+                <button
+                    type="submit"
+                    class="position-absolute end-0 top-50 translate-middle-y me-3 text-muted border border-0"
+                    style="background-color: transparent"
+                >
+                    <i class="bi bi-search"></i>
+                </button>
             </div>
         </form>
     </div>
 
     <div class="container mt-5 d-flex justify-content-center row">
-        {{#each listCardResult}}
+        {{#each articlesFindByTags}}
         <div
             class="d-flex align-items-start main-news-item col col-lg-10 col-md-12 col-sm-12"
         >
             <div class="d-flex align-items-start w-75">
                 <img
-                    style="width: 200px; height: 125px"
+                    style="width: 200px; height: 125px; object-fit: cover"
                     src="{{this.img}}"
                     alt="{{this.title}}"
                 />
@@ -55,8 +57,8 @@
             </div>
             <div class="w-25">
                 <div class="d-flex flex-column mb-2">
-                    <span>{{this.tagTitle}}</span>
-                    <span>{{this.tagDescription}}</span>
+                    <span>{{this.category}}</span>
+                    <span>{{this.subcategory}}</span>
                 </div>
                 <div>
                     {{#each this.tagList}}
@@ -72,16 +74,20 @@
         {{/each}}
     </div>
 
-    {{> Component/Paging}}
+    {{> Component/Paging page_items=this.page_items hasPrevious=this.hasPrevious
+    hasNext=this.hasNext previousLink=this.previousLink nextLink=this.nextLink}}
 </div>
+
+{{#section 'script'}}
 <script>
-      // Kiểm tra dữ liệu đã đúng chưa
-    $(document).ready(function() {
-      var taglist = {{tags}};  // Đảm bảo `tags` là mảng từ server
-      console.log(taglist);  // tags sẽ là mảng trong JavaScript
-      // Lặp qua các tag và thêm vào ô input
-      taglist.forEach(function(tag) {
-        $('#tagsInputSearch').tagsinput('add', tag);
-      });
+    // Kiểm tra dữ liệu đã đúng chưa
+    $(document).ready(function () {
+        var taglist = '{{tags}}'; // Đảm bảo `tags` là mảng từ server
+        console.log(taglist); // tags sẽ là mảng trong JavaScript
+        // Lặp qua các tag và thêm vào ô input
+        taglist.forEach(function (tag) {
+            $('#tagsInputSearch').tagsinput('add', tag);
+        });
     });
 </script>
+{{/section}}

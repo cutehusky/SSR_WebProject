@@ -1,9 +1,13 @@
-import { time } from 'console';
+import { log, time } from 'console';
 import { Response, Request } from 'express';
 import { get } from 'http';
 import { data } from 'jquery';
 import { title } from 'process';
 import { DBConfig } from '../Utils/DBConfig';
+import {
+    countArticlesByTagID,
+    findPageByTagID,
+} from '../Services/articleService';
 
 // Fake data
 const RelatedNews = [
@@ -157,6 +161,8 @@ const listCardResult = [
             { tag: 'Địa lý', link: '#' },
             { tag: 'Khoa học', link: '#' },
             { tag: 'Hiện tượng siêu nhiên', link: '#' },
+            { tag: 'Viễn tưởng', link: '#' },
+            { tag: 'Tâm linh', link: '#' },
         ],
     },
     {
@@ -362,16 +368,114 @@ export class ArticleController {
     }
 
     // /tags?tag=&page=
-    getArticleListByTags(req: Request, res: Response) {
-        const tags = req.query.tag as string[];
-        const page = (req.query.page as string) || '0';
-        console.log(tags);
-        console.log(page);
-        res.render('Home/HomeGuestTag', {
-            customCss: ['Home.css', 'News.css', 'Component.css'],
-            listCardResult,
-            tags,
-        });
+    async getArticleListByTags(req: Request, res: Response) {
+        const tags = req.query.tag as string;
+
+        if (!tags) {
+            res.render('Home/HomeGuestTag', {
+                customCss: ['Home.css', 'News.css', 'Component.css'],
+                articlesFindByTags: [],
+                tags: [],
+                page_items: [],
+            });
+            return;
+        }
+
+        const tagsArray = tags.split(',') as string[];
+
+        try {
+            const validTag = await DBConfig('TAG').whereIn(
+                'TAG.Name',
+                tagsArray
+            );
+
+            const tagIdsArray = validTag.map(item => item.TagID);
+
+            if (validTag) {
+                const page =
+                    (parseInt(req.query.page as string) as number) || 1;
+                const limit = 4;
+                const articleNum = await countArticlesByTagID(tagIdsArray);
+                const nPages = Math.ceil(articleNum / limit);
+                const page_items = [];
+
+                // Calculate the range of pages to display
+                const maxDisplayPages = 5;
+                let startPage = Math.max(
+                    1,
+                    page - Math.floor(maxDisplayPages / 2)
+                );
+                let endPage = Math.min(nPages, startPage + maxDisplayPages - 1);
+
+                // Adjust startPage if endPage is less than maxDisplayPages
+                if (endPage - startPage < maxDisplayPages - 1) {
+                    startPage = Math.max(1, endPage - maxDisplayPages + 1);
+                }
+
+                const tagsStringQuery = `/tags?tag=${tagsArray
+                    .map(tag => encodeURIComponent(tag))
+                    .join(',')}`;
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const item = {
+                        value: i,
+                        isActive: i === page,
+                        link: `${tagsStringQuery}&page=${i}`,
+                    };
+                    page_items.push(item);
+                }
+
+                const offset = (page - 1) * limit;
+
+                const response = await findPageByTagID(
+                    tagIdsArray,
+                    limit,
+                    offset
+                );
+
+                // Previous and Next button logic
+                const hasPrevious = page > 1;
+                const hasNext = page < nPages;
+
+                const previousLink = hasPrevious
+                    ? `${tagsStringQuery}&page=${page - 1}`
+                    : '';
+                const nextLink = hasNext
+                    ? `${tagsStringQuery}&page=${page + 1}`
+                    : '';
+
+                console.log('R: ', response);
+
+                res.render('Home/HomeGuestTag', {
+                    customCss: ['Home.css', 'News.css', 'Component.css'],
+                    articlesFindByTags: response,
+                    tags: tagsArray,
+                    page_items,
+                    hasPrevious,
+                    hasNext,
+                    previousLink,
+                    nextLink,
+                });
+            } else {
+                console.log('Invalid Tag');
+                res.render('Home/HomeGuestTag', {
+                    customCss: ['Home.css', 'News.css', 'Component.css'],
+                    articlesFindByTags: [],
+                    tags: tagsArray,
+                    page_items: [],
+                });
+            }
+        } catch (error) {
+            console.log('Get Tags Failed');
+            console.log(error);
+
+            res.render('Home/HomeGuestTag', {
+                customCss: ['Home.css', 'News.css', 'Component.css'],
+                articlesFindByTags: [],
+                tags: tagsArray,
+                page_items: [],
+            });
+        }
     }
 
     // /article/:id

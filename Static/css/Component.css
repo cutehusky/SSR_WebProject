@@ -1,30 +1,38 @@
 .paging-icon {
-  color: var(--color-red-primary);
+    color: var(--color-red-primary);
 }
 
-.page-item > a {
-  color: var(--color-red-primary);
-  padding: 10px 16px;
-  font-size: 16px;
+.page-link {
+    color: var(--color-red-primary);
+    padding: 10px 16px;
+    font-size: 16px;
+}
+
+.page-link:hover {
+    background-color: var(--color-red-primary);
+    border-color: var(--color-red-primary);
+    color: var(--color-white);
+    opacity: 0.8;
 }
 
 .page-item:not(.disabled):hover > a {
-  background-color: var(--color-red-primary);
-  border-color: var(--color-red-primary);
-  color: var(--color-white);
+    background-color: var(--color-red-primary);
+    border-color: var(--color-red-primary);
+    color: var(--color-white);
+    opacity: 1;
 }
 
 .page-item.control:not(.disabled):hover .paging-icon {
-  border-color: var(--color-red-primary);
-  color: var(--color-white);
+    border-color: var(--color-red-primary);
+    color: var(--color-white);
 }
 
 .page-item.active > a {
-  background-color: var(--color-red-primary);
-  border: none;
-  font-weight: bold;
+    background-color: var(--color-red-primary);
+    border: none;
+    font-weight: bold;
 }
 
 .page-item.disabled > a > i {
-  color: var(--color-gray-subtext);
+    color: var(--color-gray-subtext);
 }
