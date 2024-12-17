@@ -5,7 +5,7 @@ const router = express.Router();
 
 const editorController = new EditorController();
 
-router.get('/articles', editorController.getArticles);
+router.get('/:editorID/articles', editorController.getArticles);
 router.get('/article/:id', editorController.viewArticle);
 
 router.post('/approve', editorController.approveArticle);

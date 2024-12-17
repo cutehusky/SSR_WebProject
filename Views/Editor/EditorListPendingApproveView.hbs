@@ -18,8 +18,8 @@
                         id="roleSelect"
                     >
                         <option value="-1" {{#if (eq ../selectedCategory -1 ) }}selected{{/if }}>Tất Cả</option>
-                        {{#each this.categories}}
-                        <option value="{{id}}" {{#if (eq ../selectedCategory id ) }}selected{{/if }}>{{this}}</option>
+                        {{#each categories}}
+                        <option value="{{this.id}}" {{#if (eq ../selectedCategory id ) }}selected{{/if }}>{{this.name}}</option>
                         {{/each}}
                     </select>
                     <button

@@ -1,9 +1,11 @@
 import { Request, Response } from 'express';
+import { getEditorCategories } from '../Utils/getEditorCategories';
 
 export class EditorController {
-    // /editor/articles
-    getArticles(req: Request, res: Response) {
-        const categories: string[] = ['Thời sự', 'Kinh doanh', 'Bất động sản'];
+    // /editor/:editorID/articles
+    async getArticles(req: Request, res: Response) {
+        const editorID = Number(req.params.editorID);
+        const categories = await getEditorCategories(editorID);
         const articles: {
             title: string;
             author: string;
