@@ -1,4 +1,4 @@
-import {DBConfig as db} from "../Utils/DBConfig";
+import {DBConfig, DBConfig as db} from "../Utils/DBConfig";
 
 
 export interface UserData {
@@ -7,21 +7,62 @@ export interface UserData {
   email: string;
   password: string;
   dob: string;
-  isAdministator: number;
+  role: UserRole;
 }
+
+export const getUsernameById = async (id: number): Promise<string> => {
+    const user = await db("USER").where("UserID", id).first();
+    if (!user)
+        return "";
+    return user.FullName;
+};
+
+export const getWriterNameById = async (id: string): Promise<string> => {
+    const user = await db("WRITER")
+        .where("WriterID", id).first();
+    if (!user)
+        return "";
+    return user.Alias;
+};
 
 export const getUserByEmail = async (email: string): Promise<UserData | null> => {
   const user = await db("USER").where("Email", email).first();
   if (!user) return null;
   return {
     id: user.UserID,
-    fullname: user.Fullname,
+    fullname: user.FullName,
     email: user.Email,
     password: user.Password,
     dob: user.DOB,
-    isAdministator: user.isAdministator,
+    role:  await GetRoleOfUserById(user.UserID)
   };
 };
+
+export enum UserRole {
+    Invalid= -1,
+    User,
+    Writer,
+    Editor,
+    Admin
+}
+
+export const GetRoleOfUserById = async (userId: string) => {
+    const user = await db("USER").where("UserID", userId).first();
+    if (!user)
+        return UserRole.Invalid;
+    if (user.isAdministator)
+        return UserRole.Admin;
+    const isWriter = await db("WRITER").where("WriterID", userId).count("* as num");
+    if (isWriter[0].num === 1)
+        return UserRole.Writer;
+    const isEditor = await db("EDITOR").where("EditorID", userId).count("* as num");
+    if (isEditor[0].num === 1)
+        return UserRole.Editor;
+    const isUser = await db("SUBSCRIBER").where("SubscriberID", userId).count("* as num");
+    if (isUser[0].num === 1)
+        return UserRole.User;
+    return UserRole.Invalid;
+}
 
 export const createUser = async (userData: UserData): Promise<void> => {
   // Kiểm tra xem user đã tồn tại chưa
@@ -32,13 +73,13 @@ export const createUser = async (userData: UserData): Promise<void> => {
 
   try {
     // Insert user vào database
-    await db('USER').insert({
-        Fullname: userData.fullname,
+    const [id] = await db('USER').insert({
+        FullName: userData.fullname,
         Email: userData.email,
         Password: userData.password,
-        DOB: userData.dob,
-        isAdministator: userData.isAdministator,
+        DOB: userData.dob
       });
+    await db("SUBSCRIBER").insert({SubscriberID: id, DateExpired: new Date(0)})
   } catch (error : any) {
     console.log(error);
     throw new Error('Failed to create user.' + error.message);
@@ -56,11 +97,10 @@ export const updateUser = async (userData: UserData): Promise<void> => {
         // Update user trong database
         await db('USER').where('UserID', userData.id).update({
             UserID: userData.id,
-            Fullname: userData.fullname,
+            FullName: userData.fullname,
             Email: userData.email,
             Password: userData.password,
-            DOB: userData.dob,
-            isAdministator: userData.isAdministator,
+            DOB: userData.dob
         })
     } catch (error : any) {
         console.log(error);

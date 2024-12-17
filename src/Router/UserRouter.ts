@@ -6,7 +6,7 @@ const router = express.Router();
 const userController = new UserController();
 
 router.get('/forgot-password', userController.forgotPassword);
-router.get('/profile/:id', userController.getUserProfile);
+router.get('/profile', userController.getUserProfile);
 
 router.post('/login', async (req, res, next) => {
   try {
@@ -14,6 +14,10 @@ router.post('/login', async (req, res, next) => {
   } catch (error) {
 	next(error);
   }
+});
+router.post('/logout',  (req, res) => {
+    req.session.authUser = null;
+    res.redirect("/");
 });
 router.post('/register', async (req, res, next) => {
   try {

@@ -1,4 +1,4 @@
-import { Response, Request } from "express";
+import {Response, Request, NextFunction} from "express";
 import path from "path";
 import * as fs from "fs";
 import {DBConfig} from "../Utils/DBConfig";
@@ -10,9 +10,19 @@ import {
   GetBackgroundImageOfArticle,
   GetCategoryFullNameOfArticle, GetTagsOfArticle, UpdateBackgroundImageOfArticle
 } from "../Services/articleService";
+import {UserRole} from "../Services/userService";
 
 
 export class WriterController {
+
+  verifyUser(req: Request, res: Response, Next: NextFunction) {
+    if (!req.session.authUser || req.session.authUser.role !== UserRole.Writer) {
+      res.redirect("/404");
+      return;
+    }
+    Next();
+  }
+
   // /writer/new
   createArticleEditor(req: Request, res: Response) {
     res.render("Writer/WriterPublishNews", {
@@ -23,9 +33,10 @@ export class WriterController {
 
   // /writer/edit/:id
   async editArticleEditor(req: Request, res: Response) {
+    const writerId = req.session.authUser?.id as number;
     const articleId = req.params.id;
     const data = await GetArticleById(articleId);
-    if (!data) {
+    if (!data || data.WriterID !== writerId) {
       res.redirect("/404");
       return;
     }
@@ -59,6 +70,7 @@ export class WriterController {
 
   // /writer/myArticles?state=
   async getMyArticleList(req: Request, res: Response) {
+    const writerId = req.session.authUser?.id as number;
     let state = (req.query.state as string);
     let states:string[] = [];
     if (!state || state == "all" || (state != 'Draft'
@@ -73,7 +85,7 @@ export class WriterController {
         .join("CATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
         .join("ARTICLE_URL", "ARTICLE_URL.ArticleID", "=","ARTICLE.ArticleID")
         .where({STT: 0})
-        .where({'WriterID': 1})
+        .where({'WriterID':writerId })
         .whereIn("Status", states)
         .select("Title as title", "Abstract as abstract",
             "DatePublished as datePublished",
@@ -95,7 +107,7 @@ export class WriterController {
   }
 
   getWriterHome = async (req: Request, res: Response) =>  {
-    const writerId = 1; // Example writer ID
+    const writerId = req.session.authUser?.id as number;
     const states = [
       { id: "Published", label: "Số lượng bài viết đã xuất bảng", states: ["Published"] },
       { id: "Approved", label: "Số lượng bài viết chờ xuất bảng", states: ["Approved"] },
@@ -121,6 +133,7 @@ export class WriterController {
 
   // /writer/new
   async newArticle(req: Request, res: Response) {
+    const writerId = req.session.authUser?.id as number;
     console.log(req.body);
     const [id] = await DBConfig("ARTICLE").insert({
       Title: req.body.title,
@@ -129,7 +142,7 @@ export class WriterController {
       Abstract: req.body.abstract,
       Status:'Draft',
       IsPremium: req.body.isPremium == 'on' ? 1: 0,
-      WriterID: 1, // for testing now
+      WriterID: writerId,
     });
 
     if (req.body.category) {
@@ -177,7 +190,13 @@ export class WriterController {
   // /writer/edit
   async editArticle(req: Request, res: Response) {
     console.log(req.body);
+    const writerId = req.session.authUser?.id as number;
     const id = req.body.id;
+    const data = await GetArticleById(id);
+    if (data.WriterID !== writerId) {
+      res.redirect("/404");
+      return;
+    }
     await DBConfig("ARTICLE").where({'ArticleID': id}).update({
       Title: req.body.title,
       DatePosted: new Date(Date.now()),
@@ -185,7 +204,7 @@ export class WriterController {
       Abstract: req.body.abstract,
       Status: 'Draft',
       IsPremium: req.body.isPremium === 'on' ? 1: 0,
-      WriterID: 1, // for testing now
+      WriterID: writerId,
     });
 
     if (req.body.category) {
@@ -194,7 +213,7 @@ export class WriterController {
       }).update({
         SubCategoryID: req.body.category
       });
-      if (affectedRows == 0)
+      if (affectedRows === 0)
         await DBConfig("ARTICLE_SUBCATEGORY").insert({
           SubCategoryID: req.body.category,
           ArticleID: id

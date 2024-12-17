@@ -1,20 +1,17 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { title } from 'process';
 import session from 'express-session';
-import express, { Express } from 'express';
-import { engine } from 'express-handlebars';
-import { Response, Request } from 'express';
+import express, {Express, Request, Response} from 'express';
+import {engine} from 'express-handlebars';
 
-import { ArticleRouter } from './Router/ArticleRouter';
-import { WriterRouter } from './Router/WriterRouter';
-import { UserRouter } from './Router/UserRouter';
-import { AdminRouter } from './Router/AdminRouter';
-import { EditorRouter } from './Router/EditorRouter';
+import {ArticleRouter} from './Router/ArticleRouter';
+import {WriterRouter} from './Router/WriterRouter';
+import {UserRouter} from './Router/UserRouter';
+import {AdminRouter} from './Router/AdminRouter';
+import {EditorRouter} from './Router/EditorRouter';
 import Handlebars from 'handlebars';
-import { MiddlewareController } from './Controllers/Middleware';
+import {MiddlewareController} from './Controllers/Middleware';
 
 import sections from 'express-handlebars-sections';
+import {UserRole} from "./Services/userService";
 
 const app: Express = express();
 const port: number = 3000;
@@ -30,7 +27,7 @@ app.use(
         cookie: {
             httpOnly: true,
             secure: false,
-            maxAge: 60000,
+            maxAge: 3600000,
         },
     })
 );
@@ -53,6 +50,7 @@ app.set('views', './Views');
 let middlewareController = new MiddlewareController();
 app.use(
     '/',
+    middlewareController.getToDay,
     middlewareController.getCategory,
     middlewareController.getTags,
     middlewareController.getProfile,
@@ -60,6 +58,7 @@ app.use(
 );
 app.use(
     '/writer',
+    middlewareController.getToDay,
     middlewareController.getCategory,
     middlewareController.getTags,
     middlewareController.getProfile,
@@ -67,6 +66,7 @@ app.use(
 );
 app.use(
     '/user',
+    middlewareController.getToDay,
     middlewareController.getCategory,
     middlewareController.getTags,
     middlewareController.getProfile,
@@ -74,6 +74,7 @@ app.use(
 );
 app.use(
     '/admin',
+    middlewareController.getToDay,
     middlewareController.getCategory,
     middlewareController.getTags,
     middlewareController.getProfile,
@@ -81,6 +82,7 @@ app.use(
 );
 app.use(
     '/editor',
+    middlewareController.getToDay,
     middlewareController.getCategory,
     middlewareController.getTags,
     middlewareController.getProfile,
@@ -107,6 +109,10 @@ Handlebars.registerHelper('slice', function (array: any, start: any, end: any) {
 });
 
 app.get('/', (req: Request, res: Response) => {
+    if (req.session.authUser && req.session.authUser.role === UserRole.Writer) {
+        res.redirect('/writer');
+        return;
+    }
     res.redirect('/home/');
 });
 

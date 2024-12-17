@@ -13,8 +13,7 @@ CREATE TABLE USER (
 
 CREATE TABLE SUBSCRIBER (
     SubscriberID INT,
-    DateRegistered DATE,
-    Duration INT,
+    DateExpired DATETIME,
     CONSTRAINT PK_SUBSCRIBER PRIMARY KEY (SubscriberID)
 );
 
@@ -265,7 +264,3 @@ DELIMITER ;
 
 ALTER TABLE ARTICLE
 ADD FULLTEXT(Title, Content, Abstract);
-
-insert into USER value (0, "test user", "abc@email.com", "123", "2024-1-1", 0);
-
-insert into WRITER value (1, "hello");

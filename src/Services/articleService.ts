@@ -287,12 +287,13 @@ export const AddViewCount = async (articleId: string) => {
     if (!currentCnt) return;
     await DBConfig('ARTICLE')
         .where({ ArticleId: articleId })
-        .update({ ViewCount: currentCnt.ViewCount++ });
+        .update({ ViewCount: currentCnt.ViewCount+1 });
 };
 
 export const GetRelativeArticle = async (
     categoryId: string,
-    articleId: string
+    articleId: string,
+    limit: number = 5
 ) => {
     return DBConfig('ARTICLE')
         .join(
@@ -326,7 +327,7 @@ export const GetRelativeArticle = async (
             'SUBCATEGORY.SubCategoryID as subcategoryId',
             'URL'
         )
-        .limit(5);
+        .limit(limit);
 };
 
 export const UpdateBackgroundImageOfArticle = async (
@@ -395,7 +396,8 @@ export interface Comment {
     DatePosted: Date;
     Content: string;
     ArticleID: number;
-    SubscriberID: number;
+    SubscriberID?: number;
+    Name?: string;
 }
 
 export const GetCommentOfArticle = async (
@@ -421,11 +423,21 @@ export const GetBackgroundImageOfArticle = async (
 export const AddComment = async (
     articleId: string,
     content: string,
-    date: Date
+    date: Date,
+    userId: number = 0
 ) => {
-    await DBConfig('COMMENT').insert({
-        ArticleId: articleId,
-        Content: content,
-        DatePosted: date,
-    });
+    if (!userId) {
+        await DBConfig('COMMENT').insert({
+            ArticleId: articleId,
+            Content: content,
+            DatePosted: date,
+        });
+    } else {
+        await DBConfig('COMMENT').insert({
+            ArticleId: articleId,
+            Content: content,
+            DatePosted: date,
+            SubscriberID: userId
+        });
+    }
 };

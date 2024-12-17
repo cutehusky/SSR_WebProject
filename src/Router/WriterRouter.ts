@@ -1,17 +1,19 @@
 import express from "express";
-import { WriterController } from "../Controllers/WriterController";
+import {WriterController} from "../Controllers/WriterController";
 import {bufferUploader} from "../Utils/MulterConfig";
+import {UserRole} from "../Services/userService";
 
 const router = express.Router();
 
 const writerController = new WriterController();
 
-router.get("/", writerController.getWriterHome);
-router.get("/new", writerController.createArticleEditor);
-router.get("/edit/:id", writerController.editArticleEditor);
-router.get("/myArticles", writerController.getMyArticleList);
+router.get("/", writerController.verifyUser, writerController.getWriterHome);
+router.get("/new",  writerController.verifyUser, writerController.createArticleEditor);
 
-router.post("/new",bufferUploader.any(), writerController.newArticle);
-router.post("/edit",bufferUploader.any(), writerController.editArticle);
+router.get("/edit/:id", writerController.verifyUser, writerController.editArticleEditor);
+router.get("/myArticles", writerController.verifyUser, writerController.getMyArticleList);
+
+router.post("/new",bufferUploader.any(),writerController.verifyUser, writerController.newArticle);
+router.post("/edit",bufferUploader.any(),writerController.verifyUser, writerController.editArticle);
 
 export { router as WriterRouter };
