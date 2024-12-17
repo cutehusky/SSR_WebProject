@@ -1,7 +1,7 @@
-import {Response, Request, NextFunction} from "express";
+import {NextFunction, Request, Response} from "express";
 import {DBConfig} from "../Utils/DBConfig";
 import bcrypt from "bcryptjs";
-import {getUserByEmail, createUser, UserData} from "../Services/userService";
+import {createUser, getUserByEmail, UserData, UserRole} from "../Services/userService";
 
 
 export class UserController {
@@ -16,7 +16,7 @@ export class UserController {
         try {
             // Kiểm tra người dùng từ database
             const user = await getUserByEmail(email);
-            if (!user) {
+            if (!user || user.role === UserRole.Invalid) {
                 return res.status(404).json({ error: "User not found" });
             }
 
@@ -45,12 +45,9 @@ export class UserController {
         const { email, password, fullname}: { email: string, password: string, fullname: string} = req.body;
 
         const dob = new Date().toISOString().slice(0, 10);
-        const isAdministator = false;
-        
-        console.log(email, password, fullname, dob, isAdministator);
 
         // Kiểm tra các trường dữ liệu
-        if (!email || !password || !fullname || !dob || typeof isAdministator === 'undefined') {
+        if (!email || !password || !fullname || !dob ) {
             return res.status(400).json({ error: "All fields are required" });
         }
 
@@ -71,7 +68,7 @@ export class UserController {
                 email,
                 password: hashedPassword,
                 dob : dob,
-                isAdministator: isAdministator ? 1 : 0, // Nếu là admin thì là 1, ngược lại là 0
+                role: UserRole.User
             };
 
             // Tạo mới người dùng trong DB
@@ -95,9 +92,8 @@ export class UserController {
             customCss: ['User.css']});
     }
 
-    // /user/profile/:id
+    // /user/profile/
     getUserProfile(req: Request, res: Response) {
-        const userId = req.params.id;
         res.render('User/UserProfileView', {
             customCss: ['User.css']});
     }

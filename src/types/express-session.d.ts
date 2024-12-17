@@ -1,9 +1,10 @@
 // session.d.ts
 import 'express-session';
+import {UserData} from "../Services/userService";
 
 declare module 'express-session' {
     interface SessionData {
-        authUser?: any; // hoặc kiểu cụ thể hơn, ví dụ User
+        authUser?: UserData | null; // hoặc kiểu cụ thể hơn, ví dụ User
         retUrl?: string;
     }
 }

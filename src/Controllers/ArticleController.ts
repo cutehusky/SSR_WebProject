@@ -18,6 +18,7 @@ import {
     countArticlesByTagID,
     findPageByTagID,
 } from '../Services/articleService';
+import {getUsernameById, getWriterNameById} from "../Services/userService";
 
 const News = {
     title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
@@ -439,6 +440,13 @@ export class ArticleController {
             );
 
         const commentList = await GetCommentOfArticle(articleId);
+        for (let i = 0; i < commentList.length; i++) {
+            if (commentList[i].SubscriberID)
+                commentList[i].Name = await getUsernameById(commentList[i].SubscriberID as number);
+        }
+        console.log(commentList);
+
+        const writer = await getWriterNameById(data.WriterID);
 
         await AddViewCount(articleId);
 
@@ -460,6 +468,7 @@ export class ArticleController {
                 tags: tag,
                 relativeNews: relativeNews,
                 comments: commentList,
+                writer: writer
             },
         });
     }
@@ -486,7 +495,10 @@ export class ArticleController {
     async commentArticle(req: Request, res: Response) {
         let date = new Date(Date.now());
         // console.log(req.body);
-        await AddComment(req.body.id, req.body.content, date);
+        if (req.session.authUser)
+            await AddComment(req.body.id, req.body.content, date, req.session.authUser.id as number);
+        else
+            await AddComment(req.body.id, req.body.content, date);
         /*res.json({
             ArticleId: req.body.id,
             Content: req.body.content,
