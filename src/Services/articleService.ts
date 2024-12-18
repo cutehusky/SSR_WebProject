@@ -1,4 +1,5 @@
 import { DBConfig, DBConfig as db } from '../Utils/DBConfig';
+import {writer} from "repl";
 
 export interface ArticleData {
     id: number;
@@ -174,38 +175,36 @@ export const findPageByTagID = async (
         .whereIn('ARTICLE_TAG.TagID', tagIDs)
         .select(
             'ARTICLE.ArticleID',
-            'ARTICLE.Title as title',
-            'ARTICLE.Abstract as description',
-            'ARTICLE.DatePosted as date',
-            'ARTICLE_URL.URL as img',
+            'Title',
+            'DatePosted',
+            'Abstract',
+            'IsPremium',
+            'ViewCount',
             'CATEGORY.Name as category',
-            'SUBCATEGORY.Name as subcategory'
+            'SUBCATEGORY.Name as subcategory',
+            'CATEGORY.CategoryID as categoryId',
+            'SUBCATEGORY.SubCategoryID as subcategoryId',
+            'URL'
         )
         .groupBy(
             'ARTICLE.ArticleID',
             'ARTICLE.Title',
             'ARTICLE.Abstract',
+            'IsPremium',
+            'ViewCount',
             'ARTICLE.DatePosted',
             'ARTICLE_URL.URL',
             'CATEGORY.Name',
-            'SUBCATEGORY.Name'
+            'SUBCATEGORY.Name',
+            'CATEGORY.CategoryID',
+            'SUBCATEGORY.SubCategoryID',
         )
         .limit(limit)
         .offset(offset);
 
     // Get tags for each article
-    for (let article of response) {
-        const articleTags = await DBConfig('ARTICLE_TAG')
-            .join('TAG', 'TAG.TagID', '=', 'ARTICLE_TAG.TagID')
-            .where('ARTICLE_TAG.ArticleID', article.ArticleID)
-            .select('TAG.Name as tag');
-
-        article.tagList = articleTags.map(tag => ({
-            tag: tag.tag,
-            link: `/tags?tag=${encodeURIComponent(tag.tag)}`,
-        }));
-    }
-
+    for (let i = 0; i < response.length; i++)
+        response[i].tags = await GetTagsOfArticle(response[i].ArticleID);
     return response;
 };
 
@@ -222,8 +221,17 @@ export const countArticlesByTagID = async (
     return total ? (total as { total: number }).total : 0;
 };
 
-export const SearchArticle = async (searchValue: string, page: number) => {
-    return DBConfig('ARTICLE')
+export const CountSearchResult = async (searchValue: string): Promise<number> => {
+    let count = await DBConfig('ARTICLE')
+        .whereRaw(
+            'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
+            [searchValue]
+        ).count("* as count").first();
+    return count ? count.count as number : 0;
+};
+
+export const SearchArticle = async (searchValue: string, offset:number, limit: number) => {
+    let result = await DBConfig('ARTICLE')
         .whereRaw(
             'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
             [searchValue]
@@ -255,9 +263,11 @@ export const SearchArticle = async (searchValue: string, page: number) => {
             'SUBCATEGORY.Name as subcategory',
             'CATEGORY.CategoryID as categoryId',
             'SUBCATEGORY.SubCategoryID as subcategoryId',
-            'Content',
             'URL'
-        );
+        ).offset(offset).limit(limit);
+    for (let i = 0; i < result.length; i++)
+        result[i].tags = await GetTagsOfArticle(result[i].ArticleID);
+    return result;
 };
 
 export const GetArticleById = async (articleId: string) => {
@@ -267,6 +277,7 @@ export const GetArticleById = async (articleId: string) => {
 export interface Tag {
     id: string;
     name: string;
+    name_encode: string
 }
 
 export const GetTagsOfArticle = async (
@@ -276,6 +287,9 @@ export const GetTagsOfArticle = async (
         .join('ARTICLE_TAG', 'ARTICLE_TAG.TagID', '=', 'TAG.TagID')
         .where({ ArticleID: articleId })
         .select('Name as name', 'TAG.TagID as id');
+    if (tags)
+        for (let i = 0; i < tags.length; i++)
+            tags[i].name_encode = encodeURIComponent(tags[i].name);
     return tags ? tags : [];
 };
 
@@ -289,6 +303,36 @@ export const AddViewCount = async (articleId: string) => {
         .where({ ArticleId: articleId })
         .update({ ViewCount: currentCnt.ViewCount+1 });
 };
+
+export const CountArticleOfWriterByStates = async (
+    writerId: number,
+    states: string[]) => {
+    let count = await DBConfig("ARTICLE")
+        .where({'WriterID':writerId })
+        .whereIn("Status", states).count("* as count").first();
+    return count ? count.count as number : 0;
+}
+
+export const GetArticleOfWriterByStates = async (
+    writerId: number,
+    states: string[],
+    offset: number,
+    limit: number) => {
+    return DBConfig("ARTICLE")
+        .join("ARTICLE_SUBCATEGORY", "ARTICLE_SUBCATEGORY.ArticleID","=","ARTICLE.ArticleID")
+        .join("SUBCATEGORY",'ARTICLE_SUBCATEGORY.SubCategoryID', '=', 'SUBCATEGORY.SubCategoryID')
+        .join("CATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
+        .join("ARTICLE_URL", "ARTICLE_URL.ArticleID", "=","ARTICLE.ArticleID")
+        .where({STT: 0})
+        .where({'WriterID':writerId })
+        .whereIn("Status", states)
+        .select("Title as title", "Abstract as abstract",
+            "DatePublished as datePublished",
+            "DatePosted as datePosted", "CATEGORY.Name as category",
+            "SUBCATEGORY.Name as subcategory", "URL as cover",
+            "Status as state", "ARTICLE.ArticleID as id")
+        .orderBy("DatePosted", "desc").offset(offset).limit(limit);
+}
 
 export const GetRelativeArticle = async (
     categoryId: string,

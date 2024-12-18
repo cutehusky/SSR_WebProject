@@ -16,9 +16,12 @@ import {
     GetTagsOfArticle,
     SearchArticle,
     countArticlesByTagID,
-    findPageByTagID,
+    findPageByTagID, CountSearchResult,
 } from '../Services/articleService';
 import {getUsernameById, getWriterNameById} from "../Services/userService";
+import {clamp, getPagingNumber} from "../Utils/MathUtils";
+
+const articlePerPage = 4;
 
 const News = {
     title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
@@ -293,7 +296,7 @@ export class ArticleController {
     }
 
     // /tags?tag=&page=
-    async getArticleListByTags(req: Request, res: Response) {
+    getArticleListByTags = async (req: Request, res: Response)=> {
         const tags = req.query.tag as string;
 
         if (!tags) {
@@ -317,67 +320,29 @@ export class ArticleController {
             const tagIdsArray = validTag.map(item => item.TagID);
 
             if (validTag) {
-                const page =
+                let page =
                     (parseInt(req.query.page as string) as number) || 1;
-                const limit = 4;
                 const articleNum = await countArticlesByTagID(tagIdsArray);
-                const nPages = Math.ceil(articleNum / limit);
-                const page_items = [];
+                const totalPage = Math.ceil(articleNum / articlePerPage);
+                page = clamp(page, 1, totalPage);
 
-                // Calculate the range of pages to display
-                const maxDisplayPages = 5;
-                let startPage = Math.max(
-                    1,
-                    page - Math.floor(maxDisplayPages / 2)
-                );
-                let endPage = Math.min(nPages, startPage + maxDisplayPages - 1);
-
-                // Adjust startPage if endPage is less than maxDisplayPages
-                if (endPage - startPage < maxDisplayPages - 1) {
-                    startPage = Math.max(1, endPage - maxDisplayPages + 1);
-                }
-
+                const page_items = getPagingNumber(page, totalPage);
                 const tagsStringQuery = `/tags?tag=${tagsArray
                     .map(tag => encodeURIComponent(tag))
                     .join(',')}`;
+                for (let i = 0; i < page_items.length;i++)
+                    page_items[i].link = `${tagsStringQuery}&page=${page_items[i].value}`;
 
-                for (let i = startPage; i <= endPage; i++) {
-                    const item = {
-                        value: i,
-                        isActive: i === page,
-                        link: `${tagsStringQuery}&page=${i}`,
-                    };
-                    page_items.push(item);
-                }
-
-                const offset = (page - 1) * limit;
-
-                const response = await findPageByTagID(
-                    tagIdsArray,
-                    limit,
-                    offset
-                );
-
-                // Previous and Next button logic
-                const hasPrevious = page > 1;
-                const hasNext = page < nPages;
-
-                const previousLink = hasPrevious
-                    ? `${tagsStringQuery}&page=${page - 1}`
-                    : '';
-                const nextLink = hasNext
-                    ? `${tagsStringQuery}&page=${page + 1}`
-                    : '';
-
-                console.log('R: ', response);
+                const previousLink = page > 1
+                    ? `${tagsStringQuery}&page=${page - 1}` : '';
+                const nextLink = page < totalPage
+                    ? `${tagsStringQuery}&page=${page + 1}` : '';
 
                 res.render('Home/HomeGuestTag', {
                     customCss: ['Home.css', 'News.css', 'Component.css'],
-                    articlesFindByTags: response,
+                    articlesFindByTags: await findPageByTagID(tagIdsArray, articlePerPage, (page - 1) * articlePerPage),
                     tags: tagsArray,
                     page_items,
-                    hasPrevious,
-                    hasNext,
                     previousLink,
                     nextLink,
                 });
@@ -474,14 +439,30 @@ export class ArticleController {
     }
 
     // /search?q=&page=
-    async searchArticle(req: Request, res: Response) {
+    searchArticle = async (req: Request, res: Response) => {
         const searchValue = (req.query.q as string) || '';
-        const page = (req.query.page as string) || '0';
+        let page = parseInt(req.query.page as string) || 1;
+
+        const articleNum = await CountSearchResult(searchValue);
+        const totalPages = Math.ceil(articleNum / articlePerPage);
+        page = clamp(page, 1, totalPages);
+
+        let page_items = getPagingNumber(page, totalPages);
+        for (let i = 0; i < page_items.length;i++)
+            page_items[i].link = `/search?q=${searchValue}&page=${page_items[i].value}`;
+
+        const previousLink = page > 1
+            ? `/search?q=${searchValue}&page=${page - 1}` : '';
+        const nextLink = page < totalPages
+            ? `/search?q=${searchValue}&page=${page + 1}` : '';
 
         res.render('Home/HomeGuestSearch', {
             customCss: ['Home.css', 'News.css', 'Component.css'],
-            result: await SearchArticle(searchValue, parseInt(page) || 0),
+            result: await SearchArticle(searchValue, (page - 1) * articlePerPage, articlePerPage),
             searchValue: searchValue,
+            page_items: page_items,
+            previousLink,
+            nextLink
         });
     }
 

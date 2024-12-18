@@ -4,15 +4,16 @@ import * as fs from "fs";
 import {DBConfig} from "../Utils/DBConfig";
 import {GetSubCategories} from "../Utils/getSubCategories";
 import {
-  AddBackgroundImageOfArticle,
+  AddBackgroundImageOfArticle, CountArticleOfWriterByStates,
   createArticle,
-  GetArticleById,
+  GetArticleById, GetArticleOfWriterByStates,
   GetBackgroundImageOfArticle,
   GetCategoryFullNameOfArticle, GetTagsOfArticle, UpdateBackgroundImageOfArticle
 } from "../Services/articleService";
 import {UserRole} from "../Services/userService";
+import {clamp, getPagingNumber} from "../Utils/MathUtils";
 
-
+const articlePerPage = 6;
 export class WriterController {
 
   verifyUser(req: Request, res: Response, Next: NextFunction) {
@@ -71,31 +72,39 @@ export class WriterController {
   // /writer/myArticles?state=
   async getMyArticleList(req: Request, res: Response) {
     const writerId = req.session.authUser?.id as number;
+    let page = parseInt(req.query.page as string) || 1;
     let state = (req.query.state as string);
     let states:string[] = [];
-    if (!state || state == "all" || (state != 'Draft'
-        && state != 'Rejected' && state != 'Approved' && state != 'Published')) {
+    if (!state || state === "all" || (state !== 'Draft'
+        && state !== 'Rejected' && state !== 'Approved' && state !== 'Published')) {
       states = ['Draft', 'Rejected', 'Approved', 'Published'];
       state = "all";
     }else
       states = [state];
-    const articles = await DBConfig("ARTICLE")
-        .join("ARTICLE_SUBCATEGORY", "ARTICLE_SUBCATEGORY.ArticleID","=","ARTICLE.ArticleID")
-        .join("SUBCATEGORY",'ARTICLE_SUBCATEGORY.SubCategoryID', '=', 'SUBCATEGORY.SubCategoryID')
-        .join("CATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
-        .join("ARTICLE_URL", "ARTICLE_URL.ArticleID", "=","ARTICLE.ArticleID")
-        .where({STT: 0})
-        .where({'WriterID':writerId })
-        .whereIn("Status", states)
-        .select("Title as title", "Abstract as abstract",
-            "DatePublished as datePublished",
-            "DatePosted as datePosted", "CATEGORY.Name as category",
-            "SUBCATEGORY.Name as subcategory", "URL as cover",
-            "Status as state", "ARTICLE.ArticleID as id").orderBy("DatePosted", "desc");
+    let articleNum = await CountArticleOfWriterByStates(writerId, states);
+    let totalPages = Math.ceil(articleNum / articlePerPage);
+    page = clamp(page, 1, totalPages);
+
+    console.log(totalPages);
+
+    let page_items = getPagingNumber(page, totalPages);
+    for (let i = 0; i < page_items.length;i++)
+      page_items[i].link = `/writer/myArticles?state=${state}&page=${page_items[i].value}`;
+
+    const previousLink = page > 1
+        ? `/writer/myArticles?state=${state}&page=${page - 1}` : '';
+    const nextLink = page < totalPages
+        ? `/writer/myArticles?state=${state}&page=${page + 1}` : '';
+
+    let articles = await GetArticleOfWriterByStates(writerId, states,(page - 1) * articlePerPage, articlePerPage);
+
     res.render("Writer/WriterViewArticles", {
       customCss: ["Writer.css"],
       state,
-      articles
+      articles,
+      page_items,
+      previousLink,
+      nextLink,
     });
   }
 
