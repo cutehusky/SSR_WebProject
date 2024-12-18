@@ -5,6 +5,7 @@ import { data } from 'jquery';
 import { title } from 'process';
 import { DBConfig } from '../Utils/DBConfig';
 import path from 'path';
+import * as pdf from 'html-pdf';
 import {
     AddComment,
     AddViewCount,
@@ -16,9 +17,12 @@ import {
     GetTagsOfArticle,
     SearchArticle,
     countArticlesByTagID,
-    findPageByTagID,
+    findPageByTagID, CountSearchResult,
 } from '../Services/articleService';
 import {getUsernameById, getWriterNameById} from "../Services/userService";
+import {clamp, getPagingNumber} from "../Utils/MathUtils";
+
+const articlePerPage = 4;
 
 const News = {
     title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
@@ -293,7 +297,7 @@ export class ArticleController {
     }
 
     // /tags?tag=&page=
-    async getArticleListByTags(req: Request, res: Response) {
+    getArticleListByTags = async (req: Request, res: Response)=> {
         const tags = req.query.tag as string;
 
         if (!tags) {
@@ -317,67 +321,29 @@ export class ArticleController {
             const tagIdsArray = validTag.map(item => item.TagID);
 
             if (validTag) {
-                const page =
+                let page =
                     (parseInt(req.query.page as string) as number) || 1;
-                const limit = 4;
                 const articleNum = await countArticlesByTagID(tagIdsArray);
-                const nPages = Math.ceil(articleNum / limit);
-                const page_items = [];
+                const totalPage = Math.ceil(articleNum / articlePerPage);
+                page = clamp(page, 1, totalPage);
 
-                // Calculate the range of pages to display
-                const maxDisplayPages = 5;
-                let startPage = Math.max(
-                    1,
-                    page - Math.floor(maxDisplayPages / 2)
-                );
-                let endPage = Math.min(nPages, startPage + maxDisplayPages - 1);
-
-                // Adjust startPage if endPage is less than maxDisplayPages
-                if (endPage - startPage < maxDisplayPages - 1) {
-                    startPage = Math.max(1, endPage - maxDisplayPages + 1);
-                }
-
+                const page_items = getPagingNumber(page, totalPage);
                 const tagsStringQuery = `/tags?tag=${tagsArray
                     .map(tag => encodeURIComponent(tag))
                     .join(',')}`;
+                for (let i = 0; i < page_items.length;i++)
+                    page_items[i].link = `${tagsStringQuery}&page=${page_items[i].value}`;
 
-                for (let i = startPage; i <= endPage; i++) {
-                    const item = {
-                        value: i,
-                        isActive: i === page,
-                        link: `${tagsStringQuery}&page=${i}`,
-                    };
-                    page_items.push(item);
-                }
-
-                const offset = (page - 1) * limit;
-
-                const response = await findPageByTagID(
-                    tagIdsArray,
-                    limit,
-                    offset
-                );
-
-                // Previous and Next button logic
-                const hasPrevious = page > 1;
-                const hasNext = page < nPages;
-
-                const previousLink = hasPrevious
-                    ? `${tagsStringQuery}&page=${page - 1}`
-                    : '';
-                const nextLink = hasNext
-                    ? `${tagsStringQuery}&page=${page + 1}`
-                    : '';
-
-                console.log('R: ', response);
+                const previousLink = page > 1
+                    ? `${tagsStringQuery}&page=${page - 1}` : '';
+                const nextLink = page < totalPage
+                    ? `${tagsStringQuery}&page=${page + 1}` : '';
 
                 res.render('Home/HomeGuestTag', {
                     customCss: ['Home.css', 'News.css', 'Component.css'],
-                    articlesFindByTags: response,
+                    articlesFindByTags: await findPageByTagID(tagIdsArray, articlePerPage, (page - 1) * articlePerPage),
                     tags: tagsArray,
                     page_items,
-                    hasPrevious,
-                    hasNext,
                     previousLink,
                     nextLink,
                 });
@@ -406,6 +372,8 @@ export class ArticleController {
     // /article/:id
     async getArticle(req: Request, res: Response) {
         const articleId = req.params.id;
+        if (!articleId)
+            return;
         console.log(articleId);
         const data = await GetArticleById(articleId);
         if (!data) {
@@ -414,16 +382,6 @@ export class ArticleController {
         }
 
         let category = await GetCategoryOfArticle(articleId);
-        category = category
-            ? category
-            : {
-                  id: 0,
-                  fullname: '',
-                  categoryName: '',
-                  subcategoryName: '',
-                  categoryId: '',
-                  subcategoryId: '',
-              };
 
         let bgURL = await GetBackgroundImageOfArticle(articleId);
 
@@ -433,11 +391,6 @@ export class ArticleController {
             category.categoryId,
             articleId
         );
-
-        for (let i = 0; i < relativeNews.length; i++)
-            relativeNews[i].tags = await GetTagsOfArticle(
-                relativeNews[i].ArticleID
-            );
 
         const commentList = await GetCommentOfArticle(articleId);
         for (let i = 0; i < commentList.length; i++) {
@@ -474,21 +427,74 @@ export class ArticleController {
     }
 
     // /search?q=&page=
-    async searchArticle(req: Request, res: Response) {
+    searchArticle = async (req: Request, res: Response) => {
         const searchValue = (req.query.q as string) || '';
-        const page = (req.query.page as string) || '0';
+        let page = parseInt(req.query.page as string) || 1;
+
+        const articleNum = await CountSearchResult(searchValue);
+        const totalPages = Math.ceil(articleNum / articlePerPage);
+        page = clamp(page, 1, totalPages);
+
+        let page_items = getPagingNumber(page, totalPages);
+        for (let i = 0; i < page_items.length;i++)
+            page_items[i].link = `/search?q=${searchValue}&page=${page_items[i].value}`;
+
+        const previousLink = page > 1
+            ? `/search?q=${searchValue}&page=${page - 1}` : '';
+        const nextLink = page < totalPages
+            ? `/search?q=${searchValue}&page=${page + 1}` : '';
 
         res.render('Home/HomeGuestSearch', {
             customCss: ['Home.css', 'News.css', 'Component.css'],
-            result: await SearchArticle(searchValue, parseInt(page) || 0),
+            result: await SearchArticle(searchValue, (page - 1) * articlePerPage, articlePerPage),
             searchValue: searchValue,
+            page_items: page_items,
+            previousLink,
+            nextLink
         });
     }
 
     // /download/:id
-    downloadArticle(req: Request, res: Response) {
+    async downloadArticle(req: Request, res: Response) {
         let articleId = req.params.id;
+        if (!articleId)
+            return;
         console.log(articleId);
+        let data = await GetArticleById(articleId);
+        if (!data) {
+            res.render("/404");
+            return;
+        }
+        pdf.create(data.Content).toBuffer((err, buffer) => {
+            if (err) {
+                console.error('Error generating PDF:', err);
+                res.redirect("/404");
+                return;
+            }
+            res.setHeader('Content-Disposition', `attachment; filename=${data.Title}_id-${articleId}.pdf`);
+            res.setHeader('Content-Type', 'application/pdf');
+            res.send(buffer);
+        });
+        /*
+        res.render('DownloadTemplate', { ...data, layout: false },
+            (err, html) => {
+            if (err) {
+                console.error('Error rendering template:', err);
+                res.redirect("/404");
+            } else {
+                pdf.create(html).toBuffer((err, buffer) => {
+                    if (err) {
+                        console.error('Error generating PDF:', err);
+                        res.redirect("/404");
+                        return;
+                    }
+                    res.setHeader('Content-Disposition', `attachment; filename=${data.Title}_id-${articleId}.pdf`);
+                    res.setHeader('Content-Type', 'application/pdf');
+                    res.send(buffer);
+                });
+            }
+        });
+        */
     }
 
     // /comment

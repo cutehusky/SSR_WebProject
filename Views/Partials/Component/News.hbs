@@ -1,11 +1,15 @@
-<section class="row g-4">
+<section class="container mt-5 d-flex justify-content-center row g-4">
   {{#each listOfNews}}
   <div class="d-flex align-items-start article position-relative"
     style="padding:0px;background-color: rgba(255, 255, 255, 0.5); border-radius: 20px;">
 
     <a class="d-flex align-items-start w-75" style="text-decoration: none;color:unset;" href="/article/{{ArticleID}}">
       <div class="img-article w-50">
+        {{#if (eq this.URL 'null')}}
+        <img src="/null.jpg" alt="Logo" class="img-fluid">
+        {{else}}
         <img src={{this.URL}} alt="Logo" class="img-fluid">
+        {{/if}}
       </div>
       <div class="main-news-item__description w-50 sum-article d-flex justify-content-between flex-column">
         <div>
@@ -29,7 +33,7 @@
       </div>
       <div class="main-news-item__tags-container">
         {{#each this.tags}}
-        <a href="/tags?tag={{id}}">
+        <a href="/tags?tag={{name_encode}}">
           <button class="btn btn-sm tag">{{name}}</button>
         </a>
         {{/each}}

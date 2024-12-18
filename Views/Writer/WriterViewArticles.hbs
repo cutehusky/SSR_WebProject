@@ -33,7 +33,11 @@
         </button>
         {{/if}}
         <div class="img-article w-50">
+          {{#if (eq this.cover 'null')}}
+          <img src="/null.jpg" alt="Logo" class="img-fluid">
+          {{else}}
           <img src={{this.cover}} alt="Logo" class="img-fluid">
+          {{/if}}
         </div>
         <div class="sum-article p-3 w-50 h-100">
           <h2>{{this.title}}</h2>
@@ -76,7 +80,7 @@
       </li>
     </ul>
   </nav> --}}
-  {{> Component/Paging}}
+  {{> Component/Paging page_items=this.page_items previousLink=this.previousLink nextLink=this.nextLink}}
 </div>
 
 <div class="modal fade" id="writer-decline-modal" tabindex="-1" aria-hidden="true">

@@ -1,81 +1,26 @@
 <div class="pt-5">
-    <div
-        class="title-search-box d-flex align-items-center justify-content-between pb-4"
-        style="width: 270px; height: 60px"
-    >
+    <div class="title-search-box d-flex align-items-center justify-content-between pb-4"
+        style="width: 270px; height: 60px">
         <div class="fs-2 fw-bold">Kết quả tìm kiếm</div>
     </div>
 
     <div class="input-group rounded mt-5">
-        <form
-            method="get"
-            action="/tags"
-            style="width: 100%"
-            class="topbar gap-2"
-        >
+        <form method="get" action="/tags" style="width: 100%" class="topbar gap-2">
             <div class="input-wrapper position-relative" style="width: 100%">
-                <input
-                    class="tagInput form-control pe-5"
-                    id="tagsInputSearch"
-                    name="tag"
-                    type="text"
-                    data-role="tagsinput"
-                    placeholder="Enter tags"
-                    value="{{tags}}"
-                />
-                <button
-                    type="submit"
+                <input class="tagInput form-control pe-5" id="tagsInputSearch" name="tag" type="text"
+                    data-role="tagsinput" placeholder="Enter tags" value="{{tags}}" />
+                <button type="submit"
                     class="position-absolute end-0 top-50 translate-middle-y me-3 text-muted border border-0"
-                    style="background-color: transparent"
-                >
+                    style="background-color: transparent">
                     <i class="bi bi-search"></i>
                 </button>
             </div>
         </form>
     </div>
 
-    <div class="container mt-5 d-flex justify-content-center row">
-        {{#each articlesFindByTags}}
-        <div
-            class="d-flex align-items-start main-news-item col col-lg-10 col-md-12 col-sm-12"
-        >
-            <div class="d-flex align-items-start w-75">
-                <img
-                    style="width: 200px; height: 125px; object-fit: cover"
-                    src="{{this.img}}"
-                    alt="{{this.title}}"
-                />
-                <div class="main-news-item__description">
-                    <div>
-                        <p>{{this.title}}</p>
-                        <p>{{this.description}}</p>
-                    </div>
-                    <div>
-                        <span>Ngày đăng: {{this.date}}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="w-25">
-                <div class="d-flex flex-column mb-2">
-                    <span>{{this.category}}</span>
-                    <span>{{this.subcategory}}</span>
-                </div>
-                <div>
-                    {{#each this.tagList}}
-                    <a href="{{this.link}}">
-                        <button class="btn btn-sm tag mb-1">
-                            {{this.tag}}
-                        </button>
-                    </a>
-                    {{/each}}
-                </div>
-            </div>
-        </div>
-        {{/each}}
-    </div>
+    {{> Component/News listOfNews=articlesFindByTags}}
 
-    {{> Component/Paging page_items=this.page_items hasPrevious=this.hasPrevious
-    hasNext=this.hasNext previousLink=this.previousLink nextLink=this.nextLink}}
+    {{> Component/Paging page_items=this.page_items previousLink=this.previousLink nextLink=this.nextLink}}
 </div>
 
 {{#section 'script'}}

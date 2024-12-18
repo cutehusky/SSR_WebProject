@@ -1,22 +1,14 @@
 <nav aria-label="... " class="mt-5">
     <ul class="pagination justify-content-center">
-        {{#if this.hasPrevious}}
+        {{#if (notnull this.previousLink)}}
         <li class="page-item control">
-            <a
-                class="page-link h-100 d-flex align-items-center"
-                href="{{this.previousLink}}"
-                tabindex="-1"
-            >
+            <a class="page-link h-100 d-flex align-items-center" href="{{this.previousLink}}" tabindex="-1">
                 <i class="bi bi-caret-left-fill paging-icon"></i>
             </a>
         </li>
         {{else}}
         <li class="page-item control disabled">
-            <a
-                class="page-link h-100 d-flex align-items-center"
-                href="{{this.previousLink}}"
-                tabindex="-1"
-            >
+            <a class="page-link h-100 d-flex align-items-center" href="#" tabindex="-1">
                 <i class="bi bi-caret-left-fill paging-icon"></i>
             </a>
         </li>
@@ -28,23 +20,15 @@
         <li class="page-item">
             <a class="page-link h-100" href="{{this.link}}">{{this.value}}</a>
         </li>
-        {{/if}} {{/each}} {{#if this.hasNext}}
+        {{/if}} {{/each}} {{#if (notnull this.nextLink)}}
         <li class="page-item control">
-            <a
-                class="page-link h-100 d-flex align-items-center"
-                href="{{this.nextLink}}"
-                tabindex="-1"
-            >
+            <a class="page-link h-100 d-flex align-items-center" href="{{this.nextLink}}" tabindex="-1">
                 <i class="bi bi-caret-right-fill paging-icon"></i>
             </a>
         </li>
         {{else}}
         <li class="page-item control disabled">
-            <a
-                class="page-link h-100 d-flex align-items-center"
-                href="{{this.nextLink}}"
-                tabindex="-1"
-            >
+            <a class="page-link h-100 d-flex align-items-center" href="#" tabindex="-1">
                 <i class="bi bi-caret-right-fill paging-icon"></i>
             </a>
         </li>

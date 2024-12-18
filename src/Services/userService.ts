@@ -52,14 +52,14 @@ export const GetRoleOfUserById = async (userId: string) => {
         return UserRole.Invalid;
     if (user.isAdministator)
         return UserRole.Admin;
-    const isWriter = await db("WRITER").where("WriterID", userId).count("* as num");
-    if (isWriter[0].num === 1)
+    const isWriter = await db("WRITER").where("WriterID", userId).count("* as num").first();
+    if (isWriter && isWriter.num === 1)
         return UserRole.Writer;
-    const isEditor = await db("EDITOR").where("EditorID", userId).count("* as num");
-    if (isEditor[0].num === 1)
+    const isEditor = await db("EDITOR").where("EditorID", userId).count("* as num").first();
+    if (isEditor && isEditor.num === 1)
         return UserRole.Editor;
-    const isUser = await db("SUBSCRIBER").where("SubscriberID", userId).count("* as num");
-    if (isUser[0].num === 1)
+    const isUser = await db("SUBSCRIBER").where("SubscriberID", userId).count("* as num").first();
+    if (isUser && isUser.num === 1)
         return UserRole.User;
     return UserRole.Invalid;
 }

@@ -19,7 +19,7 @@
         <div>
           <span class="data">{{data.DatePosted}}</span>
           {{!-- Should be checked if the user has the ability to download the article --}}
-          <a href="#" class="ms-2 icon-link icon-link-hover text-dark"
+          <a href="/download/{{data.ID}}" class="ms-2 icon-link icon-link-hover text-dark"
             style="--bs-icon-link-transform: translate3d(0, -.125rem, 0);">
             <i class="bi bi-file-earmark-arrow-down-fill"></i>
           </a>
@@ -39,7 +39,7 @@
       <p class="fw-bold me-2">Tags:</p>
       <div class="card-item-tags" style="width:90%">
         {{#each data.tags}}
-        <a href="/tags?tag={{id}}" class="me-1">
+        <a href="/tags?tag={{name_encode}}" class="me-1">
           <button class="btn btn-sm tag">{{name}}</button>
         </a>
         {{/each}}
