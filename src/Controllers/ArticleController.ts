@@ -5,6 +5,7 @@ import { data } from 'jquery';
 import { title } from 'process';
 import { DBConfig } from '../Utils/DBConfig';
 import path from 'path';
+import * as pdf from 'html-pdf';
 import {
     AddComment,
     AddViewCount,
@@ -371,6 +372,8 @@ export class ArticleController {
     // /article/:id
     async getArticle(req: Request, res: Response) {
         const articleId = req.params.id;
+        if (!articleId)
+            return;
         console.log(articleId);
         const data = await GetArticleById(articleId);
         if (!data) {
@@ -452,9 +455,46 @@ export class ArticleController {
     }
 
     // /download/:id
-    downloadArticle(req: Request, res: Response) {
+    async downloadArticle(req: Request, res: Response) {
         let articleId = req.params.id;
+        if (!articleId)
+            return;
         console.log(articleId);
+        let data = await GetArticleById(articleId);
+        if (!data) {
+            res.render("/404");
+            return;
+        }
+        pdf.create(data.Content).toBuffer((err, buffer) => {
+            if (err) {
+                console.error('Error generating PDF:', err);
+                res.redirect("/404");
+                return;
+            }
+            res.setHeader('Content-Disposition', `attachment; filename=${data.Title}_id-${articleId}.pdf`);
+            res.setHeader('Content-Type', 'application/pdf');
+            res.send(buffer);
+        });
+        /*
+        res.render('DownloadTemplate', { ...data, layout: false },
+            (err, html) => {
+            if (err) {
+                console.error('Error rendering template:', err);
+                res.redirect("/404");
+            } else {
+                pdf.create(html).toBuffer((err, buffer) => {
+                    if (err) {
+                        console.error('Error generating PDF:', err);
+                        res.redirect("/404");
+                        return;
+                    }
+                    res.setHeader('Content-Disposition', `attachment; filename=${data.Title}_id-${articleId}.pdf`);
+                    res.setHeader('Content-Type', 'application/pdf');
+                    res.send(buffer);
+                });
+            }
+        });
+        */
     }
 
     // /comment

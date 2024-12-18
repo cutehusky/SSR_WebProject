@@ -14,7 +14,7 @@ router.get(
 router.get("/tags", articleController.getArticleListByTags);
 router.get("/article/:id", articleController.getArticle);
 router.get("/search", articleController.searchArticle);
-router.get("/download", articleController.downloadArticle);
+router.get("/download/:id", articleController.downloadArticle);
 
 router.post("/comment/", articleController.commentArticle);
 
