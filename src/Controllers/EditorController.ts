@@ -3,6 +3,7 @@ import { getEditorCategories } from '../Utils/getEditorCategories';
 import { getArticlesCategories } from '../Utils/getArticlesCategories';
 import { getArticleDetails } from '../Utils/getArticleDetails';
 import { getArticleTags } from '../Utils/getArticleTags';
+import { updateArticleStateEditor } from '../Utils/updateArticleStateEditor';
 
 export class EditorController {
     // /editor/:editorID/articles
@@ -43,16 +44,19 @@ export class EditorController {
         res.send(`Article ${articleId} approved`);
     }
 
-    // /editor/reject
-    rejectArticle(req: Request, res: Response) {
+    // /editor/:editorID/articles/:id/reject
+    async rejectArticle(req: Request, res: Response) {
         const articleId = req.params.id;
-        console.log(articleId);
-        res.send(`Article ${articleId} rejected`);
+        const editorId = req.params.editorID;
+        await updateArticleStateEditor(Number(editorId), Number(articleId), 'rejected', req.body.reason);
+        res.redirect(`/editor/${editorId}/articles`);
+        // res.send(`Article ${articleId} rejected`);
     }
 
-    // /editor/articles/:id
+    // /editor/:editorID/articles/:id
     async viewArticle(req: Request, res: Response) {
         const articleId = req.params.id;
+        const editorId = req.params.editorID;
         const article_details = await getArticleDetails(Number(articleId));
         let article;
         let date = new Date(article_details[0].DatePosted);
@@ -84,6 +88,7 @@ export class EditorController {
             customJs: ['EditorAddTag.js'],
             articleId,
             article,
+            editorId,
         });
     }
     

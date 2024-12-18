@@ -9,6 +9,6 @@ router.get('/:editorID/articles', editorController.getArticles);
 router.get('/:editorID/articles/:id', editorController.viewArticle);
 
 router.post('/approve', editorController.approveArticle);
-router.post('/reject', editorController.rejectArticle);
+router.post('/:editorID/articles/:id/reject', editorController.rejectArticle);
 
 export { router as EditorRouter };

@@ -28,7 +28,7 @@
     </p>
     <p class="mb-2">
         <span class="fw-bold">Category:</span>
-        <span class="text-primary">{{article.subcategory}}</span>
+        <span class="text-primary"><span class="text-muted">{{article.category}} / </span>{{article.subcategory}}</span>
     </p>
     <div class="mb-2 d-flex align-items-center">
         <span class="fw-bold me-2">Tags:</span>
@@ -50,7 +50,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="editor-decline-modal" tabindex="-1" aria-hidden="true">
+<form action="/editor/{{editorId}}/articles/{{articleId}}/reject" method="post" class="modal fade" id="editor-decline-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -61,21 +61,21 @@
             </div>
             <div class="modal-body pt-1">
                 <p class="mb-2 fw-bold">Phản hồi:</p>
-                <textarea class="form-control" rows="10" placeholder="Bài viết bị từ chối vì..."></textarea>
+                <textarea id="bulletTextarea" name="reason" class="form-control" rows="10" placeholder="Bài viết bị từ chối vì..."></textarea>
             </div>
             <div class="modal-footer">
                 <div class="d-flex">
                     <button type="button" class="btn editor-modal-return flex-grow-1 me-2" data-bs-dismiss="modal">
                         Quay về
                     </button>
-                    <button type="button" class="btn editor-modal-send flex-grow-1">
+                    <button type="submit" class="btn editor-modal-send flex-grow-1">
                         Gửi
                     </button>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</form>
 
 <form action="" class="modal fade" id="editor-adjust-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -201,5 +201,41 @@
             $('#tags-submission').val(allTagValues.join(','));
             //console.log('Del: ', $('#tags-submission').val());
         });
+    });
+</script>
+<script>
+    const textarea = document.getElementById('bulletTextarea');
+
+    textarea.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            const caretPosition = textarea.selectionStart;
+            const beforeCaret = textarea.value.slice(0, caretPosition);
+            const afterCaret = textarea.value.slice(caretPosition);
+            textarea.value = beforeCaret + '\n• ' + afterCaret;
+            textarea.selectionStart = textarea.selectionEnd = caretPosition + 3;
+        }
+    });
+
+    textarea.addEventListener('input', () => {
+        const lines = textarea.value.split('\n');
+        const formattedLines = lines.map(line => {
+            return line.trim() !== '' && !line.startsWith('•') ? `• ${line.trim()}` : line;
+        });
+        textarea.value = formattedLines.join('\n');
+    });
+</script>
+<script>
+    const editorDeclineModal = document.getElementById('editor-decline-modal');
+    const editorDeclineButton = document.querySelector('.editor-decline');
+    const editorModalSendButton = document.querySelector('.editor-modal-send');
+    const bulletTextarea = document.getElementById('bulletTextarea');
+
+    editorDeclineModal.addEventListener('show.bs.modal', function () {
+        editorModalSendButton.disabled = true;
+    });
+
+    bulletTextarea.addEventListener('input', function () {
+        editorModalSendButton.disabled = bulletTextarea.value.trim() === '';
     });
 </script>
