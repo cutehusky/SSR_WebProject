@@ -202,10 +202,9 @@ export const findPageByTagID = async (
         .limit(limit)
         .offset(offset);
 
-    // Get tags for each article
     for (let i = 0; i < response.length; i++)
         response[i].tags = await GetTagsOfArticle(response[i].ArticleID);
-    return response;
+    return response as Array<ArticleListItem>;
 };
 
 export const countArticlesByTagID = async (
@@ -267,7 +266,7 @@ export const SearchArticle = async (searchValue: string, offset:number, limit: n
         ).offset(offset).limit(limit);
     for (let i = 0; i < result.length; i++)
         result[i].tags = await GetTagsOfArticle(result[i].ArticleID);
-    return result;
+    return result as Array<ArticleListItem>;
 };
 
 export const GetArticleById = async (articleId: string) => {
@@ -281,7 +280,7 @@ export interface Tag {
 }
 
 export const GetTagsOfArticle = async (
-    articleId: string
+    articleId: string|number
 ): Promise<Array<Tag>> => {
     let tags = await DBConfig('TAG')
         .join('ARTICLE_TAG', 'ARTICLE_TAG.TagID', '=', 'TAG.TagID')
@@ -326,20 +325,39 @@ export const GetArticleOfWriterByStates = async (
         .where({STT: 0})
         .where({'WriterID':writerId })
         .whereIn("Status", states)
-        .select("Title as title", "Abstract as abstract",
+        .select("Title as title",
+            "Abstract as abstract",
             "DatePublished as datePublished",
-            "DatePosted as datePosted", "CATEGORY.Name as category",
-            "SUBCATEGORY.Name as subcategory", "URL as cover",
-            "Status as state", "ARTICLE.ArticleID as id")
+            "DatePosted as datePosted",
+            "CATEGORY.Name as category",
+            "SUBCATEGORY.Name as subcategory",
+            "URL as cover",
+            "Status as state",
+            "ARTICLE.ArticleID as id")
         .orderBy("DatePosted", "desc").offset(offset).limit(limit);
 }
 
+export interface ArticleListItem {
+    ArticleID: number,
+    Title: string,
+    DatePosted: Date,
+    Abstract: string,
+    IsPremium: boolean,
+    ViewCount: number,
+    category: string,
+    subcategory: string,
+    categoryId: number,
+    subcategoryId: number,
+    URL: string,
+    tags?: Array<Tag>
+}
+
 export const GetRelativeArticle = async (
-    categoryId: string,
-    articleId: string,
+    categoryId: string|number,
+    articleId: string|number,
     limit: number = 5
-) => {
-    return DBConfig('ARTICLE')
+): Promise<Array<ArticleListItem>> => {
+    let result = await DBConfig('ARTICLE')
         .join(
             'ARTICLE_SUBCATEGORY',
             'ARTICLE_SUBCATEGORY.ArticleID',
@@ -372,6 +390,19 @@ export const GetRelativeArticle = async (
             'URL'
         )
         .limit(limit);
+    for (let i = 0; i < result.length; i++)
+        result[i].tags = await GetTagsOfArticle(result[i].ArticleID);
+    return result as Array<ArticleListItem>;
+};
+
+
+export const GetBackgroundImageOfArticle = async (
+    articleId: string
+): Promise<string> => {
+    let bgURL = await DBConfig('ARTICLE_URL')
+        .where({ STT: 0, ArticleID: articleId })
+        .first();
+    return bgURL && bgURL.URL ? bgURL.URL : 'null';
 };
 
 export const UpdateBackgroundImageOfArticle = async (
@@ -394,8 +425,20 @@ export const AddBackgroundImageOfArticle = async (
     });
 };
 
+export interface CategoryFullname {
+    fullname: string,
+    id: number
+}
+
+export interface Category {
+    categoryName: string,
+    subcategoryName: string,
+    categoryId: number,
+    subcategoryId: number
+}
+
 export const GetCategoryFullNameOfArticle = async (articleId: string) => {
-    return DBConfig('ARTICLE_SUBCATEGORY')
+    let result = await DBConfig('ARTICLE_SUBCATEGORY')
         .join(
             'SUBCATEGORY',
             'ARTICLE_SUBCATEGORY.SubCategoryID',
@@ -411,10 +454,11 @@ export const GetCategoryFullNameOfArticle = async (articleId: string) => {
             )
         )
         .first();
+    return result ? result as CategoryFullname : {fullname: "", id: 0};
 };
 
 export const GetCategoryOfArticle = async (articleId: string) => {
-    return DBConfig('ARTICLE_SUBCATEGORY')
+    let category = await DBConfig('ARTICLE_SUBCATEGORY')
         .join(
             'SUBCATEGORY',
             'ARTICLE_SUBCATEGORY.SubCategoryID',
@@ -424,17 +468,13 @@ export const GetCategoryOfArticle = async (articleId: string) => {
         .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
         .where({ ArticleID: articleId })
         .select(
-            'ARTICLE_SUBCATEGORY.SubCategoryID as id',
             'CATEGORY.Name as categoryName',
             'SUBCATEGORY.Name as subcategoryName',
             'CATEGORY.CategoryID as categoryId',
-            'SUBCATEGORY.SubCategoryID as subcategoryId',
-            DBConfig.raw(
-                'CONCAT(CATEGORY.Name, " / ", SUBCATEGORY.Name) as fullname'
-            )
-        )
-        .first();
-};
+            'SUBCATEGORY.SubCategoryID as subcategoryId'
+        ).first();
+    return category ? category as Category : {categoryName: '', subcategoryName: '', categoryId: 0, subcategoryId: 0};
+}
 
 export interface Comment {
     DatePosted: Date;
@@ -453,15 +493,6 @@ export const GetCommentOfArticle = async (
         })
         .orderBy('DatePosted', 'desc');
     return comment ? comment : [];
-};
-
-export const GetBackgroundImageOfArticle = async (
-    articleId: string
-): Promise<string> => {
-    let bgURL = await DBConfig('ARTICLE_URL')
-        .where({ STT: 0, ArticleID: articleId })
-        .first();
-    return bgURL && bgURL.URL ? bgURL.URL : 'null';
 };
 
 export const AddComment = async (

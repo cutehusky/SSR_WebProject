@@ -43,7 +43,6 @@ export class WriterController {
     }
 
     let category = await GetCategoryFullNameOfArticle(articleId);
-    category = category ? category : {id: 0, fullname: ""};
 
     let bgURL = await GetBackgroundImageOfArticle(articleId);
 

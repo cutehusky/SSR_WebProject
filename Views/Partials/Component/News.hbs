@@ -5,7 +5,11 @@
 
     <a class="d-flex align-items-start w-75" style="text-decoration: none;color:unset;" href="/article/{{ArticleID}}">
       <div class="img-article w-50">
+        {{#if (eq this.URL 'null')}}
+        <img src="/null.jpg" alt="Logo" class="img-fluid">
+        {{else}}
         <img src={{this.URL}} alt="Logo" class="img-fluid">
+        {{/if}}
       </div>
       <div class="main-news-item__description w-50 sum-article d-flex justify-content-between flex-column">
         <div>

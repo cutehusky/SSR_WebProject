@@ -379,16 +379,6 @@ export class ArticleController {
         }
 
         let category = await GetCategoryOfArticle(articleId);
-        category = category
-            ? category
-            : {
-                  id: 0,
-                  fullname: '',
-                  categoryName: '',
-                  subcategoryName: '',
-                  categoryId: '',
-                  subcategoryId: '',
-              };
 
         let bgURL = await GetBackgroundImageOfArticle(articleId);
 
@@ -398,11 +388,6 @@ export class ArticleController {
             category.categoryId,
             articleId
         );
-
-        for (let i = 0; i < relativeNews.length; i++)
-            relativeNews[i].tags = await GetTagsOfArticle(
-                relativeNews[i].ArticleID
-            );
 
         const commentList = await GetCommentOfArticle(articleId);
         for (let i = 0; i < commentList.length; i++) {
