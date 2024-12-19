@@ -4,6 +4,7 @@ import { getArticlesCategories } from '../Utils/getArticlesCategories';
 import { getArticleDetails } from '../Utils/getArticleDetails';
 import { getArticleTags } from '../Utils/getArticleTags';
 import { updateArticleStateEditor } from '../Utils/updateArticleStateEditor';
+import { getCategorySubcategories } from '../Utils/getEditorCategories';
 
 export class EditorController {
     // /editor/:editorID/articles
@@ -37,11 +38,18 @@ export class EditorController {
         });
     }
 
-    // /editor/approve
-    approveArticle(req: Request, res: Response) {
+    // /editor/:editorID/articles/:id/approve
+    async approveArticle(req: Request, res: Response) {
         const articleId = req.params.id;
-        console.log(articleId);
-        res.send(`Article ${articleId} approved`);
+        const editorId = req.params.editorID;
+        const result = req.body;
+        const tags = result.tags.split(',').map((tag: string) => Number(tag.trim()));
+        const subcategoryId = result.subcategory;
+        const date = result.date;
+        const time = result.time;
+        const dateTime = `${date} ${time}`;
+        await updateArticleStateEditor(Number(editorId), Number(articleId), 'approved', null, tags, subcategoryId, dateTime);
+        res.redirect(`/editor/${editorId}/articles`);
     }
 
     // /editor/:editorID/articles/:id/reject
@@ -50,7 +58,6 @@ export class EditorController {
         const editorId = req.params.editorID;
         await updateArticleStateEditor(Number(editorId), Number(articleId), 'rejected', req.body.reason);
         res.redirect(`/editor/${editorId}/articles`);
-        // res.send(`Article ${articleId} rejected`);
     }
 
     // /editor/:editorID/articles/:id
@@ -70,7 +77,7 @@ export class EditorController {
         };
         const formattedDate = date.toLocaleDateString('vi-VN', options);
         const tags = await getArticleTags(Number(articleId));
-        
+        const subcategories = await getCategorySubcategories(article_details[0].CategoryID);
         article = {
             date: formattedDate,
             author: article_details[0].Alias,
@@ -89,6 +96,7 @@ export class EditorController {
             articleId,
             article,
             editorId,
+            subcategories
         });
     }
     

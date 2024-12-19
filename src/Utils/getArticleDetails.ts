@@ -11,6 +11,8 @@ export const getArticleDetails = (articleID: number): Promise<any> => {
             'a.*',
             'w.Alias',
             's.Name as Subcategory',
-            'c.Name as Category'
+            's.SubcategoryID',
+            'c.Name as Category',
+            'c.CategoryID'
         );
 };

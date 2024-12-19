@@ -1,23 +1,57 @@
 import { DBConfig } from "./DBConfig";
 
-export const updateArticleStateEditor = (editorID: number, articleID: number, status: string, reason: string | null = null): Promise<any> => {
-    if (status === 'approved') {
-        return DBConfig('ARTICLE as a')
-            .where('a.ArticleID', articleID)
-            .update({
-                Status: 'Approved',
-                EditorID: editorID,
-                Reason: null
+export const updateArticleStateEditor = async (
+    editorID: number,
+    articleID: number,
+    status: string,
+    reason: string | null = null,
+    tags: number[] = [],
+    subcategoryID: number = 0,
+    dateTime: string = ''
+): Promise<any> => {
+    return DBConfig.transaction(async (trx) => {
+        if (status === 'approved') {
+            await trx('ARTICLE')
+                .where('ArticleID', articleID)
+                .update({
+                    Status: 'approved',
+                    EditorID: editorID,
+                    Reason: null,
+                    DatePublished: dateTime,
+                });
+
+            // Delete existing article subcategories
+            await trx('ARTICLE_SUBCATEGORY')
+                .where('ArticleID', articleID)
+                .del();
+            
+            // Insert new article subcategory
+            await trx('ARTICLE_SUBCATEGORY').insert({
+                ArticleID: articleID,
+                SubcategoryID: subcategoryID,
             });
-    }
-    if (status === 'rejected') {
-        return DBConfig('ARTICLE as a')
-            .where('a.ArticleID', articleID)
-            .update({
-                Status: 'Rejected',
-                EditorID: editorID,
-                Reason: reason
-            });
-    }
-    return Promise.resolve();
+
+            // Delete existing tags
+            await trx('ARTICLE_TAG')
+                .where('ArticleID', articleID)
+                .del();
+
+            // Insert new tags
+            if (tags.length > 0) {
+                const tagInserts = tags.map((tag) => ({
+                    ArticleID: articleID,
+                    TagID: tag,
+                }));
+                await trx('ARTICLE_TAG').insert(tagInserts);
+            }
+        } else {
+            await trx('ARTICLE')
+                .where('ArticleID', articleID)
+                .update({
+                    State: status,
+                    EditorID: editorID,
+                    Reason: reason,
+                });
+        }
+    });
 };
