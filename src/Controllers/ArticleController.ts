@@ -17,10 +17,14 @@ import {
     GetTagsOfArticle,
     SearchArticle,
     countArticlesByTagID,
-    findPageByTagID, CountSearchResult,
+    findPageByTagID,
+    CountSearchResult,
+    getFullCategoryNameByCatID,
+    getArticlesSortedByPostedDate,
+    countArticlesByCatID,
 } from '../Services/articleService';
-import {getUsernameById, getWriterNameById} from "../Services/userService";
-import {clamp, getPagingNumber} from "../Utils/MathUtils";
+import { getUsernameById, getWriterNameById } from '../Services/userService';
+import { clamp, getPagingNumber } from '../Utils/MathUtils';
 
 const articlePerPage = 4;
 
@@ -249,11 +253,36 @@ export class ArticleController {
     }
 
     // /category/:id?page=
-    getArticleListByCategory(req: Request, res: Response) {
-        const categoryId = req.params.id;
-        const page = (req.query.page as string) || '0';
-        // console.log(categoryId);
-        // console.log(page);
+    async getArticleListByCategory(req: Request, res: Response) {
+        const categoryId = req.params.id as string;
+        const { categoryName, subcategoryInfo } =
+            await getFullCategoryNameByCatID(categoryId);
+
+        const articleNum = await countArticlesByCatID(categoryId);
+        const totalPage = Math.ceil(articleNum / articlePerPage);
+        let page = (parseInt(req.query.page as string) as number) || 1;
+        page = clamp(page, 1, totalPage);
+
+        const page_items = getPagingNumber(page, totalPage);
+        const categoriesStringQuery = `/category/${categoryId}`;
+
+        for (let i = 0; i < page_items.length; i++)
+            page_items[
+                i
+            ].link = `${categoriesStringQuery}?page=${page_items[i].value}`;
+
+        const previousLink =
+            page > 1 ? `${categoriesStringQuery}?page=${page - 1}` : '';
+        const nextLink =
+            page < totalPage ? `${categoriesStringQuery}?page=${page + 1}` : '';
+
+        const articles = await getArticlesSortedByPostedDate(
+            categoryId,
+            articlePerPage,
+            (page - 1) * articlePerPage
+        );
+        const [topNews, ...newsOfCategory] = articles;
+
         res.render('Home/HomeGuestCategories', {
             customCss: [
                 'Category.css',
@@ -261,11 +290,14 @@ export class ArticleController {
                 'Home.css',
                 'Component.css',
             ],
-            categories: listCategories[Number(categoryId) - 1].SubCategories,
-            name: listCategories[Number(categoryId) - 1].name,
-
-            newsOfCategory: getFirstTwoTags(listCardResult),
+            categoryName,
+            subcategoryInfo,
+            isCategory: true,
+            newsOfCategory,
             topNews,
+            previousLink,
+            nextLink,
+            page_items,
         });
     }
 
@@ -297,7 +329,7 @@ export class ArticleController {
     }
 
     // /tags?tag=&page=
-    getArticleListByTags = async (req: Request, res: Response)=> {
+    getArticleListByTags = async (req: Request, res: Response) => {
         const tags = req.query.tag as string;
 
         if (!tags) {
@@ -321,8 +353,7 @@ export class ArticleController {
             const tagIdsArray = validTag.map(item => item.TagID);
 
             if (validTag) {
-                let page =
-                    (parseInt(req.query.page as string) as number) || 1;
+                let page = (parseInt(req.query.page as string) as number) || 1;
                 const articleNum = await countArticlesByTagID(tagIdsArray);
                 const totalPage = Math.ceil(articleNum / articlePerPage);
                 page = clamp(page, 1, totalPage);
@@ -331,17 +362,26 @@ export class ArticleController {
                 const tagsStringQuery = `/tags?tag=${tagsArray
                     .map(tag => encodeURIComponent(tag))
                     .join(',')}`;
-                for (let i = 0; i < page_items.length;i++)
-                    page_items[i].link = `${tagsStringQuery}&page=${page_items[i].value}`;
 
-                const previousLink = page > 1
-                    ? `${tagsStringQuery}&page=${page - 1}` : '';
-                const nextLink = page < totalPage
-                    ? `${tagsStringQuery}&page=${page + 1}` : '';
+                for (let i = 0; i < page_items.length; i++)
+                    page_items[
+                        i
+                    ].link = `${tagsStringQuery}&page=${page_items[i].value}`;
+
+                const previousLink =
+                    page > 1 ? `${tagsStringQuery}&page=${page - 1}` : '';
+                const nextLink =
+                    page < totalPage
+                        ? `${tagsStringQuery}&page=${page + 1}`
+                        : '';
 
                 res.render('Home/HomeGuestTag', {
                     customCss: ['Home.css', 'News.css', 'Component.css'],
-                    articlesFindByTags: await findPageByTagID(tagIdsArray, articlePerPage, (page - 1) * articlePerPage),
+                    articlesFindByTags: await findPageByTagID(
+                        tagIdsArray,
+                        articlePerPage,
+                        (page - 1) * articlePerPage
+                    ),
                     tags: tagsArray,
                     page_items,
                     previousLink,
@@ -367,13 +407,12 @@ export class ArticleController {
                 page_items: [],
             });
         }
-    }
+    };
 
     // /article/:id
     async getArticle(req: Request, res: Response) {
         const articleId = req.params.id;
-        if (!articleId)
-            return;
+        if (!articleId) return;
         console.log(articleId);
         const data = await GetArticleById(articleId);
         if (!data) {
@@ -395,7 +434,9 @@ export class ArticleController {
         const commentList = await GetCommentOfArticle(articleId);
         for (let i = 0; i < commentList.length; i++) {
             if (commentList[i].SubscriberID)
-                commentList[i].Name = await getUsernameById(commentList[i].SubscriberID as number);
+                commentList[i].Name = await getUsernameById(
+                    commentList[i].SubscriberID as number
+                );
         }
         console.log(commentList);
 
@@ -421,7 +462,7 @@ export class ArticleController {
                 tags: tag,
                 relativeNews: relativeNews,
                 comments: commentList,
-                writer: writer
+                writer: writer,
             },
         });
     }
@@ -436,42 +477,52 @@ export class ArticleController {
         page = clamp(page, 1, totalPages);
 
         let page_items = getPagingNumber(page, totalPages);
-        for (let i = 0; i < page_items.length;i++)
-            page_items[i].link = `/search?q=${searchValue}&page=${page_items[i].value}`;
+        for (let i = 0; i < page_items.length; i++)
+            page_items[
+                i
+            ].link = `/search?q=${searchValue}&page=${page_items[i].value}`;
 
-        const previousLink = page > 1
-            ? `/search?q=${searchValue}&page=${page - 1}` : '';
-        const nextLink = page < totalPages
-            ? `/search?q=${searchValue}&page=${page + 1}` : '';
+        const previousLink =
+            page > 1 ? `/search?q=${searchValue}&page=${page - 1}` : '';
+        const nextLink =
+            page < totalPages
+                ? `/search?q=${searchValue}&page=${page + 1}`
+                : '';
 
         res.render('Home/HomeGuestSearch', {
             customCss: ['Home.css', 'News.css', 'Component.css'],
-            result: await SearchArticle(searchValue, (page - 1) * articlePerPage, articlePerPage),
+            result: await SearchArticle(
+                searchValue,
+                (page - 1) * articlePerPage,
+                articlePerPage
+            ),
             searchValue: searchValue,
             page_items: page_items,
             previousLink,
-            nextLink
+            nextLink,
         });
-    }
+    };
 
     // /download/:id
     async downloadArticle(req: Request, res: Response) {
         let articleId = req.params.id;
-        if (!articleId)
-            return;
+        if (!articleId) return;
         console.log(articleId);
         let data = await GetArticleById(articleId);
         if (!data) {
-            res.render("/404");
+            res.render('/404');
             return;
         }
         pdf.create(data.Content).toBuffer((err, buffer) => {
             if (err) {
                 console.error('Error generating PDF:', err);
-                res.redirect("/404");
+                res.redirect('/404');
                 return;
             }
-            res.setHeader('Content-Disposition', `attachment; filename=${data.Title}_id-${articleId}.pdf`);
+            res.setHeader(
+                'Content-Disposition',
+                `attachment; filename=${data.Title}_id-${articleId}.pdf`
+            );
             res.setHeader('Content-Type', 'application/pdf');
             res.send(buffer);
         });
@@ -502,9 +553,13 @@ export class ArticleController {
         let date = new Date(Date.now());
         // console.log(req.body);
         if (req.session.authUser)
-            await AddComment(req.body.id, req.body.content, date, req.session.authUser.id as number);
-        else
-            await AddComment(req.body.id, req.body.content, date);
+            await AddComment(
+                req.body.id,
+                req.body.content,
+                date,
+                req.session.authUser.id as number
+            );
+        else await AddComment(req.body.id, req.body.content, date);
         /*res.json({
             ArticleId: req.body.id,
             Content: req.body.content,

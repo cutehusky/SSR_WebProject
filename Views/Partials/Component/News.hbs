@@ -1,44 +1,58 @@
 <section class="container mt-5 d-flex justify-content-center row g-4">
-  {{#each listOfNews}}
-  <div class="d-flex align-items-start article position-relative"
-    style="padding:0px;background-color: rgba(255, 255, 255, 0.5); border-radius: 20px;">
+    {{#each listOfNews}}
+    <div
+        class="d-flex align-items-start article position-relative"
+        style="
+            padding: 0px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+        "
+    >
+        <a
+            class="d-flex align-items-start w-75"
+            style="text-decoration: none; color: unset"
+            href="/article/{{ArticleID}}"
+        >
+            <div class="img-article w-50">
+                {{#if (eq this.URL 'null')}}
+                <img src="/null.jpg" alt="Logo" class="img-fluid" />
+                {{else}}
+                <img src="{{this.URL}}" alt="Logo" class="img-fluid" />
+                {{/if}}
+            </div>
+            <div
+                class="main-news-item__description w-50 sum-article d-flex justify-content-between flex-column pt-2 pb-2"
+            >
+                <div>
+                    <h5>{{this.Title}}</h5>
+                    <p>{{this.Abstract}}</p>
+                </div>
+                <div>
+                    <span>Ngày đăng: {{this.DatePosted}}</span>
+                </div>
+            </div>
+        </a>
 
-    <a class="d-flex align-items-start w-75" style="text-decoration: none;color:unset;" href="/article/{{ArticleID}}">
-      <div class="img-article w-50">
-        {{#if (eq this.URL 'null')}}
-        <img src="/null.jpg" alt="Logo" class="img-fluid">
-        {{else}}
-        <img src={{this.URL}} alt="Logo" class="img-fluid">
-        {{/if}}
-      </div>
-      <div class="main-news-item__description w-50 sum-article d-flex justify-content-between flex-column">
-        <div>
-          <h5>{{this.Title}}</h5>
-          <p>{{this.Abstract}}</p>
+        <div class="w-25 h-100 pt-2 pb-2">
+            <div class="d-flex flex-column mb-2">
+                <a href="/category/{{this.categoryId}}" class="text-muted">
+                    <span>{{this.category}} /</span>
+                </a>
+                <a
+                    href="/category/subcategory/{{this.subcategoryId}}"
+                    class="text-muted"
+                >
+                    <span>{{this.subcategory}}</span>
+                </a>
+            </div>
+            <div class="main-news-item__tags-container">
+                {{#each this.tags}}
+                <a href="/tags?tag={{name_encode}}">
+                    <button class="btn btn-sm tag">{{name}}</button>
+                </a>
+                {{/each}}
+            </div>
         </div>
-        <div>
-          <span>Ngày đăng: {{this.DatePosted}}</span>
-        </div>
-      </div>
-    </a>
-
-    <div class="w-25 h-100">
-      <div class="d-flex flex-column mb-2">
-        <a href="/category/{{this.categoryId}}">
-          <span>{{this.category}} /</span>
-        </a>
-        <a href="/category/subcategory/{{this.subcategoryId}}">
-          <span>{{this.subcategory}}</span>
-        </a>
-      </div>
-      <div class="main-news-item__tags-container">
-        {{#each this.tags}}
-        <a href="/tags?tag={{name_encode}}">
-          <button class="btn btn-sm tag">{{name}}</button>
-        </a>
-        {{/each}}
-      </div>
     </div>
-  </div>
-  {{/each}}
+    {{/each}}
 </section>
