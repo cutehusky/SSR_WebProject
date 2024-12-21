@@ -3,7 +3,7 @@ import { Response, Request } from 'express';
 import { get } from 'http';
 import { data } from 'jquery';
 import { title } from 'process';
-import { DBConfig } from '../utils/DBConfig';
+import { DBConfig } from '../Utils/DBConfig';
 import path from "path";
 
 // Fake data
