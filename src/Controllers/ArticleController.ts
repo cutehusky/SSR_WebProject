@@ -20,8 +20,11 @@ import {
     findPageByTagID,
     CountSearchResult,
     getFullCategoryNameByCatID,
-    getArticlesSortedByPostedDate,
+    getArticlesByCategoryID,
     countArticlesByCatID,
+    getSubcategoryInfoBySubCatID,
+    getArticlesBySubCatID,
+    countArticlesBySubCatID,
 } from '../Services/articleService';
 import { getUsernameById, getWriterNameById } from '../Services/userService';
 import { clamp, getPagingNumber } from '../Utils/MathUtils';
@@ -276,7 +279,7 @@ export class ArticleController {
         const nextLink =
             page < totalPage ? `${categoriesStringQuery}?page=${page + 1}` : '';
 
-        const articles = await getArticlesSortedByPostedDate(
+        const articles = await getArticlesByCategoryID(
             categoryId,
             articlePerPage,
             (page - 1) * articlePerPage
@@ -302,16 +305,43 @@ export class ArticleController {
     }
 
     // /category/subcategory/:id?page=
-    getArticleListBySubCategory(req: Request, res: Response) {
-        const categoryName = req.params.category;
-        const subCategoryId = req.params.id;
-        const page = (req.query.page as string) || '0';
-        console.log(subCategoryId);
-        console.log(page);
+    async getArticleListBySubCategory(req: Request, res: Response) {
+        const subcategoryId = req.params.id as string;
+        const { categoryID, categoryName, subcategoryInfo } =
+            await getSubcategoryInfoBySubCatID(subcategoryId);
 
-        //tìm trong datebase các category có name = categoryName
-        // const idCategory = listCategories.find(category => category.name === categoryName)?.id;
-        const idCategory = 1;
+        const articleNum = await countArticlesBySubCatID(subcategoryId);
+        const totalPage = Math.ceil(articleNum / articlePerPage);
+        let page = (parseInt(req.query.page as string) as number) || 1;
+        page = clamp(page, 1, totalPage);
+
+        const page_items = getPagingNumber(page, totalPage);
+        const subCategoriesStringQuery = `/category/subcategory/${subcategoryId}`;
+
+        for (let i = 0; i < page_items.length; i++)
+            page_items[
+                i
+            ].link = `${subCategoriesStringQuery}?page=${page_items[i].value}`;
+
+        const previousLink =
+            page > 1 ? `${subCategoriesStringQuery}?page=${page - 1}` : '';
+        const nextLink =
+            page < totalPage
+                ? `${subCategoriesStringQuery}?page=${page + 1}`
+                : '';
+
+        const articles = await getArticlesBySubCatID(
+            subcategoryId,
+            articlePerPage,
+            (page - 1) * articlePerPage
+        );
+        const [topNews, ...listOfNews] = articles;
+
+        // the activating subcategory will be placed first in the array
+        subcategoryInfo.sort((a, b) =>
+            a.id === subcategoryId ? -1 : b.id === subcategoryId ? 1 : 0
+        );
+
         res.render('Home/HomeGuestSubCategories', {
             customCss: [
                 'Category.css',
@@ -319,12 +349,15 @@ export class ArticleController {
                 'Home.css',
                 'Component.css',
             ],
-            categories: listCategories[Number(idCategory) - 1].SubCategories,
-            nameCategory: categoryName,
-            subCategoryId: Number(subCategoryId),
-
-            newsOfCategory: getFirstTwoTags(listCardResult),
+            subcategoryId,
+            categoryID,
+            categoryName,
+            subcategoryInfo,
+            listOfNews,
             topNews,
+            previousLink,
+            nextLink,
+            page_items,
         });
     }
 

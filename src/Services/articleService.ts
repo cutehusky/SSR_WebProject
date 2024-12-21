@@ -178,7 +178,7 @@ export const getFullCategoryNameByCatID = async (
     return { categoryName, subcategoryInfo };
 };
 
-export const getArticlesSortedByPostedDate = async (
+export const getArticlesByCategoryID = async (
     categoryId: string,
     limit: number,
     offset: number
@@ -272,6 +272,125 @@ export const countArticlesByCatID = async (
         .first();
 
     return total ? (total.total as number) : 0;
+};
+
+export const countArticlesBySubCatID = async (
+    subcategoryId: string
+): Promise<number> => {
+    let total = await db('ARTICLE_SUBCATEGORY')
+        .where('ARTICLE_SUBCATEGORY.SubCategoryID', '=', subcategoryId)
+        .join(
+            'ARTICLE',
+            'ARTICLE.ArticleID',
+            '=',
+            'ARTICLE_SUBCATEGORY.ArticleID'
+        )
+        .groupBy('ARTICLE_SUBCATEGORY.SubCategoryID')
+        .count('* as total')
+        .first();
+
+    return total ? (total.total as number) : 0;
+};
+
+export const getSubcategoryInfoBySubCatID = async (
+    subcategoryId: string
+): Promise<{
+    categoryID: string;
+    categoryName: string;
+    subcategoryInfo: {
+        id: string;
+        link: string;
+        name: string;
+    }[];
+}> => {
+    let { categoryID, categoryName } = await db('SUBCATEGORY')
+        .where('SUBCATEGORY.SubCategoryID', '=', subcategoryId)
+        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+        .select(
+            'CATEGORY.CategoryID as categoryID',
+            'CATEGORY.Name as categoryName'
+        )
+        .first();
+
+    const response = await db('SUBCATEGORY')
+        .where('SUBCATEGORY.CategoryID', '=', categoryID)
+        .select(
+            'SUBCATEGORY.Name as name',
+            'SUBCATEGORY.SubCategoryID as subID'
+        );
+
+    const result = {
+        subcategoryInfo: response.map(item => ({
+            id: item.subID.toString(),
+            link: `/category/subcategory/${item.subID}`,
+            name: item.name,
+        })),
+        categoryName,
+        categoryID,
+    };
+
+    return result;
+};
+
+export const getArticlesBySubCatID = async (
+    subcategoryId: string,
+    limit: number,
+    offset: number
+): Promise<any[]> => {
+    const response = await db('SUBCATEGORY')
+        .where('SUBCATEGORY.SubCategoryID', '=', subcategoryId)
+        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+        .join(
+            'ARTICLE_SUBCATEGORY',
+            'ARTICLE_SUBCATEGORY.SubCategoryID',
+            '=',
+            'SUBCATEGORY.SubcategoryID'
+        )
+        .join(
+            'ARTICLE',
+            'ARTICLE.ArticleID',
+            '=',
+            'ARTICLE_SUBCATEGORY.ArticleID'
+        )
+        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', 'ARTICLE.ArticleID')
+        .orderBy('ARTICLE.DatePosted', 'DESC')
+        .select(
+            'ARTICLE.ArticleID as ArticleID',
+            'ARTICLE.Title as Title',
+            'ARTICLE.Abstract as Abstract',
+            'ARTICLE.DatePosted as DatePosted',
+            'ARTICLE_URL.URL as URL',
+            'SUBCATEGORY.Name as subcategory',
+            'SUBCATEGORY.SubcategoryID as subcategoryId',
+            'CATEGORY.Name as category'
+        )
+        .limit(limit)
+        .offset(offset);
+
+    const formattedResponse = await Promise.all(
+        response.map(async item => {
+            const date = new Date(item.DatePosted);
+            const formattedDate = date
+                .toISOString()
+                .slice(0, 19)
+                .replace('T', ' ');
+            const tags = await db('ARTICLE_TAG')
+                .where('ARTICLE_TAG.ArticleID', '=', item.ArticleID)
+                .join('TAG', 'TAG.TagID', '=', 'ARTICLE_TAG.TagID')
+                .select('TAG.Name as name');
+
+            return {
+                ...item,
+                DatePosted: formattedDate,
+                tags: tags.map(tag => ({
+                    name_encode: encodeURIComponent(tag.name),
+                    name: tag.name,
+                })),
+            };
+        })
+    );
+
+    return formattedResponse;
 };
 
 export const findPageByTagID = async (

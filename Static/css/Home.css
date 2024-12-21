@@ -23,13 +23,12 @@
 
 .sub-category {
     margin-right: 16px;
-    margin-top: 8px;
     font-weight: bold;
     color: var(--color-gray-text);
 }
 
 .sub-category.is-active {
-    color: var(--color-red-link);
+    color: var(--color-red-primary);
 }
 
 .top-news:hover {

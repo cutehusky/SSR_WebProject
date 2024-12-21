@@ -1,17 +1,17 @@
 import session from 'express-session';
-import express, {Express, Request, Response} from 'express';
-import {engine} from 'express-handlebars';
+import express, { Express, Request, Response } from 'express';
+import { engine } from 'express-handlebars';
 
-import {ArticleRouter} from './Router/ArticleRouter';
-import {WriterRouter} from './Router/WriterRouter';
-import {UserRouter} from './Router/UserRouter';
-import {AdminRouter} from './Router/AdminRouter';
-import {EditorRouter} from './Router/EditorRouter';
+import { ArticleRouter } from './Router/ArticleRouter';
+import { WriterRouter } from './Router/WriterRouter';
+import { UserRouter } from './Router/UserRouter';
+import { AdminRouter } from './Router/AdminRouter';
+import { EditorRouter } from './Router/EditorRouter';
 import Handlebars from 'handlebars';
-import {MiddlewareController} from './Controllers/Middleware';
+import { MiddlewareController } from './Controllers/Middleware';
 
 import sections from 'express-handlebars-sections';
-import {UserRole} from "./Services/userService";
+import { UserRole } from './Services/userService';
 
 const app: Express = express();
 const port: number = 3000;

@@ -15,7 +15,7 @@
         {{/if}}
         <ul class="nav w-100 d-flex flex-nowrap sub-category-wrapper">
             {{#each subcategoryInfo}}
-            <li class="sub-category text text-nowrap">
+            <li class="pt-3 me-3 sub-category text text-nowrap">
                 <a href="/category/subcategory/{{this.subcategoryId}}"
                     >{{this.subcategoryName}}</a
                 >
@@ -27,7 +27,7 @@
 
 <div class="d-flex align-items-start">
     <div class="col col-lg-9 col-md-12 col-sm-12">
-        <section class="d-flex col col-lg-12 col-md-12 col-sm-12">
+        <section class="col col-lg-12 col-md-12 col-sm-12">
             <section class="w-65 me-3 col col-lg-12 col-md-12 col-sm-12">
                 <a href="/article/{{topNews.ArticleID}}" class="top-news">
                     <div
@@ -36,8 +36,8 @@
                         <img
                             src="{{topNews.URL}}"
                             alt=""
-                            class="w-100 h-100 img-fluid"
-                            style="object-fit: cover; max-height: 500px"
+                            class="w-100 img-fluid"
+                            style="object-fit: cover; height: 500px"
                         />
                         <div class="top-news__date">
                             <span>Ngày đăng: {{topNews.DatePosted}}</span>
@@ -86,7 +86,7 @@
             {{> Component/News listOfNews=newsOfCategory}}
         </section>
     </div>
-    <div class="col col-lg-3 sub-news">
+    <!-- <div class="col col-lg-3 sub-news">
         {{#each newsOfCategory}}
         <div class="mb-4">
             <div
@@ -120,7 +120,7 @@
             </div>
         </div>
         {{/each}}
-    </div>
+    </div> -->
 </div>
 
 {{> Component/Paging page_items=this.page_items previousLink=this.previousLink
