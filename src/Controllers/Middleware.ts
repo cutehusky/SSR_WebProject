@@ -2,7 +2,7 @@
 import { NextFunction, Request, Response } from "express";
 import session from "express-session";
 
-import { DBConfig } from "../utils/DBConfig";
+import { DBConfig } from "../Utils/DBConfig";
 export class MiddlewareController {
     async getCategory(req: Request, res: Response, next: NextFunction) {
         let categories = await DBConfig("CATEGORY").select("CategoryID as id", "Name as name");
