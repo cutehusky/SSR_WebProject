@@ -1,5 +1,5 @@
 import { DBConfig, DBConfig as db } from '../Utils/DBConfig';
-import {writer} from "repl";
+import { writer } from 'repl';
 
 export interface ArticleData {
     id: number;
@@ -123,6 +123,249 @@ export const updateArticle = async (articleData: ArticleData): Promise<void> => 
     }
 };
 
+export const getFullCategoryNameByCatID = async (
+    categoryId: string
+): Promise<{
+    categoryName: string;
+    subcategoryInfo: { subcategoryId: string; subcategoryName: string }[];
+}> => {
+    const response = await db('CATEGORY')
+        .where('CATEGORY.CategoryID', '=', categoryId)
+        .join(
+            'SUBCATEGORY',
+            'SUBCATEGORY.CategoryID',
+            '=',
+            'CATEGORY.CategoryID'
+        )
+        .select(
+            'CATEGORY.Name as categoryName',
+            'SUBCATEGORY.Name as subcategoryName',
+            'SUBCATEGORY.SubCategoryID as subcategoryId'
+        );
+    const categoryName = response[0].categoryName; // because all categoryName are the same
+    const subcategoryInfo = response.map(item => ({
+        subcategoryId: item.subcategoryId,
+        subcategoryName: item.subcategoryName,
+    }));
+
+    return { categoryName, subcategoryInfo };
+};
+
+export const getArticlesByCategoryID = async (
+    categoryId: string,
+    limit: number,
+    offset: number
+): Promise<any[]> => {
+    const response = await db('CATEGORY')
+        .where('CATEGORY.CategoryID', '=', categoryId)
+        .join(
+            'SUBCATEGORY',
+            'SUBCATEGORY.CategoryID',
+            '=',
+            'CATEGORY.CategoryID'
+        )
+        .join(
+            'ARTICLE_SUBCATEGORY',
+            'ARTICLE_SUBCATEGORY.SubCategoryID',
+            '=',
+            'SUBCATEGORY.SubCategoryID'
+        )
+        .join(
+            'ARTICLE',
+            'ARTICLE.ArticleID',
+            '=',
+            'ARTICLE_SUBCATEGORY.ArticleID'
+        )
+        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+        .orderBy('ARTICLE.DatePosted', 'DESC')
+        .select(
+            'ARTICLE.ArticleID as ArticleID',
+            'ARTICLE.Title as Title',
+            'ARTICLE.Abstract as Abstract',
+            'ARTICLE.DatePosted as DatePosted',
+            'ARTICLE_URL.URL as URL',
+            'SUBCATEGORY.Name as subcategory',
+            'SUBCATEGORY.SubcategoryID as subcategoryId',
+            'CATEGORY.Name as category'
+        )
+        .limit(limit)
+        .offset(offset);
+
+    const formattedResponse = await Promise.all(
+        response.map(async item => {
+            const date = new Date(item.DatePosted);
+            const formattedDate = date
+                .toISOString()
+                .slice(0, 19)
+                .replace('T', ' ');
+            const tags = await db('ARTICLE_TAG')
+                .where('ARTICLE_TAG.ArticleID', '=', item.ArticleID)
+                .join('TAG', 'TAG.TagID', '=', 'ARTICLE_TAG.TagID')
+                .select('TAG.Name as name');
+
+            return {
+                ...item,
+                DatePosted: formattedDate,
+                tags: tags.map(tag => ({
+                    name_encode: encodeURIComponent(tag.name),
+                    name: tag.name,
+                })),
+            };
+        })
+    );
+
+    return formattedResponse;
+};
+
+export const countArticlesByCatID = async (
+    categoryId: string
+): Promise<number> => {
+    let total = await db('CATEGORY')
+        .where('CATEGORY.CategoryID', '=', categoryId)
+        .join(
+            'SUBCATEGORY',
+            'SUBCATEGORY.CategoryID',
+            '=',
+            'CATEGORY.CategoryID'
+        )
+        .join(
+            'ARTICLE_SUBCATEGORY',
+            'ARTICLE_SUBCATEGORY.SubCategoryID',
+            '=',
+            'SUBCATEGORY.SubCategoryID'
+        )
+        .join(
+            'ARTICLE',
+            'ARTICLE.ArticleID',
+            '=',
+            'ARTICLE_SUBCATEGORY.ArticleID'
+        )
+        .groupBy('CATEGORy.CategoryID')
+        .count('* as total')
+        .first();
+
+    return total ? (total.total as number) : 0;
+};
+
+export const countArticlesBySubCatID = async (
+    subcategoryId: string
+): Promise<number> => {
+    let total = await db('ARTICLE_SUBCATEGORY')
+        .where('ARTICLE_SUBCATEGORY.SubCategoryID', '=', subcategoryId)
+        .join(
+            'ARTICLE',
+            'ARTICLE.ArticleID',
+            '=',
+            'ARTICLE_SUBCATEGORY.ArticleID'
+        )
+        .groupBy('ARTICLE_SUBCATEGORY.SubCategoryID')
+        .count('* as total')
+        .first();
+
+    return total ? (total.total as number) : 0;
+};
+
+export const getSubcategoryInfoBySubCatID = async (
+    subcategoryId: string
+): Promise<{
+    categoryID: string;
+    categoryName: string;
+    subcategoryInfo: {
+        id: string;
+        link: string;
+        name: string;
+    }[];
+}> => {
+    let { categoryID, categoryName } = await db('SUBCATEGORY')
+        .where('SUBCATEGORY.SubCategoryID', '=', subcategoryId)
+        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+        .select(
+            'CATEGORY.CategoryID as categoryID',
+            'CATEGORY.Name as categoryName'
+        )
+        .first();
+
+    const response = await db('SUBCATEGORY')
+        .where('SUBCATEGORY.CategoryID', '=', categoryID)
+        .select(
+            'SUBCATEGORY.Name as name',
+            'SUBCATEGORY.SubCategoryID as subID'
+        );
+
+    const result = {
+        subcategoryInfo: response.map(item => ({
+            id: item.subID.toString(),
+            link: `/category/subcategory/${item.subID}`,
+            name: item.name,
+        })),
+        categoryName,
+        categoryID,
+    };
+
+    return result;
+};
+
+export const getArticlesBySubCatID = async (
+    subcategoryId: string,
+    limit: number,
+    offset: number
+): Promise<any[]> => {
+    const response = await db('SUBCATEGORY')
+        .where('SUBCATEGORY.SubCategoryID', '=', subcategoryId)
+        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+        .join(
+            'ARTICLE_SUBCATEGORY',
+            'ARTICLE_SUBCATEGORY.SubCategoryID',
+            '=',
+            'SUBCATEGORY.SubcategoryID'
+        )
+        .join(
+            'ARTICLE',
+            'ARTICLE.ArticleID',
+            '=',
+            'ARTICLE_SUBCATEGORY.ArticleID'
+        )
+        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', 'ARTICLE.ArticleID')
+        .orderBy('ARTICLE.DatePosted', 'DESC')
+        .select(
+            'ARTICLE.ArticleID as ArticleID',
+            'ARTICLE.Title as Title',
+            'ARTICLE.Abstract as Abstract',
+            'ARTICLE.DatePosted as DatePosted',
+            'ARTICLE_URL.URL as URL',
+            'SUBCATEGORY.Name as subcategory',
+            'SUBCATEGORY.SubcategoryID as subcategoryId',
+            'CATEGORY.Name as category'
+        )
+        .limit(limit)
+        .offset(offset);
+
+    const formattedResponse = await Promise.all(
+        response.map(async item => {
+            const date = new Date(item.DatePosted);
+            const formattedDate = date
+                .toISOString()
+                .slice(0, 19)
+                .replace('T', ' ');
+            const tags = await db('ARTICLE_TAG')
+                .where('ARTICLE_TAG.ArticleID', '=', item.ArticleID)
+                .join('TAG', 'TAG.TagID', '=', 'ARTICLE_TAG.TagID')
+                .select('TAG.Name as name');
+
+            return {
+                ...item,
+                DatePosted: formattedDate,
+                tags: tags.map(tag => ({
+                    name_encode: encodeURIComponent(tag.name),
+                    name: tag.name,
+                })),
+            };
+        })
+    );
+
+    return formattedResponse;
+};
+
 export const findPageByTagID = async (
     tagIDs: string[],
     limit: number,
@@ -170,7 +413,7 @@ export const findPageByTagID = async (
             'CATEGORY.Name',
             'SUBCATEGORY.Name',
             'CATEGORY.CategoryID',
-            'SUBCATEGORY.SubCategoryID',
+            'SUBCATEGORY.SubCategoryID'
         )
         .limit(limit)
         .offset(offset);
@@ -188,21 +431,28 @@ export const countArticlesByTagID = async (
         .count('* as total')
         .groupBy('ARTICLE_TAG.TagID')
         .first();
-    console.log('TT: ', total);
 
     return total ? (total as { total: number }).total : 0;
 };
 
-export const CountSearchResult = async (searchValue: string): Promise<number> => {
+export const CountSearchResult = async (
+    searchValue: string
+): Promise<number> => {
     let count = await DBConfig('ARTICLE')
         .whereRaw(
             'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
             [searchValue]
-        ).count("* as count").first();
-    return count ? count.count as number : 0;
+        )
+        .count('* as count')
+        .first();
+    return count ? (count.count as number) : 0;
 };
 
-export const SearchArticle = async (searchValue: string, offset:number, limit: number) => {
+export const SearchArticle = async (
+    searchValue: string,
+    offset: number,
+    limit: number
+) => {
     let result = await DBConfig('ARTICLE')
         .whereRaw(
             'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
@@ -236,7 +486,9 @@ export const SearchArticle = async (searchValue: string, offset:number, limit: n
             'CATEGORY.CategoryID as categoryId',
             'SUBCATEGORY.SubCategoryID as subcategoryId',
             'URL'
-        ).offset(offset).limit(limit);
+        )
+        .offset(offset)
+        .limit(limit);
     for (let i = 0; i < result.length; i++)
         result[i].tags = await GetTagsOfArticle(result[i].ArticleID);
     return result as Array<ArticleListItem>;
@@ -249,11 +501,11 @@ export const GetArticleById = async (articleId: string) => {
 export interface Tag {
     id: string;
     name: string;
-    name_encode: string
+    name_encode: string;
 }
 
 export const GetTagsOfArticle = async (
-    articleId: string|number
+    articleId: string | number
 ): Promise<Array<Tag>> => {
     let tags = await DBConfig('TAG')
         .join('ARTICLE_TAG', 'ARTICLE_TAG.TagID', '=', 'TAG.TagID')
@@ -273,61 +525,79 @@ export const AddViewCount = async (articleId: string) => {
     if (!currentCnt) return;
     await DBConfig('ARTICLE')
         .where({ ArticleId: articleId })
-        .update({ ViewCount: currentCnt.ViewCount+1 });
+        .update({ ViewCount: currentCnt.ViewCount + 1 });
 };
 
 export const CountArticleOfWriterByStates = async (
     writerId: number,
-    states: string[]) => {
-    let count = await DBConfig("ARTICLE")
-        .where({'WriterID':writerId })
-        .whereIn("Status", states).count("* as count").first();
-    return count ? count.count as number : 0;
-}
+    states: string[]
+) => {
+    let count = await DBConfig('ARTICLE')
+        .where({ WriterID: writerId })
+        .whereIn('Status', states)
+        .count('* as count')
+        .first();
+    return count ? (count.count as number) : 0;
+};
 
 export const GetArticleOfWriterByStates = async (
     writerId: number,
     states: string[],
     offset: number,
-    limit: number) => {
-    return DBConfig("ARTICLE")
-        .join("ARTICLE_SUBCATEGORY", "ARTICLE_SUBCATEGORY.ArticleID","=","ARTICLE.ArticleID")
-        .join("SUBCATEGORY",'ARTICLE_SUBCATEGORY.SubCategoryID', '=', 'SUBCATEGORY.SubCategoryID')
-        .join("CATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
-        .join("ARTICLE_URL", "ARTICLE_URL.ArticleID", "=","ARTICLE.ArticleID")
-        .where({STT: 0})
-        .where({'WriterID':writerId })
-        .whereIn("Status", states)
-        .select("Title as title",
-            "Abstract as abstract",
-            "DatePublished as datePublished",
-            "DatePosted as datePosted",
-            "CATEGORY.Name as category",
-            "SUBCATEGORY.Name as subcategory",
-            "URL as cover",
-            "Status as state",
-            "ARTICLE.ArticleID as id")
-        .orderBy("DatePosted", "desc").offset(offset).limit(limit);
-}
+    limit: number
+) => {
+    return DBConfig('ARTICLE')
+        .join(
+            'ARTICLE_SUBCATEGORY',
+            'ARTICLE_SUBCATEGORY.ArticleID',
+            '=',
+            'ARTICLE.ArticleID'
+        )
+        .join(
+            'SUBCATEGORY',
+            'ARTICLE_SUBCATEGORY.SubCategoryID',
+            '=',
+            'SUBCATEGORY.SubCategoryID'
+        )
+        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+        .where({ STT: 0 })
+        .where({ WriterID: writerId })
+        .whereIn('Status', states)
+        .select(
+            'Title as title',
+            'Abstract as abstract',
+            'DatePublished as datePublished',
+            'DatePosted as datePosted',
+            'CATEGORY.Name as category',
+            'SUBCATEGORY.Name as subcategory',
+            'URL as cover',
+            'Status as state',
+            'ARTICLE.ArticleID as id'
+        )
+        .orderBy('DatePosted', 'desc')
+        .offset(offset)
+        .limit(limit);
+};
 
 export interface ArticleListItem {
-    ArticleID: number,
-    Title: string,
-    DatePosted: Date,
-    Abstract: string,
-    IsPremium: boolean,
-    ViewCount: number,
-    category: string,
-    subcategory: string,
-    categoryId: number,
-    subcategoryId: number,
-    URL: string,
-    tags?: Array<Tag>
+    ArticleID: number;
+    Title: string;
+    DatePosted: Date;
+    Abstract: string;
+    IsPremium: boolean;
+    ViewCount: number;
+    category: string;
+    subcategory: string;
+    categoryId: number;
+    subcategoryId: number;
+    URL: string;
+    tags?: Array<Tag>;
 }
 
 export const GetRelativeArticle = async (
-    categoryId: string|number,
-    articleId: string|number,
+    categoryId: string | number,
+    articleId: string | number,
     limit: number = 5
 ): Promise<Array<ArticleListItem>> => {
     let result = await DBConfig('ARTICLE')
@@ -368,7 +638,6 @@ export const GetRelativeArticle = async (
     return result as Array<ArticleListItem>;
 };
 
-
 export const GetBackgroundImageOfArticle = async (
     articleId: string
 ): Promise<string> => {
@@ -399,15 +668,15 @@ export const AddBackgroundImageOfArticle = async (
 };
 
 export interface CategoryFullname {
-    fullname: string,
-    id: number
+    fullname: string;
+    id: number;
 }
 
 export interface Category {
-    categoryName: string,
-    subcategoryName: string,
-    categoryId: number,
-    subcategoryId: number
+    categoryName: string;
+    subcategoryName: string;
+    categoryId: number;
+    subcategoryId: number;
 }
 
 export const GetCategoryFullNameOfArticle = async (articleId: string) => {
@@ -427,7 +696,7 @@ export const GetCategoryFullNameOfArticle = async (articleId: string) => {
             )
         )
         .first();
-    return result ? result as CategoryFullname : {fullname: "", id: 0};
+    return result ? (result as CategoryFullname) : { fullname: '', id: 0 };
 };
 
 export const GetCategoryOfArticle = async (articleId: string) => {
@@ -445,9 +714,17 @@ export const GetCategoryOfArticle = async (articleId: string) => {
             'SUBCATEGORY.Name as subcategoryName',
             'CATEGORY.CategoryID as categoryId',
             'SUBCATEGORY.SubCategoryID as subcategoryId'
-        ).first();
-    return category ? category as Category : {categoryName: '', subcategoryName: '', categoryId: 0, subcategoryId: 0};
-}
+        )
+        .first();
+    return category
+        ? (category as Category)
+        : {
+              categoryName: '',
+              subcategoryName: '',
+              categoryId: 0,
+              subcategoryId: 0,
+          };
+};
 
 export interface Comment {
     DatePosted: Date;
@@ -485,7 +762,7 @@ export const AddComment = async (
             ArticleId: articleId,
             Content: content,
             DatePosted: date,
-            SubscriberID: userId
+            SubscriberID: userId,
         });
     }
 };
