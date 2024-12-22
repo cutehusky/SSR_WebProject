@@ -26,8 +26,23 @@ router.post('/register', async (req, res, next) => {
     next(error);
   }
 });
-router.post('/send-otp', userController.sendOTP);
-router.post('/reset-password-by-otp', userController.resetPasswordByOTP);
-router.post('/reset-password', userController.resetPassword);
+router.post('/send-otp', async(req, res, next) =>{
+  try {
+    await userController.sendOTP(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+});
+router.post('/reset-password-by-otp', (req, res) => {
+  userController.resetPasswordByOTP(req, res);
+});
+
+router.post('/reset-password', async (req, res, next)=> {
+  try {
+    await userController.resetPassword(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+});
 
 export { router as UserRouter };

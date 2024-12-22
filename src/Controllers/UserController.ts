@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {DBConfig} from "../Utils/DBConfig";
 import bcrypt from "bcryptjs";
-import {createUser, getUserByEmail, UserData, UserRole} from "../Services/userService";
+import * as userService  from "../Services/userService";
 
 
 export class UserController {
@@ -15,8 +15,8 @@ export class UserController {
 
         try {
             // Kiểm tra người dùng từ database
-            const user = await getUserByEmail(email);
-            if (!user || user.role === UserRole.Invalid) {
+            const user = await userService.getUserByEmail(email);
+            if (!user || user.role === userService.UserRole.Invalid) {
                 return res.status(404).json({ error: "User not found" });
             }
 
@@ -62,17 +62,17 @@ export class UserController {
             const hashedPassword = await bcrypt.hash(password, 10);
 
             // Tạo người dùng mới
-            const newUser: UserData = {
+            const newUser: userService.UserData = {
                 id: Date.now(),  // Tạo ID theo thời gian (hoặc bạn có thể dùng UUID hoặc auto increment từ DB)
                 fullname,
                 email,
                 password: hashedPassword,
                 dob : dob,
-                role: UserRole.User
+                role: userService.UserRole.User
             };
 
             // Tạo mới người dùng trong DB
-            await createUser(newUser);
+            await userService.createUser(newUser);
 
             // Lưu thông tin người dùng vào session sau khi đăng ký thành công
             req.session.authUser = newUser;
@@ -99,17 +99,63 @@ export class UserController {
     }
 
     // /user/reset-password
-    resetPassword(req: Request, res: Response) {
+    async resetPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            // Check if user is logged in
+            const user = req.session.authUser;
+            if (!user) {
+                return res.status(401).json({ error: "Unauthorized" });
+            }
 
+            const { oldPassword, newPassword } = req.body;
+            console.log(
+                oldPassword,
+                newPassword
+            );
+
+            // Check if current password is correct
+            const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+            if (!isPasswordValid) {
+                return res.status(400).json({ error: "Current password is incorrect" });
+            }
+
+            // Update the password
+            await userService.updatePassword(user.email, newPassword);
+            return res.status(200).json({ message: "Password reset successfully" });
+        } catch (error) {
+            next(error);
+        }
     }
 
     // /user/reset-password-by-otp
-    resetPasswordByOTP(req: Request, res: Response) {
+    async resetPasswordByOTP(req: Request, res: Response) {
+        try{
+            const { email, otp, newPassword } = req.body;
 
+            const isOTPValid = userService.verifyOTP(email, otp);
+            if (!isOTPValid) {
+                return res.status(400).json({ error: "Invalid OTP" });
+            }
+
+            // Update the password
+            await userService.updatePassword(email, newPassword);
+            return res.status(200).json({ message: "Password reset successfully" });
+        } catch (error) {
+            console.error("Reset Password Error:", error);
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
     }
 
     // /user/send-otp
-    sendOTP(req: Request, res: Response) {
-
+    async sendOTP(req: Request, res: Response, next: NextFunction) : Promise<Response | void> {
+        try{
+            const { email } = req.body;
+            // console.log(email);
+            await userService.sendOTP(email);
+            return res.status(200).json({ message: "OTP sent successfully" });
+        } catch (error) {
+            console.error("Send OTP Error:", error);
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
     }
 }

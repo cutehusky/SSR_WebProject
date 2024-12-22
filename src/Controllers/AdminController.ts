@@ -409,9 +409,16 @@ export class AdminController {
   // }
   deleteArticle(req: Request, res: Response) {
     const articleId = Number(req.body.id);
-    console.log("articleId: ", articleId);
+    if(articleId == null || isNaN(articleId)){
+      res.status(400).json({
+        error: 'ID is required and must be a valid number.',
+      });
+      return;
+    }
+    // console.log("articleId: ", articleId);
     deleteArticle(articleId);
     res.status(204).send("Article deleted");
+    res.redirect("/admin/articles");
   }
 
   // /admin/article/edit/:id
