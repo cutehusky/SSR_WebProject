@@ -9,7 +9,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="emailInput">Email</label>
-                        <input type="text" class="form-control" name="email" id="emailInput" placeholder="">
+                        <input type="text" class="form-control" name="email" id="emailInput" placeholder="" required>
                     </div>
                     <div class="form-group">
                         <label for="nameInput">Họ tên</label>
@@ -30,6 +30,9 @@
                             <option>Editor</option>
                         </select>
                     </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control" name="password" id="passwordInput" value="123" placeholder="" style="display: none;"> 
+                        </div>
                 </div>
                 <div class="modal-footer custom-modal-footer ">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>

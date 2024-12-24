@@ -2,15 +2,14 @@ import {Response, Request, NextFunction} from "express";
 import path from "path";
 import * as fs from "fs";
 import {DBConfig} from "../Utils/DBConfig";
-import {GetSubCategories} from "../Utils/getSubCategories";
 import {
   AddBackgroundImageOfArticle, CountArticleOfWriterByStates,
   createArticle,
   GetArticleById, GetArticleOfWriterByStates,
   GetBackgroundImageOfArticle,
   GetCategoryFullNameOfArticle, GetTagsOfArticle, UpdateBackgroundImageOfArticle
-} from "../Services/articleService";
-import {UserRole} from "../Services/userService";
+} from "../Services/AdminArticleService";
+import {UserRole} from "../Models/UserData";
 import {clamp, getPagingNumber} from "../Utils/MathUtils";
 
 const articlePerPage = 6;

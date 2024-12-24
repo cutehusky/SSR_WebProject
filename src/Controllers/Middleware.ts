@@ -2,7 +2,7 @@
 import {NextFunction, Request, Response} from "express";
 
 import {DBConfig} from "../Utils/DBConfig";
-import {UserData, UserRole} from "../Services/userService";
+import {UserRole} from "../Models/UserData";
 
 export class MiddlewareController {
     getToDay(req:Request, res: Response, next: NextFunction) {

@@ -1,7 +1,6 @@
 import express from "express";
 import {WriterController} from "../Controllers/WriterController";
 import {bufferUploader} from "../Utils/MulterConfig";
-import {UserRole} from "../Services/userService";
 
 const router = express.Router();
 

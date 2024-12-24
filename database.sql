@@ -8,6 +8,7 @@ CREATE TABLE USER (
     Password VARCHAR(250),
     DoB DATE,
     isAdministator INT DEFAULT 0 CHECK (isAdministator IN (0, 1)),
+    Role VARCHAR CHECK (Status IN ('Admin', 'Writer', 'Editor', 'Subcriber')) ,
     otp VARCHAR(6),
     otpExpiration DATETIME,
     CONSTRAINT PK_USER PRIMARY KEY (UserID)

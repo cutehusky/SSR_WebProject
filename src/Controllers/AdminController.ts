@@ -2,10 +2,13 @@ import { Response, Request } from "express";
 
 import { GetSubCategories } from "../Utils/getSubCategories";
 import { getCategories } from "../Utils/getCategories";
+import {getUsers} from "../Utils/getUsers";
 import { DBConfig } from "../Utils/DBConfig";
 
-import { ArticleData, createArticle, deleteArticle, updateArticle } from "../Services/articleService";
-import { UserData, createUser, deleteUser, updateUser } from "../Services/userService";
+import { ArticleData, createArticle, deleteArticle, updateArticle } from "../Services/AdminArticleService";
+import { createUser, deleteUser, updateUser } from "../Services/AdminUserService";
+import { UserData } from "../Models/UserData";
+import { getTags } from "../Utils/getTags";
 import { get } from "jquery";
 let tagData = [
   { name: "test 1", id: 1 },
@@ -19,16 +22,10 @@ let tagData = [
 export class AdminController {
   // /admin/categories?category=
   async getCategories(req: Request, res: Response) {
-    console.log(req.session.authUser)
     const category = (req.query.category || "-1") as string;
     const categoryId = parseInt(category);
-    const CategoryList = res.locals.Categories
-    let subCategoryList = await GetSubCategories();
-    console.log('subCategoryList:', subCategoryList);
-
-    if(categoryId !== -1){
-      subCategoryList = subCategoryList.filter((category: { parentId: number }) => category.parentId === categoryId);
-    }
+    const CategoryList = res.locals.Categories;
+    const subCategoryList = await GetSubCategories(categoryId);
 
     res.render("Admin/AdminCategoriesView", {
       customCss: ["Admin.css"],
@@ -39,7 +36,8 @@ export class AdminController {
   }
 
   // /admin/tags
-  getTags(req: Request, res: Response) {
+  async getTags(req: Request, res: Response) {
+    tagData = await getTags();
     res.render("Admin/AdminTagsView", {
       customCss: ["Admin.css"],
       customJs: ["AdminTagsDataTable.js"],
@@ -51,41 +49,28 @@ export class AdminController {
   getArticles(req: Request, res: Response) {
     const category = (req.query.category || "-1") as string;
     const categoryId = parseInt(category);
+
+
     res.render("Admin/AdminArticlesView", {
       selectedCategory: categoryId,
+      data: [],
       customJs: ["AdminArticlesDataTable.js"],
       customCss: ["Admin.css"],
     });
   }
 
   // /admin/users?role=
-  getUsers(req: Request, res: Response) {
+  async getUsers(req: Request, res: Response) {
     const role = (req.query.role || "all") as string;
-    let testData = [];
-    for (let i = 0; i < 20; i++) {
-      testData.push({
-        id: i,
-        email: "123@gmail.com",
-        name: "hello",
-        role: "editor",
-        dateOfBirth: "2077-12-12",
-      });
-    }
-    for (let i = 20; i < 40; i++) {
-      testData.push({
-        id: i,
-        email: "123@gmail.com",
-        name: "hello",
-        role: "admin",
-        dateOfBirth: "2077-1-1",
-      });
-    }
+    console.log("Role: ", role);
+    const data = await getUsers(role);
+    console.log("Data: ", data);
 
     res.render("Admin/AdminUsersView", {
       selectedRole: role,
       customJs: ["AdminUsersDataTable.js"],
       customCss: ["Admin.css"],
-      data: testData,
+      data: data,
     });
   }
 
@@ -122,7 +107,7 @@ export class AdminController {
 
     await DBConfig("CATEGORY").where("CategoryID", "=", id).update({ Name: name });
 
-    let subCategoryResponse = await GetSubCategories();
+    let subCategoryResponse = await GetSubCategories(id);
     Categories = getCategories()
 
     
@@ -240,17 +225,7 @@ export class AdminController {
     
     try{
       await DBConfig("category").insert({ name: categoryName });
-
-      const Categories = getCategories()
-      let subCategoryData = await GetSubCategories(); 
-
-      res.render("Admin/AdminCategoriesView", {
-        customCss: ["Admin.css"],
-        customJs: ["AdminCategoryDataTable.js"],
-        Categories: Categories,
-        Subcategories: subCategoryData,
-      });
-
+      res.redirect("/admin/categories");
     } catch(error){
       console.error('Error creating category:', error);
       res.status(500).json({
@@ -272,21 +247,11 @@ export class AdminController {
   newUser(req: Request, res: Response) {
     try {
       const userData : UserData = req.body;
-      console.log('Request body:', req.body);
-      // Validation cơ bản
-      if (userData.id == null || isNaN(userData.id)) {
-        res.status(400).json({
-          error: 'ID is required and must be a valid number.',
-        });
-        return;
-      }
-  
+      console.log('Request body:', req.body);  
       // Gọi Service để tạo user
       createUser(userData);
-      // Thông báo đã tạo user thành công
-      res.status(201).json({
-        message: 'User created successfully!',
-      });
+
+      res.redirect("/admin/users");
     } catch (error) {
       // Bắt lỗi nếu có
       console.error('Error creating user:', error);
@@ -360,16 +325,7 @@ export class AdminController {
     }
     await DBConfig("CATEGORY").where("CategoryID", "=", categoryId).del();
     await DBConfig("subcategory").where("CategoryID", "=", categoryId).del();
-
-    const subCategories = await GetSubCategories();
-    const Categories = getCategories()
-
-    res.render("Admin/AdminCategoriesView", {
-      customCss: ["Admin.css"],
-      customJs: ["AdminCategoryDataTable.js"],
-      Categories: Categories,
-      Subcategories:  subCategories,
-    });
+    res.redirect("/admin/categories");
   }
 
   // /admin/user/delete
@@ -390,10 +346,7 @@ export class AdminController {
   
       // Gọi Service để xóa user
       deleteUser(id);
-      // Thông báo đã xóa user thành công
-      res.status(204).json({
-        message: 'User deleted successfully!',
-      });
+      res.redirect("/admin/users");
     } catch (error) {
       // Bắt lỗi nếu có
       console.error('Error deleting user:', error);
@@ -445,16 +398,7 @@ export class AdminController {
       .andWhere("CategoryID", category) // Điều kiện CategoryID = category
       .update({ Name: name}); // Cập nhật tên và CategoryID
 
-    let subCategoryData = await GetSubCategories();
-    let Categories = getCategories()
-
-
-    res.render("Admin/AdminCategoriesView", {
-      customCss: ["Admin.css"],
-      customJs: ["AdminCategoryDataTable.js"],
-      Categories: Categories,
-      Subcategories: subCategoryData,
-    });
+    res.redirect("/admin/categories/?category=" + category);
   }
 
   // /admin/subcategory/new
@@ -467,15 +411,7 @@ export class AdminController {
     const parentId = parseInt(category);
 
     await DBConfig("subcategory").insert({ name: name, CategoryID: parentId });
-    const subCategoryResponse = await GetSubCategories();
-    const Categories = getCategories()
-
-    res.render("Admin/AdminCategoriesView", {
-      customCss: ["Admin.css"],
-      customJs: ["AdminCategoryDataTable.js"],
-      Categories: Categories,
-      Subcategories: subCategoryResponse,
-    });
+    res.redirect("/admin/categories/?category=" + category);
   }
 
   // /admin/subcategory/delete
@@ -491,14 +427,6 @@ export class AdminController {
       .andWhere("CategoryID", parentName)
       .del();
     
-    let subCategoryData = await GetSubCategories();
-    let Categories = getCategories()
-    
-    res.render("Admin/AdminCategoriesView", {
-      customCss: ["Admin.css"],
-      customJs: ["AdminCategoryDataTable.js"],
-      Categories: Categories,
-      Subcategories: subCategoryData,
-    });
+    // res.redirect("/admin/categories/?category=" + parentName);
   }
 }

@@ -1,6 +1,6 @@
 import { DBConfig } from './DBConfig';
 
-export const GetSubCategories = (): Promise<
+export const GetSubCategories = (categoryID : number): Promise<
     {
         id: number;
         name: string;
@@ -9,7 +9,7 @@ export const GetSubCategories = (): Promise<
         fullname: string;
     }[]
 > => {
-    return DBConfig('CATEGORY')
+    const query = DBConfig('CATEGORY')
         .join(
             'SUBCATEGORY',
             'CATEGORY.CategoryID',
@@ -25,4 +25,9 @@ export const GetSubCategories = (): Promise<
                 'CONCAT(CATEGORY.Name, " / ", SUBCATEGORY.Name) as fullname'
             )
         );
+    if (categoryID !== -1) {
+        query.where('CATEGORY.CategoryID', '=', categoryID);
+    }
+
+    return query;
 };

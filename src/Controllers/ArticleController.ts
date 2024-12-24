@@ -25,8 +25,8 @@ import {
     getSubcategoryInfoBySubCatID,
     getArticlesBySubCatID,
     countArticlesBySubCatID,
-} from '../Services/articleService';
-import { getUsernameById, getWriterNameById } from '../Services/userService';
+} from '../Services/AdminArticleService';
+import { getUsernameById, getWriterNameById } from '../Services/UserPasswordService';
 import { clamp, getPagingNumber } from '../Utils/MathUtils';
 
 const articlePerPage = 4;

@@ -11,7 +11,8 @@ import Handlebars from 'handlebars';
 import { MiddlewareController } from './Controllers/Middleware';
 
 import sections from 'express-handlebars-sections';
-import { UserRole } from './Services/userService';
+import { UserRole } from '../src/Models/UserData';
+import { format, parse } from 'date-fns';
 
 const app: Express = express();
 const port: number = 3000;
@@ -88,6 +89,19 @@ app.use(
     middlewareController.getProfile,
     EditorRouter
 );
+
+Handlebars.registerHelper("formatDate", (date, formatStr) => {
+    if (!date) return "";
+
+    try {
+        // Parse chuỗi ngày với định dạng MM/dd/yyyy
+        const parsedDate = parse(date, "MM/dd/yyyy", new Date());
+        return format(parsedDate, formatStr);
+    } catch (error) {
+        console.error("Invalid date:", date, error);
+        return "";
+    }
+});
 
 Handlebars.registerHelper('eq', function (this: any, arg1: any, arg2: any) {
     return arg1 === arg2;

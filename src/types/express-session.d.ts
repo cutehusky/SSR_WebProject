@@ -1,6 +1,6 @@
 // session.d.ts
 import 'express-session';
-import {UserData} from "../Services/userService";
+import {UserData} from "../Services/AdminUserService";
 
 declare module 'express-session' {
     interface SessionData {
