@@ -25,6 +25,10 @@ import {
     getSubcategoryInfoBySubCatID,
     getArticlesBySubCatID,
     countArticlesBySubCatID,
+    getMostViewedArticles,
+    getLatestArticles,
+    getTopArticles,
+    getCategoryArticles,
 } from '../Services/AdminArticleService';
 import { getUsernameById, getWriterNameById } from '../Services/UserPasswordService';
 import { clamp, getPagingNumber } from '../Utils/MathUtils';
@@ -203,48 +207,12 @@ function getFirstTwoTags(data: { tagList: { tag: string; link: string }[] }[]) {
 
 export class ArticleController {
     // /home
-    getHome(req: Request, res: Response) {
-        const top_articles = [];
-        for (let i = 0; i < 7; i++) {
-            top_articles.push({
-                img: '../logo.jpg',
-                category: 'business',
-                date: '01/01/2045',
-                title: 'Lorem ipsum dolor sit amet elit...',
-            });
-        }
-        const view_articles = [];
-        for (let i = 0; i < 10; i++) {
-            view_articles.push({
-                img: '../logo.jpg',
-                category: 'business',
-                date: '01/01/2045',
-                title: i + 1,
-            });
-        }
-        const category_articles = [];
-        for (let i = 0; i < 10; i++) {
-            category_articles.push({
-                img: '../logo.jpg',
-                category: 'business',
-                date: '01/01/2045',
-                title: 'Lorem ipsum dolor sit amet elit...',
-            });
-        }
-        const latest_articles = [];
-        for (let i = 0; i < 10; i++) {
-            latest_articles.push({
-                img: '../logo.jpg',
-                category: 'business',
-                date: '01/01/2045',
-                author: 'John Doe',
-                viewCount: 100,
-                commentCount: 10,
-                title: 'Lorem ipsum dolor sit amet elit...',
-                abstract:
-                    'Dolor lorem eos dolor duo et eirmod sea. Dolor sit magna rebum clita rebum dolor stet amet justo',
-            });
-        }
+    async getHome(req: Request, res: Response) {
+        const top_articles = await getTopArticles();
+        const view_articles = await getMostViewedArticles();
+        const category_articles = await getCategoryArticles();
+        const latest_articles = await getLatestArticles();
+
         res.render('Home/HomeView', {
             customCss: ['HomePage.css'],
             customJs: ['HomeView.js'],
