@@ -18,9 +18,9 @@ export class EditorController {
             );
         let articles;
         if (selectedCategory === undefined)
-            articles = await getArticlesCategories(categories);
+            articles = await getArticlesCategories(categories, editorID);
         else 
-            articles = await getArticlesCategories(selectedCategory);
+            articles = await getArticlesCategories(selectedCategory, editorID);
         const pages = ['1', '2', '3', '4', '5'];
 
         res.render('Editor/EditorListPendingApproveView', {
