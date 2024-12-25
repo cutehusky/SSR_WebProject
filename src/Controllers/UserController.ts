@@ -5,12 +5,12 @@ import * as userService  from "../Services/UserPasswordService";
 import { UserRole } from "../Models/UserData";
 import { UserData } from "../Models/UserData";
 import { createUser } from "../Services/AdminUserService";
+import nodemailer from 'nodemailer';
 
 export class UserController {
     // /user/login
     async logIn(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         const { email, password } = req.body;
-
         if (!email || !password) {
             return res.status(400).json({ error: "Email and Password are required" });
         }
@@ -88,10 +88,112 @@ export class UserController {
     }
     
     // /user/forgot-password/
-    forgotPassword(req: Request, res: Response) {
+    async forgotPassword(req: Request, res: Response) {
         const userId = req.params.id;
+        console.log(req.session.authUser);
         res.render('User/ForgotPasswordView',{
             customCss: ['User.css']});
+    }
+
+    async forgotPasswordPost(req: Request, res: Response) {
+        const { otp, newPassword, otpCheck, email, expires } = req.body;
+        if(otp != otpCheck) {
+            res.render('User/ForgotPasswordView', {
+                customCss: ['User.css'],
+                errorOTP: 'Mã OTP không chính xác, vui lòng thử lại.',
+                otp: {
+                    email,
+                    OTP: otp,
+                    OTPExpires: expires,
+                }
+            });
+        }
+        if (new Date() > new Date(expires)) {
+            res.render('User/ForgotPasswordView', {
+                customCss: ['User.css'],
+                errorOTP: 'Mã OTP đã hết hạn, vui lòng thử lại.',
+                otp: {
+                    email,
+                    OTP: otp,
+                    OTPExpires: expires,
+                }
+            });
+        }
+        try {
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            await DBConfig("USER").where("Email", email).update({ Password: hashedPassword });
+            res.render('User/ForgotPasswordView', {
+                customCss: ['User.css'],
+                message: 'Mật khẩu đã được thay đổi thành công!',
+            });
+        } catch (error) {
+            console.error("Forgot Password Error:", error);
+            res.render('User/ForgotPasswordView', {
+                customCss: ['User.css'],
+                error: 'Không thể thay đổi mật khẩu, vui lòng thử lại sau.',
+            });
+        }
+    }
+    // /user/forgot-password-email/
+    async forgotPasswordEmail(req: Request, res: Response) {
+        const userId = req.params.id;
+        console.log(req.session.authUser);
+        res.render('User/ForgotPasswordEmailView',{
+            customCss: ['User.css']});
+    }
+    async forgotPasswordEmailPost(req: Request, res: Response) {
+        const { email } = req.body;
+        const user = await DBConfig("USER").where("Email", email).first();
+        if (!user) {
+            return res.render('User/ForgotPasswordEmailView', {
+                customCss: ['User.css'],
+                error: 'Email không tồn tại trong hệ thống.',
+            });
+        }
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail', 
+            auth: {
+                user: 'nguyengiakiet0987654321@gmail.com', 
+                pass: 'fxqi kcba bklr wpvj', 
+            },    
+            logger: true, 
+            debug: true, 
+        });
+        try {
+            const OTP = Math.floor(100000 + Math.random() * 900000); 
+            const OTPExpires = new Date(Date.now() + 3 * 60 * 60 * 1000); // 3 giờ
+            // Gửi email
+            const info = await transporter.sendMail({
+                from: '"Reset password" <nguyengiakiet0987654321@gmail.com>', 
+                to: email, 
+                subject: 'SSR | OTP', 
+                text: 'Đây là email để lấy lại mật khẩu của bạn.', 
+                html: `
+                    <p>Dear ${email},</p>
+                    <p>You have selected ${email} as your name verification page:</p>
+                    <h1> ${OTP} </h1>
+                    <p>This code will expire three hours after this email was sent</p>
+                    <p>If you did not make this request, you can ignore this</p>
+                `, 
+            });
+            console.log('Email sent: ' + info.response);
+            
+            res.render('User/ForgotPasswordView', {
+                customCss: ['User.css'],
+                message: 'Email đã được gửi, vui lòng kiểm tra hòm thư của bạn!',
+                otp: {
+                    email,
+                    OTP,
+                    OTPExpires,
+                }
+            });
+        } catch (error) {
+            console.error('Error sending email:', error);
+            res.render('User/ForgotPasswordView', {
+                customCss: ['User.css'],
+                error: 'Không thể gửi email, vui lòng thử lại sau.',
+            });
+        }
     }
 
     // /user/profile/

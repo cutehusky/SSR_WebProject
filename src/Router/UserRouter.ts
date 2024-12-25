@@ -6,6 +6,11 @@ const router = express.Router();
 const userController = new UserController();
 
 router.get('/forgot-password', userController.forgotPassword);
+router.post('/forgot-password', userController.forgotPasswordPost);
+
+router.get('/forgot-password-email', userController.forgotPasswordEmail);
+router.post('/forgot-password-email', userController.forgotPasswordEmailPost);
+
 router.get('/profile', userController.getUserProfile);
 
 router.post('/login', async (req, res, next) => {

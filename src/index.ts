@@ -23,7 +23,7 @@ app.use(express.static('Static'));
 
 app.use(
     session({
-        secret: 'your-secret-key',
+        secret: '3pMOtRGmCc',
         saveUninitialized: true,
         cookie: {
             httpOnly: true,
@@ -49,6 +49,14 @@ app.set('view engine', 'hbs');
 app.set('views', './Views');
 
 let middlewareController = new MiddlewareController();
+
+
+app.use((req: Request, res: Response, next: Function) => {
+    res.locals.session = req.session; // sử dụng session.authUser ở handlebars
+    next();
+});
+
+
 app.use(
     '/',
     middlewareController.getToDay,
