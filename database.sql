@@ -8,7 +8,7 @@ CREATE TABLE USER (
     Password VARCHAR(250),
     DoB DATE,
     isAdministator INT DEFAULT 0 CHECK (isAdministator IN (0, 1)),
-    Role VARCHAR CHECK (Status IN ('Admin', 'Writer', 'Editor', 'Subcriber')) ,
+    Role VARCHAR(10) CHECK (Role IN ('Admin', 'Writer', 'Editor', 'Subcriber')) ,
     otp VARCHAR(6),
     otpExpiration DATETIME,
     CONSTRAINT PK_USER PRIMARY KEY (UserID)
@@ -100,7 +100,7 @@ CREATE TABLE ARTICLE_URL (
     CONSTRAINT PK_ARTICLE_URL PRIMARY KEY (ArticleID, STT)
 );
 
-ALTER TABLE  
+ALTER TABLE  SUBSCRIBER
 ADD 
     CONSTRAINT FK_SUBSCRIBER_USER
     FOREIGN KEY (SubscriberID)

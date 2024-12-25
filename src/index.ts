@@ -91,17 +91,16 @@ app.use(
 );
 
 Handlebars.registerHelper("formatDate", (date, formatStr) => {
-    if (!date) return "";
-
+    if (!date) return ""; // Nếu không có ngày, trả về chuỗi rỗng
     try {
-        // Parse chuỗi ngày với định dạng MM/dd/yyyy
-        const parsedDate = parse(date, "MM/dd/yyyy", new Date());
-        return format(parsedDate, formatStr);
+        const parsedDate = parse(date, "dd/MM/yyyy", new Date()); // Parse ngày gốc
+        return format(parsedDate, formatStr); // Trả về ngày đúng định dạng yyyy-MM-dd
     } catch (error) {
         console.error("Invalid date:", date, error);
-        return "";
+        return ""; // Xử lý lỗi nếu ngày không hợp lệ
     }
 });
+
 
 Handlebars.registerHelper('eq', function (this: any, arg1: any, arg2: any) {
     return arg1 === arg2;

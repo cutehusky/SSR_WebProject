@@ -11,6 +11,7 @@ import {
 } from "../Services/AdminArticleService";
 import {UserRole} from "../Models/UserData";
 import {clamp, getPagingNumber} from "../Utils/MathUtils";
+import session from "express-session";
 
 const articlePerPage = 6;
 export class WriterController {
@@ -36,7 +37,7 @@ export class WriterController {
     const writerId = req.session.authUser?.id as number;
     const articleId = req.params.id;
     const data = await GetArticleById(articleId);
-    if (!data || data.WriterID !== writerId) {
+    if (!data || data.WriterID !== writerId || req.session.authUser?.role !== UserRole.Admin) {
       res.redirect("/404");
       return;
     }

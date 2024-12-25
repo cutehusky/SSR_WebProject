@@ -5,7 +5,7 @@ import { getCategories } from "../Utils/getCategories";
 import {getUsers} from "../Utils/getUsers";
 import { DBConfig } from "../Utils/DBConfig";
 
-import { ArticleData, createArticle, deleteArticle, updateArticle } from "../Services/AdminArticleService";
+import { ArticleData, createArticle, deleteArticle, updateArticle, getArticlesCategories } from "../Services/AdminArticleService";
 import { createUser, deleteUser, updateUser } from "../Services/AdminUserService";
 import { UserData } from "../Models/UserData";
 import { getTags } from "../Utils/getTags";
@@ -45,18 +45,24 @@ export class AdminController {
     });
   }
 
-  // /admin/articles?category=
-  getArticles(req: Request, res: Response) {
-    const category = (req.query.category || "-1") as string;
-    const categoryId = parseInt(category);
+  // /admin/articles?category=&page=
+  async getArticles(req: Request, res: Response) {
+    const categoryId = parseInt((req.query.category || "-1") as string);
 
+        // Lấy page từ query string, nếu không có, gán giá trị mặc định là 1
+        const page = parseInt((req.query.page || "1") as string);
 
-    res.render("Admin/AdminArticlesView", {
-      selectedCategory: categoryId,
-      data: [],
-      customJs: ["AdminArticlesDataTable.js"],
-      customCss: ["Admin.css"],
-    });
+        // Gọi hàm getArticlesCategories để lấy dữ liệu
+        const data = await getArticlesCategories(categoryId);
+        console.log("Data: ", data);
+
+        // Render trang với dữ liệu lấy được
+        res.render("Admin/AdminArticlesView", {
+            selectedCategory: categoryId,
+            data: data, // Dữ liệu bài viết trả về từ database
+            customJs: ["AdminArticlesDataTable.js"],
+            customCss: ["Admin.css"],
+        });
   }
 
   // /admin/users?role=
@@ -107,17 +113,7 @@ export class AdminController {
 
     await DBConfig("CATEGORY").where("CategoryID", "=", id).update({ Name: name });
 
-    let subCategoryResponse = await GetSubCategories(id);
-    Categories = getCategories()
-
-    
-    res.render("Admin/AdminCategoriesView", {
-      customCss: ["Admin.css"],
-      customJs: ["AdminCategoryDataTable.js"],
-      Categories: Categories,
-      Subcategories: subCategoryResponse,
-    });
-  
+    res.redirect("/admin/categories");
   }
 
   // /admin/user/edit
@@ -144,10 +140,7 @@ export class AdminController {
   
       // Gọi Service để tạo user
       updateUser(userData);
-      // Thông báo đã tạo user thành công
-      res.status(201).json({
-        message: 'User updated successfully!',
-      });
+      res.redirect("/admin/users");
     } catch (error) {
       // Bắt lỗi nếu có
       console.error('Error updating user:', error);

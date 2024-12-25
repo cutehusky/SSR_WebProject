@@ -70,7 +70,7 @@ export class UserController {
                 email,
                 password: hashedPassword,
                 dob : dob,
-                role: "Subscriber"
+                role: "Subcriber"
             };
 
             // Tạo mới người dùng trong DB
