@@ -3,7 +3,7 @@ import {UserData, UserRole} from "../Models/UserData";
 
 const datePremium = 10; //min
 
-export const createUser = async (userData: UserData): Promise<void> => {
+export const createUser = async (userData: any): Promise<void> => {
   // Kiểm tra xem user đã tồn tại chưa
   const userExists = await db('USER').where('Email', userData.email).first();
   if (userExists) {
@@ -18,7 +18,7 @@ export const createUser = async (userData: UserData): Promise<void> => {
         Password: userData.password,
         DOB: userData.dob || null,
         Role: userData.role,
-        isAdministator: userData.role === "Admin"
+        isAdministator: userData.role === "Admin" ? 1:0
       });
     if (userData.role === UserRole.User)
         await db("SUBSCRIBER").insert({SubscriberID: id,

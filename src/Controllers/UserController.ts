@@ -72,20 +72,11 @@ export class UserController {
         }
 
         try {
-            // Kiểm tra xem người dùng đã tồn tại chưa
-            const userExists = await DBConfig('USER')
-                .where('Email', email)
-                .first();
-            if (userExists) {
-                return res.status(400).json({ error: 'Email already in use' });
-            }
-
             // Mã hóa mật khẩu
             const hashedPassword = await bcrypt.hash(password, 10);
 
             // Tạo người dùng mới
-            const newUser: UserData = {
-                id: Date.now(), // Tạo ID theo thời gian (hoặc bạn có thể dùng UUID hoặc auto increment từ DB)
+            const newUser = {
                 fullname,
                 email,
                 password: hashedPassword,
@@ -95,9 +86,11 @@ export class UserController {
 
             // Tạo mới người dùng trong DB
             await createUser(newUser);
+            const userDb = await userService.getUserByEmail(email);
 
             // Lưu thông tin người dùng vào session sau khi đăng ký thành công
-            req.session.authUser = newUser;
+            req.session.authUser = userDb;
+            console.log("sé",req.session.authUser);
 
             // Redirect đến trang profile hoặc trang chính
             return res.redirect('/home');
@@ -117,26 +110,27 @@ export class UserController {
     }
 
     async forgotPasswordPost(req: Request, res: Response) {
-        const { otp, newPassword, otpCheck, email, expires } = req.body;
-        if (otp != otpCheck) {
+        const { otp, newPassword,  email } = req.body;
+        const user = await DBConfig('USER').where('Email', email).first();
+        if (otp != user.otp) {
             res.render('User/ForgotPasswordView', {
                 customCss: ['User.css'],
                 errorOTP: 'Mã OTP không chính xác, vui lòng thử lại.',
                 otp: {
                     email,
                     OTP: otp,
-                    OTPExpires: expires,
+                    OTPExpires: user.otpExpiration,
                 },
             });
         }
-        if (new Date() > new Date(expires)) {
+        if (new Date() > new Date(user.otpExpiration)) {
             res.render('User/ForgotPasswordView', {
                 customCss: ['User.css'],
                 errorOTP: 'Mã OTP đã hết hạn, vui lòng thử lại.',
                 otp: {
                     email,
                     OTP: otp,
-                    OTPExpires: expires,
+                    OTPExpires: user.otpExpiration,
                 },
             });
         }
@@ -186,6 +180,12 @@ export class UserController {
         try {
             const OTP = Math.floor(100000 + Math.random() * 900000);
             const OTPExpires = new Date(Date.now() + 3 * 60 * 60 * 1000); // 3 giờ
+
+            // Lưu OTP vào database
+            await DBConfig('USER')
+                .where('Email', email)
+                .update({ otp: OTP, otpExpiration: OTPExpires });
+
             // Gửi email
             const info = await transporter.sendMail({
                 from: '"Reset password" <nguyengiakiet0987654321@gmail.com>',
@@ -208,8 +208,59 @@ export class UserController {
                     'Email đã được gửi, vui lòng kiểm tra hòm thư của bạn!',
                 otp: {
                     email,
-                    OTP,
-                    OTPExpires,
+                },
+            });
+        } catch (error) {
+            console.error('Error sending email:', error);
+            res.render('User/ForgotPasswordView', {
+                customCss: ['User.css'],
+                error: 'Không thể gửi email, vui lòng thử lại sau.',
+            });
+        }
+    }
+    // /user/resent-otp
+    async resentOTP(req: Request, res: Response) {
+        const { email } = req.body;
+        const user = await DBConfig('USER').where('Email', email).first();
+        if (!user) {
+            return res.render('User/ForgotPasswordEmailView', {
+                customCss: ['User.css'],
+                error: 'Email không tồn tại trong hệ thống.',
+            });
+        }
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: 'nguyengiakiet0987654321@gmail.com',
+                pass: 'fxqi kcba bklr wpvj',
+            },
+            logger: true,
+            debug: true,
+        });
+        try {
+            const OTP = user.otp
+            // Gửi email
+            const info = await transporter.sendMail({
+                from: '"Reset password" <nguyengiakiet0987654321@gmail.com>',
+                to: email,
+                subject: 'SSR | OTP',
+                text: 'Đây là email để lấy lại mật khẩu của bạn.',
+                html: `
+                    <p>Dear ${email},</p>
+                    <p>You have selected ${email} as your name verification page:</p>
+                    <h1> ${OTP} </h1>
+                    <p>This code will expire three hours after this email was sent</p>
+                    <p>If you did not make this request, you can ignore this</p>
+                `,
+            });
+            console.log('Email sent: ' + info.response);
+
+            res.render('User/ForgotPasswordView', {
+                customCss: ['User.css'],
+                message:
+                    'Email đã được gửi, vui lòng kiểm tra hòm thư của bạn!',
+                otp: {
+                    email,
                 },
             });
         } catch (error) {

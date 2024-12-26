@@ -21,8 +21,18 @@ import session from "express-session";
 const articlePerPage = 6;
 export class WriterController {
 
-  verifyUser(req: Request, res: Response, Next: NextFunction) {
+  verifyUserForWriter(req: Request, res: Response, Next: NextFunction) {
     if (!req.session.authUser || req.session.authUser.role !== UserRole.Writer) {
+      res.redirect("/404");
+      return;
+    }
+    Next();
+  }
+
+  verifyUserForAdminAndWriter(req: Request, res: Response, Next: NextFunction) {
+    if (!req.session.authUser ||
+        (req.session.authUser.role !== UserRole.Writer
+            && req.session.authUser.role !== UserRole.Admin)) {
       res.redirect("/404");
       return;
     }
@@ -41,11 +51,13 @@ export class WriterController {
   async editArticleEditor(req: Request, res: Response) {
     const writerId = req.session.authUser?.id as number;
     const articleId = req.params.id;
+    console.log(writerId);
     if (!articleId || !writerId) {
       res.redirect("/404");
       return;
     }
     const data = await GetArticleById(articleId);
+    console.log(data);
     if (!data || (data.WriterID !== writerId && req.session.authUser?.role !== UserRole.Admin)) {
       res.redirect("/404");
       return;
@@ -55,7 +67,7 @@ export class WriterController {
 
     let tag = await GetTagsOfArticle(articleId);
 
-    if (data.Status !== "Draft" && data.Status !== "Rejected") {
+    if (req.session.authUser?.role === UserRole.Admin || data.Status === "Draft" || data.Status === "Rejected") {
       let category = await GetCategoryFullNameOfArticle(articleId);
       res.render("Writer/WriterUpdateNews", {
         customCss: ["Writer.css"],
@@ -200,7 +212,7 @@ export class WriterController {
       Abstract: req.body.abstract,
       Status:'Draft',
       IsPremium: req.body.isPremium === 'on' ? 1: 0,
-      WriterID: writerId,
+      WriterID: req.session.authUser.role === UserRole.Admin ? null : writerId,
     });
 
     await DBConfig("ARTICLE_SUBCATEGORY").insert({
@@ -240,6 +252,10 @@ export class WriterController {
         });
       }
     }
+    if (req.session.authUser.role === UserRole.Admin) {
+      res.redirect("/admin/articles");
+      return;
+    }
     res.redirect("/writer/myArticles?state=Draft");
   }
 
@@ -254,7 +270,7 @@ export class WriterController {
     }
 
     const data = await GetArticleById(id);
-    if (data.WriterID !== writerId || (data.Status !== "Draft" && data.Status !== "Rejected")) {
+    if ((data.WriterID !== writerId && req.session.authUser.role !== UserRole.Admin) || (data.Status !== "Draft" && data.Status !== "Rejected")) {
       res.redirect("/404");
       return;
     }
@@ -266,15 +282,26 @@ export class WriterController {
       return;
     }
 
-    await DBConfig("ARTICLE").where({'ArticleID': id}).update({
-      Title: req.body.title,
-      DatePosted: new Date(Date.now()),
-      Content: req.body.content,
-      Abstract: req.body.abstract,
-      Status: 'Draft',
-      IsPremium: req.body.isPremium === 'on' ? 1: 0,
-      WriterID: writerId,
-    });
+    if (data.WriterID !== writerId && req.session.authUser.role === UserRole.Admin) {
+      await DBConfig("ARTICLE").where({'ArticleID': id}).update({
+        Title: req.body.title,
+        DatePosted: new Date(Date.now()),
+        Content: req.body.content,
+        Abstract: req.body.abstract,
+        Status: 'Draft',
+        IsPremium: req.body.isPremium === 'on' ? 1: 0,
+      });
+    }else {
+      await DBConfig("ARTICLE").where({'ArticleID': id}).update({
+        Title: req.body.title,
+        DatePosted: new Date(Date.now()),
+        Content: req.body.content,
+        Abstract: req.body.abstract,
+        Status: 'Draft',
+        IsPremium: req.body.isPremium === 'on' ? 1: 0,
+        WriterID: writerId,
+      });
+    }
 
     const affectedRows  = await DBConfig("ARTICLE_SUBCATEGORY").where({
       ArticleID: id
@@ -321,6 +348,10 @@ export class WriterController {
               await UpdateBackgroundImageOfArticle(id, filePath.replace("Static",""));
         });
       }
+    }
+    if (data.WriterID !== writerId && req.session.authUser.role === UserRole.Admin) {
+      res.redirect("/admin/articles");
+      return;
     }
     res.redirect("/writer/myArticles?state=Draft");
   }
