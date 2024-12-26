@@ -23,6 +23,7 @@ import { UserData } from '../Models/UserData';
 import { createTag, deleteTagById, getTagByName, getTags, getTagsById, updateTagById } from '../Utils/getTags';
 import { get } from 'jquery';
 import { clamp, getPagingNumber } from '../Utils/MathUtils';
+import {getWriterNameById} from "../Services/UserPasswordService";
 
 const itemPerPage = 5;
 
@@ -157,6 +158,9 @@ export class AdminController {
             (page - 1) * itemPerPage,
             itemPerPage
         );
+        for (let i = 0; i<data.length;i++)
+            data[i].writer = await getWriterNameById(data[i].writerID);
+
         console.log('Data: ', data);
         console.log(categoryId)
 
@@ -256,7 +260,7 @@ export class AdminController {
     // "dob": "1990-01-01",
     // "role": 1
     // }
-    editUser(req: Request, res: Response) {
+    async editUser(req: Request, res: Response) {
         try {
             const userData: UserData = req.body;
             console.log('Request body:', req.body);
@@ -269,7 +273,7 @@ export class AdminController {
             }
 
             // Gọi Service để tạo user
-            updateUser(userData);
+            await updateUser(userData);
             res.redirect('/admin/users');
         } catch (error) {
             // Bắt lỗi nếu có
@@ -292,55 +296,11 @@ export class AdminController {
     //   "editorID": 2
     // }
 
-    editArticle(req: Request, res: Response) {
-        try {
-            const {
-                id,
-                title,
-                datePosted,
-                content,
-                abstract,
-                status,
-                isPremium,
-                writerID,
-                editorID,
-            } = req.body;
-
-            // Log dữ liệu để kiểm tra
-            console.log('Request body:', req.body);
-            // Validation cơ bản
-
-            // Gọi Service để tạo bài viết
-            const articleID = updateArticle({
-                id,
-                title,
-                datePosted,
-                content,
-                abstract,
-                status,
-                isPremium,
-                writerID,
-                editorID,
-            });
-            // Thông báo đã tạo bài viết thành công
-            res.status(201).json({
-                message: 'Article created successfully!',
-                articleID,
-            });
-        } catch (error) {
-            // Bắt lỗi nếu có
-            console.error('Error creating article:', error);
-            res.status(500).json({
-                error: 'Internal Server Error.',
-            });
-        }
-    }
-
     // /admin/tag/new
     async newTag(req: Request, res: Response) {
         const {name} = req.body;
         const existtag = await getTagByName(name);
-        console.log("existtag: ", existtag);
+        console.log("exist tag: ", existtag);
         if (existtag.length > 0) {
             res.status(400).json({
                 error: 'Tag already exists.',
@@ -380,49 +340,17 @@ export class AdminController {
     //     "dob": "1990-01-01",
     //     "role": 0
     // }
-    newUser(req: Request, res: Response) {
+    async newUser(req: Request, res: Response) {
         try {
             const userData: UserData = req.body;
             console.log('Request body:', req.body);
             // Gọi Service để tạo user
-            createUser(userData);
+            await createUser(userData);
 
             res.redirect('/admin/users');
         } catch (error) {
             // Bắt lỗi nếu có
             console.error('Error creating user:', error);
-            res.status(500).json({
-                error: 'Internal Server Error.',
-            });
-        }
-    }
-
-    // /admin/article/new
-    // request datatest{
-    //   "title": "New Article Title",
-    //   "datePosted": "2024-12-14",
-    //   "content": "This is the content of the new article.",
-    //   "abstract": "A brief summary of the article.",
-    //   "status": "draft",
-    //   "isPremium": true,
-    //   "writerID": "1",
-    //   "editorID": "2"
-    // }
-    async newArticle(req: Request, res: Response) {
-        try {
-            const article: ArticleData = req.body;
-
-            // Log dữ liệu để kiểm tra
-            console.log('Request body:', req.body);
-
-            // Gọi Service để tạo bài viết
-            await createArticle(article);
-
-            res.status(201).json({
-                message: 'Article created successfully!',
-            });
-        } catch (error) {
-            console.error('Error creating article:', error);
             res.status(500).json({
                 error: 'Internal Server Error.',
             });
@@ -467,7 +395,7 @@ export class AdminController {
     // request datatest{
     //     "id": 4
     // }
-    deleteUser(req: Request, res: Response) {
+    async deleteUser(req: Request, res: Response) {
         try {
             const id = req.body.id;
             console.log('Request body:', req.body);
@@ -480,7 +408,7 @@ export class AdminController {
             }
 
             // Gọi Service để xóa user
-            deleteUser(id);
+            await deleteUser(id);
             res.redirect('/admin/users');
         } catch (error) {
             // Bắt lỗi nếu có
@@ -495,7 +423,7 @@ export class AdminController {
     // request datatest = {
     // "id" : 5
     // }
-    deleteArticle(req: Request, res: Response) {
+    async deleteArticle(req: Request, res: Response) {
         const articleId = Number(req.body.id);
         if (articleId == null || isNaN(articleId)) {
             res.status(400).json({
@@ -504,20 +432,8 @@ export class AdminController {
             return;
         }
         // console.log("articleId: ", articleId);
-        deleteArticle(articleId);
-        res.status(204).send('Article deleted');
+        await deleteArticle(articleId);
         res.redirect('/admin/articles');
-    }
-
-    // /admin/article/edit/:id
-    editArticleEditor(req: Request, res: Response) {}
-
-    // /admin/article/edit/:id
-    createArticleEditor(req: Request, res: Response) {
-        res.render('Writer/WriterPublishNews', {
-            customCss: ['Writer.css'],
-            customJs: ['Summernote.js'],
-        });
     }
 
     // /admin/subcategory/edit

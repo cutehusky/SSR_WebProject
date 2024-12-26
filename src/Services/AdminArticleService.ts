@@ -1064,13 +1064,14 @@ export const getArticlesCategories = (
         .join('ARTICLE_SUBCATEGORY as as', 'a.ArticleID', 'as.ArticleID')
         .join('SUBCATEGORY as s', 'as.SubcategoryID', 's.SubcategoryID')
         .join('CATEGORY as c', 's.CategoryID', 'c.CategoryID')
-        .join('WRITER as w', 'a.WriterID', 'w.WriterID')
         .select(
             'a.ArticleID as id',
             'a.Title as title',
             DBConfig.raw("DATE_FORMAT(a.DatePosted, '%d/%m/%Y') as date"),
             's.Name as subcategory',
-            'c.Name as category'
+            'c.Name as category',
+            'a.WriterID as writerID',
+            'a.Status as status'
         );
     if (categories === -1) {
         return query.offset(offset).limit(limit);
