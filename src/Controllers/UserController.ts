@@ -72,20 +72,11 @@ export class UserController {
         }
 
         try {
-            // Kiểm tra xem người dùng đã tồn tại chưa
-            const userExists = await DBConfig('USER')
-                .where('Email', email)
-                .first();
-            if (userExists) {
-                return res.status(400).json({ error: 'Email already in use' });
-            }
-
             // Mã hóa mật khẩu
             const hashedPassword = await bcrypt.hash(password, 10);
 
             // Tạo người dùng mới
-            const newUser: UserData = {
-                id: Date.now(), // Tạo ID theo thời gian (hoặc bạn có thể dùng UUID hoặc auto increment từ DB)
+            const newUser = {
                 fullname,
                 email,
                 password: hashedPassword,
@@ -95,9 +86,11 @@ export class UserController {
 
             // Tạo mới người dùng trong DB
             await createUser(newUser);
+            const userDb = await userService.getUserByEmail(email);
 
             // Lưu thông tin người dùng vào session sau khi đăng ký thành công
-            req.session.authUser = newUser;
+            req.session.authUser = userDb;
+            console.log("sé",req.session.authUser);
 
             // Redirect đến trang profile hoặc trang chính
             return res.redirect('/home');
