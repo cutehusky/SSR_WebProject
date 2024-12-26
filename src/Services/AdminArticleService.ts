@@ -790,6 +790,7 @@ export const AddComment = async (
 // HOME
 
 export const getMostViewedArticles = async (
+    isUserPremium: boolean = false,
     limit: number = 10
 ): Promise<
     {
@@ -801,37 +802,82 @@ export const getMostViewedArticles = async (
         categoryID: string;
     }[]
 > => {
-    const response = await db('ARTICLE')
-        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
-        .join(
-            'ARTICLE_SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.ArticleID',
-            '=',
-            'ARTICLE.ArticleID'
-        )
-        .join(
-            'SUBCATEGORY',
-            'SUBCATEGORY.SubCategoryID',
-            '=',
-            'ARTICLE_SUBCATEGORY.SubCategoryID'
-        )
-        .orderBy('ARTICLE.IsPremium', 'desc')
-        .orderBy('ARTICLE.ViewCount', 'desc')
-        .limit(limit)
-        .select(
-            'ARTICLE.ArticleID as articleID',
-            'ARTICLE.Title as title',
-            'ARTICLE.IsPremium as isPremium',
-            'ARTICLE_URL.URL as img',
-            DBConfig.raw("DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"),
-            'SUBCATEGORY.Name as category',
-            'SUBCATEGORY.SubCategoryID as categoryID'
-        );
+    let response = [];
+
+    if (isUserPremium) {
+        response = await db('ARTICLE')
+            .join(
+                'ARTICLE_URL',
+                'ARTICLE_URL.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
+            .join(
+                'ARTICLE_SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
+            .join(
+                'SUBCATEGORY',
+                'SUBCATEGORY.SubCategoryID',
+                '=',
+                'ARTICLE_SUBCATEGORY.SubCategoryID'
+            )
+            .orderBy('ARTICLE.IsPremium', 'desc')
+            .orderBy('ARTICLE.ViewCount', 'desc')
+            .limit(limit)
+            .select(
+                'ARTICLE.ArticleID as articleID',
+                'ARTICLE.Title as title',
+                'ARTICLE.IsPremium as isPremium',
+                'ARTICLE_URL.URL as img',
+                DBConfig.raw(
+                    "DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"
+                ),
+                'SUBCATEGORY.Name as category',
+                'SUBCATEGORY.SubCategoryID as categoryID'
+            );
+    } else {
+        response = await db('ARTICLE')
+            .join(
+                'ARTICLE_URL',
+                'ARTICLE_URL.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
+            .join(
+                'ARTICLE_SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
+            .join(
+                'SUBCATEGORY',
+                'SUBCATEGORY.SubCategoryID',
+                '=',
+                'ARTICLE_SUBCATEGORY.SubCategoryID'
+            )
+            .orderBy('ARTICLE.ViewCount', 'desc')
+            .limit(limit)
+            .select(
+                'ARTICLE.ArticleID as articleID',
+                'ARTICLE.Title as title',
+                'ARTICLE.IsPremium as isPremium',
+                'ARTICLE_URL.URL as img',
+                DBConfig.raw(
+                    "DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"
+                ),
+                'SUBCATEGORY.Name as category',
+                'SUBCATEGORY.SubCategoryID as categoryID'
+            );
+    }
 
     return response;
 };
 
 export const getLatestArticles = async (
+    isUserPremium: boolean = false,
     limit: number = 10
 ): Promise<
     {
@@ -847,36 +893,84 @@ export const getLatestArticles = async (
         abstract: string;
     }[]
 > => {
-    const response = await db('ARTICLE')
-        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
-        .join('WRITER', 'WRITER.WriterID', '=', 'ARTICLE.WriterID')
-        .join(
-            'ARTICLE_SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.ArticleID',
-            '=',
-            'ARTICLE.ArticleID'
-        )
-        .join(
-            'SUBCATEGORY',
-            'SUBCATEGORY.SubCategoryID',
-            '=',
-            'ARTICLE_SUBCATEGORY.SubCategoryID'
-        )
-        .orderBy('ARTICLE.IsPremium', 'desc')
-        .orderBy('ARTICLE.DatePosted', 'desc')
-        .limit(limit)
-        .select(
-            'ARTICLE.ArticleID as articleID',
-            'ARTICLE.Title as title',
-            'ARTICLE.Abstract as abstract',
-            'ARTICLE.ViewCount as viewCount',
-            'ARTICLE.IsPremium as isPremium',
-            'ARTICLE_URL.URL as img',
-            DBConfig.raw("DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"),
-            'SUBCATEGORY.Name as category',
-            'SUBCATEGORY.SubCategoryID as categoryID',
-            'WRITER.Alias as author'
-        );
+    let response = [];
+
+    if (isUserPremium) {
+        response = await db('ARTICLE')
+            .join(
+                'ARTICLE_URL',
+                'ARTICLE_URL.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
+            .join('WRITER', 'WRITER.WriterID', '=', 'ARTICLE.WriterID')
+            .join(
+                'ARTICLE_SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
+            .join(
+                'SUBCATEGORY',
+                'SUBCATEGORY.SubCategoryID',
+                '=',
+                'ARTICLE_SUBCATEGORY.SubCategoryID'
+            )
+            .orderBy('ARTICLE.IsPremium', 'desc')
+            .orderBy('ARTICLE.DatePosted', 'desc')
+            .limit(limit)
+            .select(
+                'ARTICLE.ArticleID as articleID',
+                'ARTICLE.Title as title',
+                'ARTICLE.Abstract as abstract',
+                'ARTICLE.ViewCount as viewCount',
+                'ARTICLE.IsPremium as isPremium',
+                'ARTICLE_URL.URL as img',
+                DBConfig.raw(
+                    "DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"
+                ),
+                'SUBCATEGORY.Name as category',
+                'SUBCATEGORY.SubCategoryID as categoryID',
+                'WRITER.Alias as author'
+            );
+    } else {
+        response = await db('ARTICLE')
+            .join(
+                'ARTICLE_URL',
+                'ARTICLE_URL.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
+            .join('WRITER', 'WRITER.WriterID', '=', 'ARTICLE.WriterID')
+            .join(
+                'ARTICLE_SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
+            .join(
+                'SUBCATEGORY',
+                'SUBCATEGORY.SubCategoryID',
+                '=',
+                'ARTICLE_SUBCATEGORY.SubCategoryID'
+            )
+            .orderBy('ARTICLE.DatePosted', 'desc')
+            .limit(limit)
+            .select(
+                'ARTICLE.ArticleID as articleID',
+                'ARTICLE.Title as title',
+                'ARTICLE.Abstract as abstract',
+                'ARTICLE.ViewCount as viewCount',
+                'ARTICLE.IsPremium as isPremium',
+                'ARTICLE_URL.URL as img',
+                DBConfig.raw(
+                    "DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"
+                ),
+                'SUBCATEGORY.Name as category',
+                'SUBCATEGORY.SubCategoryID as categoryID',
+                'WRITER.Alias as author'
+            );
+    }
 
     const result = await Promise.all(
         response.map(async item => {
@@ -896,6 +990,7 @@ export const getLatestArticles = async (
 };
 
 export const getTopArticles = async (
+    isUserPremium: boolean = false,
     limit: number = 7
 ): Promise<
     {
@@ -918,38 +1013,84 @@ export const getTopArticles = async (
     endWeek.setDate(startWeek.getDate() + 6);
     endWeek.setHours(23, 59, 59, 999);
 
-    const response = await db('ARTICLE')
-        .whereBetween('ARTICLE.DatePosted', [startWeek, endWeek])
-        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
-        .join(
-            'ARTICLE_SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.ArticleID',
-            '=',
-            'ARTICLE.ArticleID'
-        )
-        .join(
-            'SUBCATEGORY',
-            'SUBCATEGORY.SubCategoryID',
-            '=',
-            'ARTICLE_SUBCATEGORY.SubCategoryID'
-        )
-        .orderBy('ARTICLE.IsPremium', 'desc')
-        .orderBy('ARTICLE.ViewCount', 'desc')
-        .limit(limit)
-        .select(
-            'ARTICLE.ArticleID as articleID',
-            'ARTICLE_URL.URL as img',
-            'SUBCATEGORY.Name as category',
-            'SUBCATEGORY.SubCategoryID as categoryID',
-            DBConfig.raw("DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"),
-            'ARTICLE.Title as title',
-            'ARTICLE.IsPremium as isPremium'
-        );
+    let response = [];
+
+    if (isUserPremium) {
+        response = await db('ARTICLE')
+            .whereBetween('ARTICLE.DatePosted', [startWeek, endWeek])
+            .join(
+                'ARTICLE_URL',
+                'ARTICLE_URL.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
+            .join(
+                'ARTICLE_SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
+            .join(
+                'SUBCATEGORY',
+                'SUBCATEGORY.SubCategoryID',
+                '=',
+                'ARTICLE_SUBCATEGORY.SubCategoryID'
+            )
+            .orderBy('ARTICLE.IsPremium', 'desc')
+            .orderBy('ARTICLE.ViewCount', 'desc')
+            .limit(limit)
+            .select(
+                'ARTICLE.ArticleID as articleID',
+                'ARTICLE_URL.URL as img',
+                'SUBCATEGORY.Name as category',
+                'SUBCATEGORY.SubCategoryID as categoryID',
+                DBConfig.raw(
+                    "DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"
+                ),
+                'ARTICLE.Title as title',
+                'ARTICLE.IsPremium as isPremium'
+            );
+    } else {
+        response = await db('ARTICLE')
+            .whereBetween('ARTICLE.DatePosted', [startWeek, endWeek])
+            .join(
+                'ARTICLE_URL',
+                'ARTICLE_URL.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
+            .join(
+                'ARTICLE_SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
+            .join(
+                'SUBCATEGORY',
+                'SUBCATEGORY.SubCategoryID',
+                '=',
+                'ARTICLE_SUBCATEGORY.SubCategoryID'
+            )
+            .orderBy('ARTICLE.ViewCount', 'desc')
+            .limit(limit)
+            .select(
+                'ARTICLE.ArticleID as articleID',
+                'ARTICLE_URL.URL as img',
+                'SUBCATEGORY.Name as category',
+                'SUBCATEGORY.SubCategoryID as categoryID',
+                DBConfig.raw(
+                    "DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"
+                ),
+                'ARTICLE.Title as title',
+                'ARTICLE.IsPremium as isPremium'
+            );
+    }
 
     return response;
 };
 
 export const getCategoryArticles = async (
+    isUserPremium: boolean = false,
     limit: number = 10
 ): Promise<
     {
@@ -962,23 +1103,52 @@ export const getCategoryArticles = async (
     }[]
 > => {
     // Get top 10 Ids which have most views
-    const mostViewedCatIDs = await db('CATEGORY')
-        .join('SUBCATEGORY', 'SUBCATEGORY.CategoryID', 'CATEGORY.CategoryID')
-        .join(
-            'ARTICLE_SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.SubCategoryID',
-            'SUBCATEGORY.SubCategoryID'
-        )
-        .join(
-            'ARTICLE',
-            'ARTICLE.ArticleID',
-            '=',
-            'ARTICLE_SUBCATEGORY.ArticleID'
-        )
-        .orderBy('ARTICLE.IsPremium', 'desc')
-        .orderBy('ARTICLE.ViewCount', 'desc')
-        .limit(limit)
-        .select('CATEGORY.CategoryID as CatID');
+    let mostViewedCatIDs = [];
+
+    if (isUserPremium) {
+        mostViewedCatIDs = await db('CATEGORY')
+            .join(
+                'SUBCATEGORY',
+                'SUBCATEGORY.CategoryID',
+                'CATEGORY.CategoryID'
+            )
+            .join(
+                'ARTICLE_SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.SubCategoryID',
+                'SUBCATEGORY.SubCategoryID'
+            )
+            .join(
+                'ARTICLE',
+                'ARTICLE.ArticleID',
+                '=',
+                'ARTICLE_SUBCATEGORY.ArticleID'
+            )
+            .orderBy('ARTICLE.IsPremium', 'desc')
+            .orderBy('ARTICLE.ViewCount', 'desc')
+            .limit(limit)
+            .select('CATEGORY.CategoryID as CatID');
+    } else {
+        mostViewedCatIDs = await db('CATEGORY')
+            .join(
+                'SUBCATEGORY',
+                'SUBCATEGORY.CategoryID',
+                'CATEGORY.CategoryID'
+            )
+            .join(
+                'ARTICLE_SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.SubCategoryID',
+                'SUBCATEGORY.SubCategoryID'
+            )
+            .join(
+                'ARTICLE',
+                'ARTICLE.ArticleID',
+                '=',
+                'ARTICLE_SUBCATEGORY.ArticleID'
+            )
+            .orderBy('ARTICLE.ViewCount', 'desc')
+            .limit(limit)
+            .select('CATEGORY.CategoryID as CatID');
+    }
 
     const CatIDs = [...new Set(mostViewedCatIDs.map(item => item.CatID))];
 

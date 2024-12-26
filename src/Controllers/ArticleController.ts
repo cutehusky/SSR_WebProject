@@ -59,10 +59,11 @@ export class ArticleController {
 
     // /home
     async getHome(req: Request, res: Response) {
-        const top_articles = await getTopArticles();
-        const view_articles = await getMostViewedArticles();
-        const category_articles = await getCategoryArticles();
-        const latest_articles = await getLatestArticles();
+        const isUserPremium: boolean = !!req.session.authUser;
+        const top_articles = await getTopArticles(isUserPremium);
+        const view_articles = await getMostViewedArticles(isUserPremium);
+        const category_articles = await getCategoryArticles(isUserPremium);
+        const latest_articles = await getLatestArticles(isUserPremium);
 
         res.render('Home/HomeView', {
             customCss: ['HomePage.css'],

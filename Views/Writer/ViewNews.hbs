@@ -1,15 +1,14 @@
-<div class="w-100 d-flex justify-content-center" style="background-color: rgba(255, 255, 255, 0.4);">
-    <div class="w-75">
-        <section class="mt-5">
+<div
+    class="w-100 d-flex justify-content-center"
+    style="background-color: rgba(255, 255, 255, 0.4)"
+>
+    <div class="w-75 d-flex flex-column">
+        <section class="mt-5 h-100">
             <div class="header-content mb-1 d-flex justify-content-between">
                 <ul class="d-flex list-unstyled">
-                    <li class="text-primary">
-                        {{data.category}}
-                    </li>
-                    <li style="margin: 0 12px;">/</li>
-                    <li>
-                        {{data.subcategory}}
-                    </li>
+                    <li class="text-primary">{{data.category}}</li>
+                    <li style="margin: 0 12px">/</li>
+                    <li>{{data.subcategory}}</li>
                 </ul>
 
                 <div>
@@ -21,16 +20,20 @@
 
             <p class="mb-4">Được đăng bởi: {{data.writer}}</p>
             <div>
-                <img src="{{data.BackgroundImage}}" style="width: 100%;">
+                <img src="{{data.BackgroundImage}}" style="width: 100%" />
             </div>
-            {{{data.Content}}}
+            <div
+                class="d-flex flex-column align-items-center justify-content-center"
+            >
+                {{{data.Content}}}
+            </div>
         </section>
 
         <hr class="mb-4" />
 
         <div class="d-flex mt-2 flex-wrap">
             <p class="fw-bold me-2">Tags:</p>
-            <div class="card-item-tags" style="width:90%">
+            <div class="card-item-tags" style="width: 90%">
                 {{#each data.tags}}
                 <div class="me-1">
                     <button class="btn btn-sm tag">{{name}}</button>
@@ -42,13 +45,29 @@
         <hr class="mt-5" />
 
         <section class="mt-5">
-            <h2 class="pb-2 d-inline" style="border-bottom: 1px solid var(--color-red-primary);">Bình luận</h2>
+            <h2
+                class="pb-2 d-inline"
+                style="border-bottom: 1px solid var(--color-red-primary)"
+            >
+                Bình luận
+            </h2>
             <div class="mt-5">
-                <form enctype="application/x-www-form-urlencoded" id="commentForm" class="input-group mb-5 w-100"
-                    method="post">
+                <form
+                    enctype="application/x-www-form-urlencoded"
+                    id="commentForm"
+                    class="input-group mb-5 w-100"
+                    method="post"
+                >
                     <div class="me-2">
-                        <img src="https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0"
-                            alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;" />
+                        <img
+                            src="https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0"
+                            alt="Avatar"
+                            style="
+                                width: 40px;
+                                height: 40px;
+                                border-radius: 50%;
+                            "
+                        />
                     </div>
                 </form>
 
@@ -57,11 +76,25 @@
                     <div class="d-flex mt-3">
                         <div class="me-2">
                             {{#if (notnull Avatar)}}
-                            <img src="{{this.Avatar}}" alt="Avatar"
-                                style="width: 40px; height: 40px; border-radius: 50%;" />
+                            <img
+                                src="{{this.Avatar}}"
+                                alt="Avatar"
+                                style="
+                                    width: 40px;
+                                    height: 40px;
+                                    border-radius: 50%;
+                                "
+                            />
                             {{else}}
-                            <img src="/98650216.jpg" alt="Avatar"
-                                style="width: 40px; height: 40px; border-radius: 50%;" />
+                            <img
+                                src="/98650216.jpg"
+                                alt="Avatar"
+                                style="
+                                    width: 40px;
+                                    height: 40px;
+                                    border-radius: 50%;
+                                "
+                            />
                             {{/if}}
                         </div>
                         <div class="d-flex flex-column">
@@ -71,7 +104,9 @@
                                 {{else}}
                                 <div class="fw-bold me-2">Anonymous</div>
                                 {{/if}}
-                                <div class="text-muted">{{this.DatePosted}}</div>
+                                <div class="text-muted">
+                                    {{this.DatePosted}}
+                                </div>
                             </div>
                             <div>{{this.Content}}</div>
                         </div>

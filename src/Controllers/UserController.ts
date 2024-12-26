@@ -25,6 +25,7 @@ export class UserController {
         try {
             // Kiểm tra người dùng từ database
             const user = await userService.getUserByEmail(email);
+
             if (!user || user.role === UserRole.Invalid) {
                 return res.status(404).json({ error: 'User not found' });
             }
@@ -37,7 +38,6 @@ export class UserController {
             if (!isPasswordValid) {
                 return res.status(401).json({ error: 'Password is incorrect' });
             }
-            console.log(user);
 
             // Lưu thông tin người dùng vào session
             req.session.authUser = user;
