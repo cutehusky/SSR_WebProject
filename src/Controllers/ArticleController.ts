@@ -436,12 +436,6 @@ export class ArticleController {
         );
 
         const commentList = await GetCommentOfArticle(articleId);
-        for (let i = 0; i < commentList.length; i++) {
-            if (commentList[i].SubscriberID)
-                commentList[i].Name = await getUsernameById(
-                    commentList[i].SubscriberID as number
-                );
-        }
         console.log(commentList);
 
         const writer = await getWriterNameById(data.WriterID);

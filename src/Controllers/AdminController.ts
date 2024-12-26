@@ -2,7 +2,7 @@ import { Response, Request } from 'express';
 
 import { GetSubCategories } from '../Utils/getSubCategories';
 import { getCategories } from '../Utils/getCategories';
-import { getUsers } from '../Utils/getUsers';
+import { countUsers, getUsers } from '../Utils/getUsers';
 import { DBConfig } from '../Utils/DBConfig';
 
 import {
@@ -11,6 +11,8 @@ import {
     deleteArticle,
     updateArticle,
     getArticlesCategories,
+    CountArticleOfWriterByStates,
+    countArticlesCategories,
 } from '../Services/AdminArticleService';
 import {
     createUser,
@@ -20,6 +22,10 @@ import {
 import { UserData } from '../Models/UserData';
 import { getTags } from '../Utils/getTags';
 import { get } from 'jquery';
+import { clamp, getPagingNumber } from '../Utils/MathUtils';
+
+const itemPerPage = 5;
+
 let tagData = [
     { name: 'test 1', id: 1 },
     { name: 'test 2', id: 2 },
@@ -57,28 +63,69 @@ export class AdminController {
     // /admin/articles?category=&page=
     async getArticles(req: Request, res: Response) {
         const categoryId = parseInt((req.query.category || '-1') as string);
+        let page = parseInt(req.query.page as string) || 1;
+        let articleNum = await countArticlesCategories(categoryId);
+        let totalPages = Math.ceil(articleNum / itemPerPage);
+        page = clamp(page, 1, totalPages);
+        let page_items = getPagingNumber(page, totalPages);
+        for (let i = 0; i < page_items.length; i++)
+            page_items[
+                i
+            ].link = `/admin/articles?category=${categoryId}&page=${page_items[i].value}`;
 
-        // Lấy page từ query string, nếu không có, gán giá trị mặc định là 1
-        const page = parseInt((req.query.page || '1') as string);
+        const previousLink =
+            page > 1
+                ? `/admin/articles?category=${categoryId}&page=${page - 1}`
+                : '';
+        const nextLink =
+            page < totalPages
+                ? `/admin/articles?category=${categoryId}&page=${page + 1}`
+                : '';
 
-        // Gọi hàm getArticlesCategories để lấy dữ liệu
-        const data = await getArticlesCategories(categoryId);
+        const data = await getArticlesCategories(
+            categoryId,
+            (page - 1) * itemPerPage,
+            itemPerPage
+        );
         console.log('Data: ', data);
 
-        // Render trang với dữ liệu lấy được
         res.render('Admin/AdminArticlesView', {
             selectedCategory: categoryId,
             data: data, // Dữ liệu bài viết trả về từ database
             customJs: ['AdminArticlesDataTable.js'],
             customCss: ['Admin.css'],
+            page_items,
+            previousLink,
+            nextLink,
         });
     }
 
     // /admin/users?role=
     async getUsers(req: Request, res: Response) {
         const role = (req.query.role || 'all') as string;
+        let page = parseInt(req.query.page as string) || 1;
+        let userNum = await countUsers(role);
+        let totalPages = Math.ceil(userNum / itemPerPage);
+        page = clamp(page, 1, totalPages);
+        let page_items = getPagingNumber(page, totalPages);
+        for (let i = 0; i < page_items.length; i++)
+            page_items[
+                i
+            ].link = `/admin/users?role=${role}&page=${page_items[i].value}`;
+
+        const previousLink =
+            page > 1 ? `/admin/users?role=${role}&page=${page - 1}` : '';
+        const nextLink =
+            page < totalPages
+                ? `/admin/users?role=${role}&page=${page + 1}`
+                : '';
+
         console.log('Role: ', role);
-        const data = await getUsers(role);
+        const data = await getUsers(
+            role,
+            (page - 1) * itemPerPage,
+            itemPerPage
+        );
         console.log('Data: ', data);
 
         res.render('Admin/AdminUsersView', {
@@ -86,6 +133,9 @@ export class AdminController {
             customJs: ['AdminUsersDataTable.js'],
             customCss: ['Admin.css'],
             data: data,
+            page_items,
+            previousLink,
+            nextLink,
         });
     }
 

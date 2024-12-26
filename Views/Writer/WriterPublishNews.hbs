@@ -6,11 +6,11 @@
         enctype="multipart/form-data">
         <div class="mb-4">
             <label for="title" class="form-label input-title">Nhập tiêu đề</label>
-            <input type="text" class="form-control input-field" id="title" name="title" />
+            <input type="text" class="form-control input-field" id="title" name="title" required />
         </div>
         <div class="mb-4">
             <label for="abstract" class="form-label input-title">Nhập tóm tắt nội dung</label>
-            <textarea class="form-control textarea-field" id="abstract" rows="10" name="abstract"></textarea>
+            <textarea class="form-control textarea-field" id="abstract" rows="10" name="abstract" required></textarea>
         </div>
         <div class="mb-4">
             <label for="backgroundImageArticle" class="form-label input-title">Ảnh đại diện bài viết</label>
@@ -22,7 +22,7 @@
 
         <div class="mb-4">
             <p class="input-title">Nhập nội dung</p>
-            <textarea id="summernote" name="content"></textarea>
+            <textarea id="summernote" name="content" required></textarea>
         </div>
         <div class="mb-4">
             <label class="form-label input-title">Chọn chuyên mục</label>
@@ -38,8 +38,8 @@
                                     {{#each SubCategories}}
                                     <li class="leaf">
                                         <label class="form-label" for="subcategory_{{id}}">{{name}}</label>
-                                        <input type="radio" data-category-fullname="{{fullname}}" name="category"
-                                            value="{{id}}" id="subcategory_{{id}}">
+                                        <input type="radio" required data-category-fullname="{{fullname}}"
+                                            name="category" value="{{id}}" id="subcategory_{{id}}">
                                     </li>
                                     {{/each}}
                                 </ul>
@@ -53,7 +53,7 @@
         <div class="mb-4">
             <label for="editor-tags" class="form-label fw-bold">Tags</label>
             <div class="d-flex mt-2">
-                <input type="text" class="d-none" id="tags-submission" name="tags" />
+                <input type="text" class="d-none" id="tags-submission" name="tags" required />
                 <select id="editor-tags" class="form-control">
                     {{#each tags}}
                     <option value="{{id}}">{{name}}</option>
