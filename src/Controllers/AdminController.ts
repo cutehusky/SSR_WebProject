@@ -1,4 +1,4 @@
-import { Response, Request } from 'express';
+import {Response, Request, NextFunction} from 'express';
 
 import { GetSubCategories, countCategories, GetCategoriesPage, countSubCategories } from '../Services/AdminCategoryService';
 import { getCategories } from '../Utils/getCategories';
@@ -6,12 +6,8 @@ import { countUsers, getUsers } from '../Utils/getUsers';
 import { DBConfig } from '../Utils/DBConfig';
 
 import {
-    ArticleData,
-    createArticle,
     deleteArticle,
-    updateArticle,
     getArticlesCategories,
-    CountArticleOfWriterByStates,
     countArticlesCategories,
 } from '../Services/AdminArticleService';
 import {
@@ -19,7 +15,7 @@ import {
     deleteUser,
     updateUser,
 } from '../Services/AdminUserService';
-import { UserData } from '../Models/UserData';
+import {UserData, UserRole} from '../Models/UserData';
 import { createTag, deleteTagById, getTagByName, getTags, getTagsById, updateTagById } from '../Utils/getTags';
 import { get } from 'jquery';
 import { clamp, getPagingNumber } from '../Utils/MathUtils';
@@ -36,6 +32,13 @@ let tagData = [
 ];
 
 export class AdminController {
+    verifyAdmin(req: Request, res: Response, next: NextFunction) {
+        if (!req.session.authUser || req.session.authUser.role !== UserRole.Admin) {
+            res.redirect("/404");
+            return;
+        }
+        next();
+    }
     // /admin/categories?category=
     async getCategories(req: Request, res: Response) {
         const category = req.query.category && !isNaN(Number(req.query.category)) ? Number(req.query.category) : -1;

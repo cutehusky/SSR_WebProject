@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import * as userService from '../Services/UserPasswordService';
 import { UserRole } from '../Models/UserData';
 import { UserData } from '../Models/UserData';
-import { createUser } from '../Services/AdminUserService';
+import {addPremium, createUser} from '../Services/AdminUserService';
 import nodemailer from 'nodemailer';
 
 export class UserController {
@@ -378,5 +378,15 @@ export class UserController {
             console.error('Update Profile Error:', error);
             return res.status(500).json({ error: 'Internal Server Error' });
         }
+    }
+
+    async addPremium( req: Request, res: Response) {
+        if (!req.session.authUser || req.session.authUser.role !== UserRole.User) {
+            res.redirect("/404");
+            return;
+        }
+        await addPremium(req.session.authUser.id);
+        const referer = req.get('Referer') || '/';
+        res.redirect(referer);
     }
 }

@@ -43,7 +43,8 @@ export class MiddlewareController {
                     .where("SubscriberID", req.session.authUser.id).first();
                 console.log(userData);
                 res.locals.isPremium = new Date(Date.now()) < userData.DateExpired;
-                res.locals.premiumTime = (userData.DateExpired.getTime() - Date.now()) / (1000 * 60);
+                let sec = (userData.DateExpired.getTime() - Date.now()) / 1000;
+                res.locals.premiumTime = Math.floor(sec / 60) + ":" + Math.round(sec % 60);
             }
         }
         else {

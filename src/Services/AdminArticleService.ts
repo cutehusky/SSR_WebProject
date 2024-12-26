@@ -2,63 +2,6 @@ import { DBConfig, DBConfig as db } from '../Utils/DBConfig';
 import { writer } from 'repl';
 import { getUsernameById } from './UserPasswordService';
 
-export interface ArticleData {
-    id: number;
-    title: string;
-    datePosted?: string; // Ngày đăng bài, có thể null
-    content: string;
-    abstract?: string; // Tóm tắt, có thể null
-    status?: 'Draft' | 'Rejected' | 'Approved' | 'Published'; // Trạng thái bài viết
-    isPremium?: number; // 0: Miễn phí, 1: Premium
-    writerID: number;
-    editorID?: number | null; // Editor có thể null
-}
-
-async function getNewIdForArticle(): Promise<number> {
-    return db('ARTICLE')
-        .max('ArticleID')
-        .first()
-        .then(result => {
-            return result ? result['max(`ArticleID`)'] + 1 : 1;
-        });
-}
-
-export const createArticle = async (
-    articleData: ArticleData
-): Promise<void> => {
-    // Tạo id cho bài viết không bị trùng trong database
-    articleData.id = await getNewIdForArticle();
-
-    // Kiểm tra các editor và writer có tồn tại không
-    const writerExists = await db('WRITER')
-        .where('WriterID', articleData.writerID)
-        .first();
-    if (!writerExists) {
-        throw new Error(
-            `Writer with ID ${articleData.writerID} does not exist.`
-        );
-    }
-    const editorExists = await db('EDITOR')
-        .where('EditorID', articleData.editorID)
-        .first();
-    if (!editorExists) {
-        throw new Error(
-            `Editor with ID ${articleData.editorID} does not exist.`
-        );
-    }
-
-    return db('ARTICLE').insert({
-        ArticleID: articleData.id,
-        Title: articleData.title,
-        DatePosted: articleData.datePosted,
-        Content: articleData.content,
-        Abstract: articleData.abstract,
-        Status: articleData.status,
-        IsPremium: articleData.isPremium,
-        WriterID: articleData.writerID,
-        EditorID: articleData.editorID,
-    });
-};
 
 export const deleteArticle = async (articleID: number): Promise<void> => {
     try {
@@ -80,60 +23,6 @@ export const deleteArticle = async (articleID: number): Promise<void> => {
             error instanceof Error ? error.message : 'Unknown error';
         console.error('Error deleting article:', errorMessage);
         throw new Error('Error deleting article: ' + errorMessage);
-    }
-};
-
-export const updateArticle = async (
-    articleData: ArticleData
-): Promise<void> => {
-    const {
-        id,
-        title,
-        datePosted,
-        content,
-        abstract,
-        status = 'Draft',
-        isPremium = 0,
-        writerID,
-        editorID = null,
-    } = articleData;
-
-    // Kiểm tra các trường bắt buộc
-    if (id == null || isNaN(id)) {
-        throw new Error('ID are required.');
-    }
-
-    // Kiểm tra xem bài viết đã tồn tại chưa
-    const articleExists = await db('ARTICLE').where('Id', id).first();
-    if (!articleExists) {
-        throw new Error(`Article with ID ${id} already exists.`);
-    }
-    // Kiểm tra nếu writerID và editorID tồn tại trong các bảng tương ứng
-    const writerExists = await db('writer').where('WriterID', writerID).first();
-    if (!writerExists) {
-        throw new Error(`Writer with ID ${writerID} does not exist.`);
-    }
-    const editorExists = await db('editor').where('EditorID', editorID).first();
-    if (!editorExists) {
-        throw new Error(`Editor with ID ${editorID} does not exist.`);
-    }
-
-    try {
-        // Update bài viết vào database
-        await db('ARTICLE').where('ArticleID', id).update({
-            Id: id,
-            Title: title,
-            DatePosted: datePosted,
-            Content: content,
-            Abstract: abstract,
-            Status: status,
-            IsPremium: isPremium,
-            WriterID: writerID,
-            EditorID: editorID,
-        });
-    } catch (error: any) {
-        // Xử lý lỗi nếu có
-        throw new Error('Error inserting article: ' + error.message);
     }
 };
 

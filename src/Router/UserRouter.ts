@@ -58,4 +58,7 @@ router.post('/update-profile', async (req, res, next) => {
     next(error);
   }
 });
+
+router.post('/add-premium', userController.addPremium);
+
 export { router as UserRouter };

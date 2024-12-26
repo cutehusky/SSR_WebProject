@@ -66,18 +66,17 @@
                 {{#if isLogin}}
                 {{#if isUser}}
                 {{#if isPremium}}
-                <div style="padding: 10px 10px 10px 10px" data-bs-toggle="modal" data-bs-target="#premiumModal">
-                    <a class="overflow-hidden btn rounded-pill btn1 scale sheen" href="#">Nâng Cấp Premium</a>
-                </div>
-                {{else}}
                 <div style="padding: 10px 10px 10px 10px">
                     <div class="btn rounded-pill btn1 sheen"><i class="bi bi-check2-circle"></i>Premium</div>
                 </div>
+                {{else}}
+                <div style="padding: 10px 10px 10px 10px" data-bs-toggle="modal" data-bs-target="#premiumModal">
+                    <a class="overflow-hidden btn rounded-pill btn1 scale sheen" href="#">Nâng Cấp Premium</a>
+                </div>
                 {{/if}}
                 {{/if}}
                 {{else}}
-                <div class="pe-2 ps-2" data-bs-toggle="modal"
-                    data-bs-target="#authenticationModal">
+                <div class="pe-2 ps-2" data-bs-toggle="modal" data-bs-target="#authenticationModal">
                     <a class="btn rounded-pill btn2 scale" href="#">
                         <i class="bi bi-person-fill" style="padding-right: 10px"></i>
                         Đăng Nhập

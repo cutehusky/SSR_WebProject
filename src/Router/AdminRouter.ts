@@ -6,25 +6,25 @@ router.use(express.json());
 
 const adminController = new AdminController();
 
-router.get('/categories', adminController.getCategories);
-router.get('/tags', adminController.getTags);
-router.get('/articles', adminController.getArticles);
-router.get('/users', adminController.getUsers);
+router.get('/categories',adminController.verifyAdmin, adminController.getCategories);
+router.get('/tags',adminController.verifyAdmin, adminController.getTags);
+router.get('/articles',adminController.verifyAdmin, adminController.getArticles);
+router.get('/users',adminController.verifyAdmin, adminController.getUsers);
 
-router.post('/tag/edit', adminController.editTag);
-router.post('/category/edit', adminController.editCategory);
-router.post('/subcategory/edit', adminController.editSubCategory);
-router.post('/user/edit', adminController.editUser);
+router.post('/tag/edit',adminController.verifyAdmin, adminController.editTag);
+router.post('/category/edit',adminController.verifyAdmin, adminController.editCategory);
+router.post('/subcategory/edit',adminController.verifyAdmin, adminController.editSubCategory);
+router.post('/user/edit',adminController.verifyAdmin, adminController.editUser);
 
-router.post('/tag/new', adminController.newTag);
-router.post('/category/new', adminController.newCategory);
-router.post('/subcategory/new', adminController.newSubCategory);
-router.post('/user/new', adminController.newUser);
+router.post('/tag/new',adminController.verifyAdmin, adminController.newTag);
+router.post('/category/new',adminController.verifyAdmin, adminController.newCategory);
+router.post('/subcategory/new',adminController.verifyAdmin, adminController.newSubCategory);
+router.post('/user/new',adminController.verifyAdmin, adminController.newUser);
 
-router.post('/tag/delete', adminController.deleteTag);
-router.post('/category/delete', adminController.deleteCategory);
-router.post('/subcategory/delete', adminController.deleteSubCategory);
-router.post('/user/delete', adminController.deleteUser);
-router.post('/article/delete', adminController.deleteArticle);
+router.post('/tag/delete',adminController.verifyAdmin, adminController.deleteTag);
+router.post('/category/delete',adminController.verifyAdmin, adminController.deleteCategory);
+router.post('/subcategory/delete',adminController.verifyAdmin, adminController.deleteSubCategory);
+router.post('/user/delete',adminController.verifyAdmin, adminController.deleteUser);
+router.post('/article/delete',adminController.verifyAdmin, adminController.deleteArticle);
 
 export { router as AdminRouter };
