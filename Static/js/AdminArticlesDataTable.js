@@ -3,6 +3,7 @@ $(document).ready(function () {
         responsive: true,
         searching: false,
         lengthChange: false,
+        paging: false,
         columnDefs: [
             {
                 targets: 5,
@@ -13,6 +14,7 @@ $(document).ready(function () {
     $('#editorPendingTable').DataTable({
         responsive: true,
         searching: false,
+        paging: false,
         lengthChange: false,
         columnDefs: [
             {

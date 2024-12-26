@@ -1,5 +1,6 @@
 import { DBConfig, DBConfig as db } from '../Utils/DBConfig';
 import { writer } from 'repl';
+import {getUsernameById} from "./UserPasswordService";
 
 export interface ArticleData {
     id: number;
@@ -7,7 +8,7 @@ export interface ArticleData {
     datePosted?: string; // Ngày đăng bài, có thể null
     content: string;
     abstract?: string; // Tóm tắt, có thể null
-    status?: 'Draft' | 'Pending' | 'Rejected' | 'Approved' | 'Published'; // Trạng thái bài viết
+    status?: 'Draft' | 'Rejected' | 'Approved' | 'Published'; // Trạng thái bài viết
     isPremium?: number; // 0: Miễn phí, 1: Premium
     writerID: number;
     editorID?: number | null; // Editor có thể null
@@ -742,6 +743,12 @@ export const GetCommentOfArticle = async (
             ArticleId: articleId,
         })
         .orderBy('DatePosted', 'desc');
+    for (let i = 0; i < comment.length; i++) {
+        if (comment[i].SubscriberID)
+            comment[i].Name = await getUsernameById(
+                comment[i].SubscriberID as number
+            );
+    }
     return comment ? comment : [];
 };
 
@@ -1002,7 +1009,7 @@ export const getCategoryArticles = async (
     return response;
 };
 
-export const getArticlesCategories = (categories : number): Promise<any[]> => {
+export const countArticlesCategories =  async (categories : number): Promise<number> => {
     const query =  db('ARTICLE as a')
         .join('ARTICLE_SUBCATEGORY as as', 'a.ArticleID', 'as.ArticleID')
         .join('SUBCATEGORY as s', 'as.SubcategoryID', 's.SubcategoryID')
@@ -1016,7 +1023,28 @@ export const getArticlesCategories = (categories : number): Promise<any[]> => {
             'c.Name as category'
         );
     if(categories === -1) {
-        return query;
+        let count = await query.count("* as count").first();
+        return count?.count as number || 0;
     }
-    return query.where('c.CategoryID', categories);
+    let count = await query.where('c.CategoryID', categories).count("* as count").first();
+    return count?.count as number || 0;
+};
+
+export const getArticlesCategories = (categories : number, offset: number = 0, limit: number = 0): Promise<any[]> => {
+    const query =  db('ARTICLE as a')
+        .join('ARTICLE_SUBCATEGORY as as', 'a.ArticleID', 'as.ArticleID')
+        .join('SUBCATEGORY as s', 'as.SubcategoryID', 's.SubcategoryID')
+        .join('CATEGORY as c', 's.CategoryID', 'c.CategoryID')
+        .join('WRITER as w', 'a.WriterID', 'w.WriterID')
+        .select(
+            'a.ArticleID as id',
+            'a.Title as title',
+            DBConfig.raw("DATE_FORMAT(a.DatePosted, '%d/%m/%Y') as date"),
+            's.Name as subcategory',
+            'c.Name as category'
+        );
+    if(categories === -1) {
+        return query.offset(offset).limit(limit);
+    }
+    return query.where('c.CategoryID', categories).offset(offset).limit(limit);
 };

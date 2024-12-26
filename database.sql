@@ -38,7 +38,7 @@ CREATE TABLE ARTICLE (
     DatePosted DATETIME,
     Content LONGTEXT COLLATE utf8_unicode_ci,
     Abstract TINYTEXT COLLATE utf8_unicode_ci,
-    Status CHAR(10) CHECK (Status IN ('Draft', 'Pending', 'Rejected', 'Approved', 'Published')),
+    Status CHAR(10) CHECK (Status IN ('Draft', 'Rejected', 'Approved', 'Published')),
     Reason TINYTEXT COLLATE utf8_unicode_ci,
     IsPremium INT DEFAULT 0 CHECK (IsPremium IN (0, 1)),
     ViewCount INT DEFAULT 0 CHECK (ViewCount >= 0),
@@ -128,7 +128,7 @@ ALTER TABLE COMMENT
 ADD 
     CONSTRAINT FK_COMMENT_SUBSCRIBER
     FOREIGN KEY (SubscriberID)
-    REFERENCES SUBSCRIBER(SubscriberID);
+    REFERENCES USER(UserID);
 
 ALTER TABLE ARTICLE
 ADD 
