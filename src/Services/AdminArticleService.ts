@@ -1,6 +1,6 @@
 import { DBConfig, DBConfig as db } from '../Utils/DBConfig';
 import { writer } from 'repl';
-import { getUsernameById } from './UserPasswordService';
+import {getUsernameById, getWriterNameById} from './UserPasswordService';
 
 
 export const deleteArticle = async (articleID: number): Promise<void> => {
@@ -57,42 +57,82 @@ export const getFullCategoryNameByCatID = async (
 export const getArticlesByCategoryID = async (
     categoryId: string,
     limit: number,
-    offset: number
+    offset: number,
+    isPremium: boolean
 ): Promise<any[]> => {
-    const response = await db('CATEGORY')
-        .where('CATEGORY.CategoryID', '=', categoryId)
-        .join(
-            'SUBCATEGORY',
-            'SUBCATEGORY.CategoryID',
-            '=',
-            'CATEGORY.CategoryID'
-        )
-        .join(
-            'ARTICLE_SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.SubCategoryID',
-            '=',
-            'SUBCATEGORY.SubCategoryID'
-        )
-        .join(
-            'ARTICLE',
-            'ARTICLE.ArticleID',
-            '=',
-            'ARTICLE_SUBCATEGORY.ArticleID'
-        )
-        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
-        .orderBy('ARTICLE.DatePosted', 'DESC')
-        .select(
-            'ARTICLE.ArticleID as ArticleID',
-            'ARTICLE.Title as Title',
-            'ARTICLE.Abstract as Abstract',
-            'ARTICLE.DatePosted as DatePosted',
-            'ARTICLE_URL.URL as URL',
-            'SUBCATEGORY.Name as subcategory',
-            'SUBCATEGORY.SubcategoryID as subcategoryId',
-            'CATEGORY.Name as category'
-        )
-        .limit(limit)
-        .offset(offset);
+    let response = [];
+    if (isPremium) {
+        response = await db('CATEGORY')
+            .where('CATEGORY.CategoryID', '=', categoryId)
+            .join(
+                'SUBCATEGORY',
+                'SUBCATEGORY.CategoryID',
+                '=',
+                'CATEGORY.CategoryID'
+            )
+            .join(
+                'ARTICLE_SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.SubCategoryID',
+                '=',
+                'SUBCATEGORY.SubCategoryID'
+            )
+            .join(
+                'ARTICLE',
+                'ARTICLE.ArticleID',
+                '=',
+                'ARTICLE_SUBCATEGORY.ArticleID'
+            )
+            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+            .orderBy('ARTICLE.IsPremium', 'desc')
+            .orderBy('ARTICLE.DatePosted', 'DESC')
+            .select(
+                'ARTICLE.ArticleID as ArticleID',
+                'ARTICLE.Title as Title',
+                'ARTICLE.Abstract as Abstract',
+                'ARTICLE.DatePosted as DatePosted',
+                'ARTICLE_URL.URL as URL',
+                'SUBCATEGORY.Name as subcategory',
+                'SUBCATEGORY.SubcategoryID as subcategoryId',
+                'CATEGORY.Name as category'
+            )
+            .limit(limit)
+            .offset(offset);
+    } else {
+        response = await db('CATEGORY')
+            .where('CATEGORY.CategoryID', '=', categoryId)
+            .join(
+                'SUBCATEGORY',
+                'SUBCATEGORY.CategoryID',
+                '=',
+                'CATEGORY.CategoryID'
+            )
+            .join(
+                'ARTICLE_SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.SubCategoryID',
+                '=',
+                'SUBCATEGORY.SubCategoryID'
+            )
+            .join(
+                'ARTICLE',
+                'ARTICLE.ArticleID',
+                '=',
+                'ARTICLE_SUBCATEGORY.ArticleID'
+            )
+            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+            .orderBy('ARTICLE.DatePosted', 'DESC')
+            .select(
+                'ARTICLE.ArticleID as ArticleID',
+                'ARTICLE.Title as Title',
+                'ARTICLE.Abstract as Abstract',
+                'ARTICLE.DatePosted as DatePosted',
+                'ARTICLE_URL.URL as URL',
+                'SUBCATEGORY.Name as subcategory',
+                'SUBCATEGORY.SubcategoryID as subcategoryId',
+                'CATEGORY.Name as category'
+            )
+            .limit(limit)
+            .offset(offset);
+    }
 
     const formattedResponse = await Promise.all(
         response.map(async item => {
@@ -211,37 +251,72 @@ export const getSubcategoryInfoBySubCatID = async (
 export const getArticlesBySubCatID = async (
     subcategoryId: string,
     limit: number,
-    offset: number
+    offset: number,
+    isPremium: boolean
 ): Promise<any[]> => {
-    const response = await db('SUBCATEGORY')
-        .where('SUBCATEGORY.SubCategoryID', '=', subcategoryId)
-        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
-        .join(
-            'ARTICLE_SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.SubCategoryID',
-            '=',
-            'SUBCATEGORY.SubcategoryID'
-        )
-        .join(
-            'ARTICLE',
-            'ARTICLE.ArticleID',
-            '=',
-            'ARTICLE_SUBCATEGORY.ArticleID'
-        )
-        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', 'ARTICLE.ArticleID')
-        .orderBy('ARTICLE.DatePosted', 'DESC')
-        .select(
-            'ARTICLE.ArticleID as ArticleID',
-            'ARTICLE.Title as Title',
-            'ARTICLE.Abstract as Abstract',
-            'ARTICLE.DatePosted as DatePosted',
-            'ARTICLE_URL.URL as URL',
-            'SUBCATEGORY.Name as subcategory',
-            'SUBCATEGORY.SubcategoryID as subcategoryId',
-            'CATEGORY.Name as category'
-        )
-        .limit(limit)
-        .offset(offset);
+    let response = [];
+    if (isPremium) {
+        response = await db('SUBCATEGORY')
+            .where('SUBCATEGORY.SubCategoryID', '=', subcategoryId)
+            .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+            .join(
+                'ARTICLE_SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.SubCategoryID',
+                '=',
+                'SUBCATEGORY.SubcategoryID'
+            )
+            .join(
+                'ARTICLE',
+                'ARTICLE.ArticleID',
+                '=',
+                'ARTICLE_SUBCATEGORY.ArticleID'
+            )
+            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', 'ARTICLE.ArticleID')
+            .orderBy('ARTICLE.IsPremium', 'desc')
+            .orderBy('ARTICLE.DatePosted', 'DESC')
+            .select(
+                'ARTICLE.ArticleID as ArticleID',
+                'ARTICLE.Title as Title',
+                'ARTICLE.Abstract as Abstract',
+                'ARTICLE.DatePosted as DatePosted',
+                'ARTICLE_URL.URL as URL',
+                'SUBCATEGORY.Name as subcategory',
+                'SUBCATEGORY.SubcategoryID as subcategoryId',
+                'CATEGORY.Name as category'
+            )
+            .limit(limit)
+            .offset(offset);
+    } else {
+        response = await db('SUBCATEGORY')
+            .where('SUBCATEGORY.SubCategoryID', '=', subcategoryId)
+            .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+            .join(
+                'ARTICLE_SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.SubCategoryID',
+                '=',
+                'SUBCATEGORY.SubcategoryID'
+            )
+            .join(
+                'ARTICLE',
+                'ARTICLE.ArticleID',
+                '=',
+                'ARTICLE_SUBCATEGORY.ArticleID'
+            )
+            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', 'ARTICLE.ArticleID')
+            .orderBy('ARTICLE.DatePosted', 'DESC')
+            .select(
+                'ARTICLE.ArticleID as ArticleID',
+                'ARTICLE.Title as Title',
+                'ARTICLE.Abstract as Abstract',
+                'ARTICLE.DatePosted as DatePosted',
+                'ARTICLE_URL.URL as URL',
+                'SUBCATEGORY.Name as subcategory',
+                'SUBCATEGORY.SubcategoryID as subcategoryId',
+                'CATEGORY.Name as category'
+            )
+            .limit(limit)
+            .offset(offset);
+    }
 
     const formattedResponse = await Promise.all(
         response.map(async item => {
@@ -354,44 +429,87 @@ export const CountSearchResult = async (
 export const SearchArticle = async (
     searchValue: string,
     offset: number,
-    limit: number
+    limit: number,
+    isPremium: boolean
 ) => {
-    let result = await DBConfig('ARTICLE')
-        .whereRaw(
-            'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
-            [searchValue]
-        )
-        .join(
-            'ARTICLE_SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.ArticleID',
-            '=',
-            'ARTICLE.ArticleID'
-        )
-        .join(
-            'SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.SubCategoryID',
-            '=',
-            'SUBCATEGORY.SubCategoryID'
-        )
-        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
-        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
-        .where('STT', '=', '0')
-        .orderBy('DatePosted', 'desc')
-        .select(
-            'ARTICLE.ArticleID',
-            'Title',
-            'DatePosted',
-            'Abstract',
-            'IsPremium',
-            'ViewCount',
-            'CATEGORY.Name as category',
-            'SUBCATEGORY.Name as subcategory',
-            'CATEGORY.CategoryID as categoryId',
-            'SUBCATEGORY.SubCategoryID as subcategoryId',
-            'URL'
-        )
-        .offset(offset)
-        .limit(limit);
+    let result = [];
+    console.log(isPremium);
+    if (isPremium) {
+        result = await DBConfig('ARTICLE')
+            .whereRaw(
+                'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
+                [searchValue]
+            )
+            .join(
+                'ARTICLE_SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
+            .join(
+                'SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.SubCategoryID',
+                '=',
+                'SUBCATEGORY.SubCategoryID'
+            )
+            .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+            .where('STT', '=', '0')
+            .orderBy('ARTICLE.IsPremium', 'desc')
+            .orderBy('DatePosted', 'desc')
+            .select(
+                'ARTICLE.ArticleID',
+                'Title',
+                'DatePosted',
+                'Abstract',
+                'IsPremium',
+                'ViewCount',
+                'CATEGORY.Name as category',
+                'SUBCATEGORY.Name as subcategory',
+                'CATEGORY.CategoryID as categoryId',
+                'SUBCATEGORY.SubCategoryID as subcategoryId',
+                'URL'
+            )
+            .offset(offset)
+            .limit(limit);
+    } else {
+        result = await DBConfig('ARTICLE')
+            .whereRaw(
+                'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
+                [searchValue]
+            )
+            .join(
+                'ARTICLE_SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
+            .join(
+                'SUBCATEGORY',
+                'ARTICLE_SUBCATEGORY.SubCategoryID',
+                '=',
+                'SUBCATEGORY.SubCategoryID'
+            )
+            .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+            .where('STT', '=', '0')
+            .orderBy('DatePosted', 'desc')
+            .select(
+                'ARTICLE.ArticleID',
+                'Title',
+                'DatePosted',
+                'Abstract',
+                'IsPremium',
+                'ViewCount',
+                'CATEGORY.Name as category',
+                'SUBCATEGORY.Name as subcategory',
+                'CATEGORY.CategoryID as categoryId',
+                'SUBCATEGORY.SubCategoryID as subcategoryId',
+                'URL'
+            )
+            .offset(offset)
+            .limit(limit);
+    }
     for (let i = 0; i < result.length; i++)
         result[i].tags = await GetTagsOfArticle(result[i].ArticleID);
     return result as Array<ArticleListItem>;
@@ -622,11 +740,11 @@ export const GetCategoryOfArticle = async (articleId: string) => {
     return category
         ? (category as Category)
         : {
-              categoryName: '',
-              subcategoryName: '',
-              categoryId: 0,
-              subcategoryId: 0,
-          };
+            categoryName: '',
+            subcategoryName: '',
+            categoryId: 0,
+            subcategoryId: 0,
+        };
 };
 
 export interface Comment {
@@ -792,7 +910,6 @@ export const getLatestArticles = async (
                 '=',
                 'ARTICLE.ArticleID'
             )
-            .join('WRITER', 'WRITER.WriterID', '=', 'ARTICLE.WriterID')
             .join(
                 'ARTICLE_SUBCATEGORY',
                 'ARTICLE_SUBCATEGORY.ArticleID',
@@ -820,7 +937,7 @@ export const getLatestArticles = async (
                 ),
                 'SUBCATEGORY.Name as category',
                 'SUBCATEGORY.SubCategoryID as categoryID',
-                'WRITER.Alias as author'
+                'ARTICLE.WriterID as writerID'
             );
     } else {
         response = await db('ARTICLE')
@@ -830,7 +947,6 @@ export const getLatestArticles = async (
                 '=',
                 'ARTICLE.ArticleID'
             )
-            .join('WRITER', 'WRITER.WriterID', '=', 'ARTICLE.WriterID')
             .join(
                 'ARTICLE_SUBCATEGORY',
                 'ARTICLE_SUBCATEGORY.ArticleID',
@@ -857,7 +973,7 @@ export const getLatestArticles = async (
                 ),
                 'SUBCATEGORY.Name as category',
                 'SUBCATEGORY.SubCategoryID as categoryID',
-                'WRITER.Alias as author'
+                'ARTICLE.WriterID as writerID'
             );
     }
 
@@ -871,6 +987,7 @@ export const getLatestArticles = async (
             return {
                 ...item,
                 commentCount: comments ? comments.count : 0,
+                author: await getWriterNameById(item.writerID)
             };
         })
     );
@@ -894,8 +1011,8 @@ export const getTopArticles = async (
     const startWeek = new Date();
     startWeek.setDate(
         startWeek.getDate() -
-            startWeek.getDay() +
-            (startWeek.getDay() === 0 ? -6 : 1)
+        startWeek.getDay() +
+        (startWeek.getDay() === 0 ? -6 : 1)
     );
     startWeek.setHours(0, 0, 0, 0);
     const endWeek = new Date(startWeek);

@@ -3,6 +3,7 @@ $(document).ready(function () {
         responsive: true,
         searching: false,
         lengthChange: false,
+        paging: false,
         columnDefs: [
             {
                 width: '30%',

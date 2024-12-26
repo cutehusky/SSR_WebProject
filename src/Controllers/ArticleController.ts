@@ -58,8 +58,8 @@ export class ArticleController {
     };
 
     // /home
-    async getHome(req: Request, res: Response) {
-        const isUserPremium: boolean = !!req.session.authUser;
+    getHome = async (req: Request, res: Response) => {
+        const isUserPremium = await this.isPremium(req);
         const top_articles = await getTopArticles(isUserPremium);
         const view_articles = await getMostViewedArticles(isUserPremium);
         const category_articles = await getCategoryArticles(isUserPremium);
@@ -76,7 +76,7 @@ export class ArticleController {
     }
 
     // /category/:id?page=
-    async getArticleListByCategory(req: Request, res: Response) {
+    getArticleListByCategory = async (req: Request, res: Response) => {
         const categoryId = req.params.id as string;
         const { categoryName, subcategoryInfo } =
             await getFullCategoryNameByCatID(categoryId);
@@ -102,7 +102,8 @@ export class ArticleController {
         const articles = await getArticlesByCategoryID(
             categoryId,
             articlePerPage,
-            (page - 1) * articlePerPage
+            (page - 1) * articlePerPage,
+            await this.isPremium(req)
         );
         const [topNews, ...newsOfCategory] = articles;
 
@@ -125,7 +126,7 @@ export class ArticleController {
     }
 
     // /category/subcategory/:id?page=
-    async getArticleListBySubCategory(req: Request, res: Response) {
+    getArticleListBySubCategory = async (req: Request, res: Response) => {
         const subcategoryId = req.params.id as string;
         const { categoryID, categoryName, subcategoryInfo } =
             await getSubcategoryInfoBySubCatID(subcategoryId);
@@ -153,7 +154,8 @@ export class ArticleController {
         const articles = await getArticlesBySubCatID(
             subcategoryId,
             articlePerPage,
-            (page - 1) * articlePerPage
+            (page - 1) * articlePerPage,
+            await this.isPremium(req)
         );
         const [topNews, ...listOfNews] = articles;
 
@@ -349,7 +351,8 @@ export class ArticleController {
             result: await SearchArticle(
                 searchValue,
                 (page - 1) * articlePerPage,
-                articlePerPage
+                articlePerPage,
+                await this.isPremium(req)
             ),
             searchValue: searchValue,
             page_items: page_items,
@@ -359,7 +362,7 @@ export class ArticleController {
     };
 
     // /download/:id
-    async downloadArticle(req: Request, res: Response) {
+    downloadArticle = async (req: Request, res: Response) => {
         let articleId = req.params.id;
 
         if (!articleId || !(await this.isPremium(req))) return;
