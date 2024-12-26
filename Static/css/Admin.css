@@ -200,3 +200,7 @@ h4 {
     cursor: pointer;
     font-weight: bold;
 }
+
+#myTable2_paginate {
+    display: none;
+}

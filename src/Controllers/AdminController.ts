@@ -1,6 +1,6 @@
 import { Response, Request } from 'express';
 
-import { GetSubCategories } from '../Utils/getSubCategories';
+import { GetSubCategories, countCategories, GetCategoriesPage, countSubCategories } from '../Services/AdminCategoryService';
 import { getCategories } from '../Utils/getCategories';
 import { countUsers, getUsers } from '../Utils/getUsers';
 import { DBConfig } from '../Utils/DBConfig';
@@ -37,18 +37,63 @@ let tagData = [
 export class AdminController {
     // /admin/categories?category=
     async getCategories(req: Request, res: Response) {
-        const category = (req.query.category || '-1') as string;
-        const categoryId = parseInt(category);
+        const category = req.query.category && !isNaN(Number(req.query.category)) ? Number(req.query.category) : -1;
+        const categoryId = category;
         const CategoryList = res.locals.Categories;
-        const subCategoryList = await GetSubCategories(categoryId);
-
+    
+        // Phân trang cho Chuyên Mục Cấp 1
+        let page = parseInt(req.query.page as string) || 1;
+        let itemPerPage = 5;
+        const categoryNum = await countCategories();
+        const totalPages = Math.ceil(categoryNum / itemPerPage);
+        page = Math.max(1, Math.min(page, totalPages));
+    
+        let page_items = getPagingNumber(page, totalPages);
+        page_items = page_items.map(item => ({
+            ...item,
+            link: `/admin/categories?page=${item.value}&category=${categoryId}`,
+        }));
+    
+        const previousLink = page > 1 ? `/admin/categories?page=${page - 1}&category=${categoryId}` : '';
+        const nextLink = page < totalPages ? `/admin/categories?page=${page + 1}&category=${categoryId}` : '';
+    
+        // Lấy danh sách Chuyên Mục Cấp 1
+        const categoryList = await GetCategoriesPage((page - 1) * itemPerPage, itemPerPage);
+    
+        // Phân trang cho Chuyên Mục Cấp 2
+        let subCategoryPage = parseInt(req.query.subCategoryPage as string) || 1;
+        const subCategoryNum = await countSubCategories();
+        const totalSubCategoryPages = Math.ceil(subCategoryNum[0].count / itemPerPage);
+        subCategoryPage = Math.max(1, Math.min(subCategoryPage, totalSubCategoryPages));
+    
+        let subCategoryPageItems = getPagingNumber(subCategoryPage, totalSubCategoryPages);
+        subCategoryPageItems = subCategoryPageItems.map(item => ({
+            ...item,
+            link: `/admin/categories?category=${categoryId}&subCategoryPage=${item.value}`,
+        }));        
+    
+        const subCategoryPreviousLink = subCategoryPage > 1 ? `/admin/categories?category=${categoryId}&subCategoryPage=${subCategoryPage - 1}` : '';
+        const subCategoryNextLink = subCategoryPage < totalSubCategoryPages ? `/admin/categories?category=${categoryId}&subCategoryPage=${subCategoryPage + 1}` : '';
+    
+        // Lấy danh sách Chuyên Mục Cấp 2
+        const subCategoryList = await GetSubCategories(categoryId, (subCategoryPage - 1) * itemPerPage, itemPerPage);
+    
         res.render('Admin/AdminCategoriesView', {
             customCss: ['Admin.css'],
             customJs: ['AdminCategoryDataTable.js'],
-            Categories: CategoryList,
+            Categories: categoryList,
             Subcategories: subCategoryList,
+            selectedCategory: categoryId,
+            page_items,
+            previousLink,
+            nextLink,
+            subCategoryPageItems,
+            subCategoryPreviousLink,
+            subCategoryNextLink,
         });
     }
+    
+    
 
     // /admin/tags
     async getTags(req: Request, res: Response) {
@@ -88,10 +133,11 @@ export class AdminController {
             itemPerPage
         );
         console.log('Data: ', data);
+        console.log(categoryId)
 
         res.render('Admin/AdminArticlesView', {
             selectedCategory: categoryId,
-            data: data, // Dữ liệu bài viết trả về từ database
+            data: data, 
             customJs: ['AdminArticlesDataTable.js'],
             customCss: ['Admin.css'],
             page_items,

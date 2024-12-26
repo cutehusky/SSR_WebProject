@@ -27,6 +27,7 @@ export class UserController {
             if (!isPasswordValid) {
                 return res.status(401).json({ error: "Password is incorrect" });
             }
+            console.log(user);
 
             // Lưu thông tin người dùng vào session
             req.session.authUser = user;
