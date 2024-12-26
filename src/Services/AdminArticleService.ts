@@ -2,7 +2,6 @@ import { DBConfig, DBConfig as db } from '../Utils/DBConfig';
 import { writer } from 'repl';
 import { getUsernameById } from './UserPasswordService';
 
-
 export const deleteArticle = async (articleID: number): Promise<void> => {
     try {
         // Kiểm tra xem bài viết có tồn tại không
