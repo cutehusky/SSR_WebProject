@@ -1,4 +1,4 @@
-import {Response, Request, NextFunction} from 'express';
+import { Response, Request, NextFunction } from 'express';
 import { DBConfig } from '../Utils/DBConfig';
 import path from 'path';
 import * as pdf from 'html-pdf';
@@ -28,19 +28,35 @@ import {
 } from '../Services/AdminArticleService';
 import { getWriterNameById } from '../Services/UserPasswordService';
 import { clamp, getPagingNumber } from '../Utils/MathUtils';
-import {UserRole} from "../Models/UserData";
+import { UserRole } from '../Models/UserData';
 
 const articlePerPage = 4;
 
-
 export class ArticleController {
     verifyUser(req: Request, res: Response, Next: NextFunction) {
-        if (req.session.authUser && req.session.authUser.role !== UserRole.User) {
-            res.redirect("/404");
+        if (
+            req.session.authUser &&
+            req.session.authUser.role !== UserRole.User
+        ) {
+            res.redirect('/404');
             return;
         }
         Next();
     }
+
+    // Check if the user has premium account or not
+    isPremium = async (req: Request) => {
+        if (
+            !req.session.authUser ||
+            req.session.authUser.role !== UserRole.User
+        )
+            return false;
+        let userData = await DBConfig('SUBSCRIBER')
+            .where('SubscriberID', req.session.authUser.id)
+            .first();
+        return new Date(Date.now()) < userData.DateExpired;
+    };
+
     // /home
     async getHome(req: Request, res: Response) {
         const top_articles = await getTopArticles();
@@ -246,7 +262,7 @@ export class ArticleController {
     };
 
     // /article/:id
-    async getArticle(req: Request, res: Response) {
+    getArticle = async (req: Request, res: Response) => {
         const articleId = req.params.id;
         if (!articleId) return;
         console.log(articleId);
@@ -269,7 +285,8 @@ export class ArticleController {
 
         let isPremiumUser = await this.isPremium(req);
         if (data.IsPremium && !isPremiumUser) {
-            res.redirect("/404");
+            // res.redirect('/404');
+            res.redirect('back'); // should be redirected back to the original page!
             return;
         }
 
@@ -302,7 +319,7 @@ export class ArticleController {
                 writer: writer,
             },
         });
-    }
+    };
 
     // /search?q=&page=
     searchArticle = async (req: Request, res: Response) => {
@@ -340,20 +357,11 @@ export class ArticleController {
         });
     };
 
-    isPremium = async (req: Request) => {
-        if (!req.session.authUser || req.session.authUser.role !== UserRole.User)
-            return false;
-        let userData = await DBConfig("SUBSCRIBER")
-            .where("SubscriberID", req.session.authUser.id).first();
-        return new Date(Date.now()) < userData.DateExpired;
-    }
-
     // /download/:id
     async downloadArticle(req: Request, res: Response) {
         let articleId = req.params.id;
 
-        if (!articleId || !(await this.isPremium(req)))
-            return;
+        if (!articleId || !(await this.isPremium(req))) return;
         console.log(articleId);
         let data = await GetArticleById(articleId);
         if (!data) {
