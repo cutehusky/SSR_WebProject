@@ -30,7 +30,10 @@ import {
     getTopArticles,
     getCategoryArticles,
 } from '../Services/AdminArticleService';
-import { getUsernameById, getWriterNameById } from '../Services/UserPasswordService';
+import {
+    getUsernameById,
+    getWriterNameById,
+} from '../Services/UserPasswordService';
 import { clamp, getPagingNumber } from '../Utils/MathUtils';
 
 const articlePerPage = 4;
