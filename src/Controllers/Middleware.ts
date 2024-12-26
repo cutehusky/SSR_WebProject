@@ -27,8 +27,7 @@ export class MiddlewareController {
     }
 
     async getTags(req: Request, res: Response, next: NextFunction) {
-        let tags = await DBConfig("TAG").select("TagID as id", "Name as name");
-        res.locals.tags = tags;
+        res.locals.tags = await DBConfig("TAG").select("TagID as id", "Name as name");
         next();
     }
 
@@ -37,11 +36,19 @@ export class MiddlewareController {
             res.locals.profile = req.session.authUser;
             res.locals.isLogin = true;
             res.locals.isUser = req.session.authUser.role === UserRole.User;
+            res.locals.isWriter = req.session.authUser.role === UserRole.Writer;
+            if (req.session.authUser.role === UserRole.User) {
+                let userData = await DBConfig("SUBSCRIBER")
+                    .where("SubscriberID", req.session.authUser.id).first();
+                res.locals.isPremium = new Date(Date.now()) < userData.DateExpired;
+                res.locals.premiumTime = (userData.DateExpired.getTime() - Date.now()) / (1000 * 60);
+            }
         }
         else {
             res.locals.isLogin = false;
             res.locals.profile = null;
             res.locals.isUser = true;
+            res.locals.isWriter = false;
         }
         next();
     }

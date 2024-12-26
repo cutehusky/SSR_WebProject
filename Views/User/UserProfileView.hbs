@@ -1,18 +1,22 @@
-<div
-    class="title-search-box d-flex align-items-center justify-content-between pb-4"
-    style="width: 350px; height: 60px; margin-top: 100px"
->
+{{#if isUser}}
+<div class="title-search-box d-flex align-items-center justify-content-between pb-4"
+    style="width: 350px; height: 60px; margin-top: 100px">
     <div class="fs-2 fw-bold">Trạng thái Premium</div>
 </div>
 <ul style="padding: 20px" class="premium-status">
-    {{#if (eq profile.time 0)}}
+    {{#if isPremium}}
+    <li>Tài khoản Premium của bạn sẽ hết hạn sau: {{premiumTime}} phút</li>
+    <li>Cảm ơn bạn đã đăng ký gói Premium. Chúc bạn có một ngày vui vẻ</li>
+    {{else}}
     <li>Hiện tại bạn vẫn chưa đăng ký gói Premium của chúng tôi.</li>
     <li>Hãy đăng ký ngay để nhận những trải nghiệm tốt nhất.</li>
-    {{else}}
-    <li>Tài khoản Premium của bạn sẽ hết hạn sau: {{profile.time}} phút</li>
-    <li>Cảm ơn bạn đã đăng ký gói Premium. Chúc bạn có một ngày vui vẻ</li>
-
     {{/if}}
 </ul>
+{{/if}}
+{{#if isWriter}}
+{{> User/UserProfile id=profile.id penName=profile.penName dateOfBirth=profile.dateOfBirth email=profile.email
+name=profile.name}}
+{{else}}
 {{> User/UserProfile id=profile.id dateOfBirth=profile.dateOfBirth
 email=profile.email name=profile.name}}
+{{/if}}

@@ -64,6 +64,17 @@
             {{/if}}
             <div style="display: flex">
                 {{#if isLogin}}
+                {{#if isUser}}
+                {{#if isPremium}}
+                <div style="padding: 10px 10px 10px 10px" data-bs-toggle="modal" data-bs-target="#premiumModal">
+                    <a class="overflow-hidden btn rounded-pill btn1 scale sheen" href="#">Nâng Cấp Premium</a>
+                </div>
+                {{else}}
+                <div style="padding: 10px 10px 10px 10px">
+                    <div class="btn rounded-pill btn1 sheen"><i class="bi bi-check2-circle"></i>Premium</div>
+                </div>
+                {{/if}}
+                {{/if}}
                 {{else}}
                 <div style="padding-top: 10px;padding-left: 10px" data-bs-toggle="modal"
                     data-bs-target="#authenticationModal">
@@ -73,9 +84,6 @@
                     </a>
                 </div>
                 {{/if}}
-                <div style="padding: 10px 10px 10px 10px" data-bs-toggle="modal" data-bs-target="#premiumModal">
-                    <a class="overflow-hidden btn rounded-pill btn1 scale sheen" href="#">Nâng Cấp Premium</a>
-                </div>
             </div>
 
             {{#if isLogin}}

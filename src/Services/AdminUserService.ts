@@ -1,5 +1,7 @@
 import {DBConfig as db} from "../Utils/DBConfig";
-import {UserData} from "../Models/UserData";
+import {UserData, UserRole} from "../Models/UserData";
+
+const datePremium = 10; //min
 
 export const createUser = async (userData: UserData): Promise<void> => {
   // Kiểm tra xem user đã tồn tại chưa
@@ -18,8 +20,14 @@ export const createUser = async (userData: UserData): Promise<void> => {
         Role: userData.role,
         isAdministator: userData.role === "Admin"
       });
-      
-    await db("SUBSCRIBER").insert({SubscriberID: id, DateExpired: new Date(0), })
+    if (userData.role === UserRole.User)
+        await db("SUBSCRIBER").insert({SubscriberID: id,
+            DateExpired: new Date(Date.now() + datePremium * 1000 * 60), });
+    else if (userData.role === UserRole.Editor) {
+        await db("EDITOR").insert({EditorID: id});
+    } else if (userData.role === UserRole.Writer) {
+        await db("WRITER").insert({WriterID: id, Alias: "" });
+    }
   } catch (error : any) {
     console.log(error);
     throw new Error('Failed to create user.' + error.message);

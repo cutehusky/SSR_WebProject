@@ -198,6 +198,10 @@ export class UserController {
 
     // /user/profile/
     getUserProfile(req: Request, res: Response) {
+        if (!req.session.authUser) {
+            res.redirect("/404");
+            return;
+        }
         res.render('User/UserProfileView', {
             customCss: ['User.css']});
     }
@@ -278,7 +282,7 @@ export class UserController {
                 name,
                 dob
             );
-            userService.updateProfile(user.id, email, name, dob);
+            await userService.updateProfile(user.id, email, name, dob);
         } catch (error) {
             console.error("Update Profile Error:", error);
             return res.status(500).json({ error: "Internal Server Error" });

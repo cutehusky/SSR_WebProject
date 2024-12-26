@@ -135,9 +135,12 @@ Handlebars.registerHelper('slice', function (array: any, start: any, end: any) {
 app.get('/', (req: Request, res: Response) => {
     if (req.session.authUser && req.session.authUser.role === UserRole.Writer) {
         res.redirect('/writer');
-        return;
-    }
-    res.redirect('/home/');
+    } else if (req.session.authUser && req.session.authUser.role === UserRole.Editor){
+        res.redirect('/editor/articles');
+    } else if (req.session.authUser && req.session.authUser.role === UserRole.Admin) {
+        res.redirect('/admin/categories');
+    } else
+        res.redirect('/home/');
 });
 
 app.listen(port, function () {
