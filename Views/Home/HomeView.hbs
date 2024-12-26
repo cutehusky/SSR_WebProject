@@ -8,6 +8,9 @@
                     class="position-relative overflow-hidden"
                     style="height: 500px"
                 >
+                    {{#if this.isPremium}}
+                    <p class="position-absolute premium_badge">Premium</p>
+                    {{/if}}
                     <img
                         class="img-fluid h-100"
                         src="{{this.img}}"
@@ -40,6 +43,9 @@
                         class="position-relative overflow-hidden"
                         style="height: 250px"
                     >
+                        {{#if this.isPremium}}
+                        <p class="position-absolute premium_badge">Premium</p>
+                        {{/if}}
                         <img
                             class="img-fluid w-100 h-100"
                             src="{{this.img}}"
@@ -87,6 +93,9 @@
                 class="position-relative overflow-hidden"
                 style="height: 300px"
             >
+                {{#if this.isPremium}}
+                <p class="position-absolute premium_badge">Premium</p>
+                {{/if}}
                 <img
                     class="img-fluid h-100"
                     src="{{this.img}}"
@@ -131,11 +140,16 @@
                     <div class="col-lg-12">
                         <div class="row news-lg mx-0 mb-3">
                             <div
-                                class="col-md-6 h-100 px-0"
+                                class="col-md-6 h-100 px-0 position-relative"
                                 style="height: 300px"
                             >
+                                {{#if this.isPremium}}
+                                <p class="position-absolute premium_badge">
+                                    Premium
+                                </p>
+                                {{/if}}
                                 <img
-                                    class="img-fluid h-100"
+                                    class="img-fluid w-100 h-100"
                                     src="{{this.img}}"
                                     style="object-fit: cover"
                                 />
@@ -184,6 +198,11 @@
                     {{/each}} {{#each (slice latest_articles 2 4)}}
                     <div class="col-lg-6">
                         <div class="position-relative mb-3">
+                            {{#if this.isPremium}}
+                            <p class="position-absolute premium_badge">
+                                Premium
+                            </p>
+                            {{/if}}
                             <img
                                 class="img-fluid w-100"
                                 src="{{this.img}}"
@@ -230,6 +249,11 @@
                     {{/each}} {{#each (slice latest_articles 4 6)}}
                     <div class="col-lg-6">
                         <div class="position-relative mb-3">
+                            {{#if this.isPremium}}
+                            <p class="position-absolute premium_badge">
+                                Premium
+                            </p>
+                            {{/if}}
                             <img
                                 class="img-fluid w-100"
                                 src="{{this.img}}"
@@ -276,9 +300,14 @@
                     latest_articles.length)}}
                     <div class="col-lg-6">
                         <div
-                            class="d-flex align-items-center bg-white mb-3 overflow-hidden"
+                            class="d-flex align-items-center bg-white mb-3 overflow-hidden position-relative"
                             style="height: 110px"
                         >
+                            {{#if this.isPremium}}
+                            <p class="position-absolute premium_badge">
+                                Premium
+                            </p>
+                            {{/if}}
                             <img
                                 class="img-fluid w-50"
                                 src="{{this.img}}"
@@ -321,9 +350,14 @@
                     <div class="bg-white border border-top-0 p-3">
                         {{#each category_articles}}
                         <div
-                            class="d-flex align-items-center bg-white mb-3 overflow-hidden"
+                            class="d-flex align-items-center bg-white mb-3 overflow-hidden position-relative"
                             style="height: 110px"
                         >
+                            {{#if this.isPremium}}
+                            <p class="position-absolute premium_badge">
+                                Premium
+                            </p>
+                            {{/if}}
                             <img
                                 class="img-fluid w-50"
                                 src="{{this.img}}"

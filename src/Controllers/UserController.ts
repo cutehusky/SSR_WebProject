@@ -1,31 +1,41 @@
-import {NextFunction, Request, Response} from "express";
-import {DBConfig} from "../Utils/DBConfig";
-import bcrypt from "bcryptjs";
-import * as userService  from "../Services/UserPasswordService";
-import { UserRole } from "../Models/UserData";
-import { UserData } from "../Models/UserData";
-import { createUser } from "../Services/AdminUserService";
+import { NextFunction, Request, Response } from 'express';
+import { DBConfig } from '../Utils/DBConfig';
+import bcrypt from 'bcryptjs';
+import * as userService from '../Services/UserPasswordService';
+import { UserRole } from '../Models/UserData';
+import { UserData } from '../Models/UserData';
+import { createUser } from '../Services/AdminUserService';
 import nodemailer from 'nodemailer';
 
 export class UserController {
     // /user/login
-    async logIn(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+    async logIn(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | void> {
         const { email, password } = req.body;
+
         if (!email || !password) {
-            return res.status(400).json({ error: "Email and Password are required" });
+            return res
+                .status(400)
+                .json({ error: 'Email and Password are required' });
         }
 
         try {
             // Kiểm tra người dùng từ database
             const user = await userService.getUserByEmail(email);
             if (!user || user.role === UserRole.Invalid) {
-                return res.status(404).json({ error: "User not found" });
+                return res.status(404).json({ error: 'User not found' });
             }
 
             // Kiểm tra mật khẩu người dùng
-            const isPasswordValid = await bcrypt.compare(password, user.password);
+            const isPasswordValid = await bcrypt.compare(
+                password,
+                user.password
+            );
             if (!isPasswordValid) {
-                return res.status(401).json({ error: "Password is incorrect" });
+                return res.status(401).json({ error: 'Password is incorrect' });
             }
             console.log(user);
 
@@ -36,29 +46,38 @@ export class UserController {
             const retUrl = req.session.retUrl || '/';
             req.session.retUrl = undefined;
             return res.redirect(retUrl);
-
         } catch (error) {
-            console.error("Login Error:", error);
-            return res.status(500).json({ error: "Internal Server Error" });
+            console.error('Login Error:', error);
+            return res.status(500).json({ error: 'Internal Server Error' });
         }
     }
 
     // /user/register
-    async register(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
-        const { email, password, fullname}: { email: string, password: string, fullname: string} = req.body;
+    async register(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | void> {
+        const {
+            email,
+            password,
+            fullname,
+        }: { email: string; password: string; fullname: string } = req.body;
 
         const dob = new Date().toISOString().slice(0, 10);
 
         // Kiểm tra các trường dữ liệu
-        if (!email || !password || !fullname || !dob ) {
-            return res.status(400).json({ error: "All fields are required" });
+        if (!email || !password || !fullname || !dob) {
+            return res.status(400).json({ error: 'All fields are required' });
         }
 
         try {
             // Kiểm tra xem người dùng đã tồn tại chưa
-            const userExists = await DBConfig("USER").where("Email", email).first();
+            const userExists = await DBConfig('USER')
+                .where('Email', email)
+                .first();
             if (userExists) {
-                return res.status(400).json({ error: "Email already in use" });
+                return res.status(400).json({ error: 'Email already in use' });
             }
 
             // Mã hóa mật khẩu
@@ -66,12 +85,12 @@ export class UserController {
 
             // Tạo người dùng mới
             const newUser: UserData = {
-                id: Date.now(),  // Tạo ID theo thời gian (hoặc bạn có thể dùng UUID hoặc auto increment từ DB)
+                id: Date.now(), // Tạo ID theo thời gian (hoặc bạn có thể dùng UUID hoặc auto increment từ DB)
                 fullname,
                 email,
                 password: hashedPassword,
-                dob : dob,
-                role: "Subcriber"
+                dob: dob,
+                role: 'Subcriber',
             };
 
             // Tạo mới người dùng trong DB
@@ -83,22 +102,23 @@ export class UserController {
             // Redirect đến trang profile hoặc trang chính
             return res.redirect('/home');
         } catch (error) {
-            console.error("Registration Error:", error);
-            return res.status(500).json({ error: "Internal Server Error" });
+            console.error('Registration Error:', error);
+            return res.status(500).json({ error: 'Internal Server Error' });
         }
     }
-    
+
     // /user/forgot-password/
     async forgotPassword(req: Request, res: Response) {
         const userId = req.params.id;
         console.log(req.session.authUser);
-        res.render('User/ForgotPasswordView',{
-            customCss: ['User.css']});
+        res.render('User/ForgotPasswordView', {
+            customCss: ['User.css'],
+        });
     }
 
     async forgotPasswordPost(req: Request, res: Response) {
         const { otp, newPassword, otpCheck, email, expires } = req.body;
-        if(otp != otpCheck) {
+        if (otp != otpCheck) {
             res.render('User/ForgotPasswordView', {
                 customCss: ['User.css'],
                 errorOTP: 'Mã OTP không chính xác, vui lòng thử lại.',
@@ -106,7 +126,7 @@ export class UserController {
                     email,
                     OTP: otp,
                     OTPExpires: expires,
-                }
+                },
             });
         }
         if (new Date() > new Date(expires)) {
@@ -117,18 +137,20 @@ export class UserController {
                     email,
                     OTP: otp,
                     OTPExpires: expires,
-                }
+                },
             });
         }
         try {
             const hashedPassword = await bcrypt.hash(newPassword, 10);
-            await DBConfig("USER").where("Email", email).update({ Password: hashedPassword });
+            await DBConfig('USER')
+                .where('Email', email)
+                .update({ Password: hashedPassword });
             res.render('User/ForgotPasswordView', {
                 customCss: ['User.css'],
                 message: 'Mật khẩu đã được thay đổi thành công!',
             });
         } catch (error) {
-            console.error("Forgot Password Error:", error);
+            console.error('Forgot Password Error:', error);
             res.render('User/ForgotPasswordView', {
                 customCss: ['User.css'],
                 error: 'Không thể thay đổi mật khẩu, vui lòng thử lại sau.',
@@ -139,12 +161,13 @@ export class UserController {
     async forgotPasswordEmail(req: Request, res: Response) {
         const userId = req.params.id;
         console.log(req.session.authUser);
-        res.render('User/ForgotPasswordEmailView',{
-            customCss: ['User.css']});
+        res.render('User/ForgotPasswordEmailView', {
+            customCss: ['User.css'],
+        });
     }
     async forgotPasswordEmailPost(req: Request, res: Response) {
         const { email } = req.body;
-        const user = await DBConfig("USER").where("Email", email).first();
+        const user = await DBConfig('USER').where('Email', email).first();
         if (!user) {
             return res.render('User/ForgotPasswordEmailView', {
                 customCss: ['User.css'],
@@ -152,41 +175,42 @@ export class UserController {
             });
         }
         const transporter = nodemailer.createTransport({
-            service: 'Gmail', 
+            service: 'Gmail',
             auth: {
-                user: 'nguyengiakiet0987654321@gmail.com', 
-                pass: 'fxqi kcba bklr wpvj', 
-            },    
-            logger: true, 
-            debug: true, 
+                user: 'nguyengiakiet0987654321@gmail.com',
+                pass: 'fxqi kcba bklr wpvj',
+            },
+            logger: true,
+            debug: true,
         });
         try {
-            const OTP = Math.floor(100000 + Math.random() * 900000); 
+            const OTP = Math.floor(100000 + Math.random() * 900000);
             const OTPExpires = new Date(Date.now() + 3 * 60 * 60 * 1000); // 3 giờ
             // Gửi email
             const info = await transporter.sendMail({
-                from: '"Reset password" <nguyengiakiet0987654321@gmail.com>', 
-                to: email, 
-                subject: 'SSR | OTP', 
-                text: 'Đây là email để lấy lại mật khẩu của bạn.', 
+                from: '"Reset password" <nguyengiakiet0987654321@gmail.com>',
+                to: email,
+                subject: 'SSR | OTP',
+                text: 'Đây là email để lấy lại mật khẩu của bạn.',
                 html: `
                     <p>Dear ${email},</p>
                     <p>You have selected ${email} as your name verification page:</p>
                     <h1> ${OTP} </h1>
                     <p>This code will expire three hours after this email was sent</p>
                     <p>If you did not make this request, you can ignore this</p>
-                `, 
+                `,
             });
             console.log('Email sent: ' + info.response);
-            
+
             res.render('User/ForgotPasswordView', {
                 customCss: ['User.css'],
-                message: 'Email đã được gửi, vui lòng kiểm tra hòm thư của bạn!',
+                message:
+                    'Email đã được gửi, vui lòng kiểm tra hòm thư của bạn!',
                 otp: {
                     email,
                     OTP,
                     OTPExpires,
-                }
+                },
             });
         } catch (error) {
             console.error('Error sending email:', error);
@@ -200,37 +224,46 @@ export class UserController {
     // /user/profile/
     getUserProfile(req: Request, res: Response) {
         if (!req.session.authUser) {
-            res.redirect("/404");
+            res.redirect('/404');
             return;
         }
         res.render('User/UserProfileView', {
-            customCss: ['User.css']});
+            customCss: ['User.css'],
+        });
     }
 
     // /user/reset-password
-    async resetPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+    async resetPassword(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | void> {
         try {
             // Check if user is logged in
             const user = req.session.authUser;
             if (!user) {
-                return res.status(401).json({ error: "Unauthorized" });
+                return res.status(401).json({ error: 'Unauthorized' });
             }
 
             const { oldPassword, newPassword } = req.body;
-            console.log(
-                oldPassword,
-                newPassword
-            );
+            console.log(oldPassword, newPassword);
 
             // Check if current password is correct
-            const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+            const isPasswordValid = await bcrypt.compare(
+                oldPassword,
+                user.password
+            );
             if (!isPasswordValid) {
-                return res.status(400).json({ error: "Current password is incorrect" });
+                return res
+                    .status(400)
+                    .json({ error: 'Current password is incorrect' });
             }
 
             // Update the password
             await userService.updatePassword(user.email, newPassword);
-            return res.status(200).json({ message: "Password reset successfully" });
+            return res
+                .status(200)
+                .json({ message: 'Password reset successfully' });
         } catch (error) {
             next(error);
         }
@@ -238,55 +271,61 @@ export class UserController {
 
     // /user/reset-password-by-otp
     async resetPasswordByOTP(req: Request, res: Response) {
-        try{
+        try {
             const { email, otp, newPassword } = req.body;
 
             const isOTPValid = userService.verifyOTP(email, otp);
             if (!isOTPValid) {
-                return res.status(400).json({ error: "Invalid OTP" });
+                return res.status(400).json({ error: 'Invalid OTP' });
             }
 
             // Update the password
             await userService.updatePassword(email, newPassword);
-            return res.status(200).json({ message: "Password reset successfully" });
+            return res
+                .status(200)
+                .json({ message: 'Password reset successfully' });
         } catch (error) {
-            console.error("Reset Password Error:", error);
-            return res.status(500).json({ error: "Internal Server Error" });
+            console.error('Reset Password Error:', error);
+            return res.status(500).json({ error: 'Internal Server Error' });
         }
     }
 
     // /user/send-otp
-    async sendOTP(req: Request, res: Response, next: NextFunction) : Promise<Response | void> {
-        try{
+    async sendOTP(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | void> {
+        try {
             const { email } = req.body;
             // console.log(email);
             await userService.sendOTP(email);
-            return res.status(200).json({ message: "OTP sent successfully" });
+            return res.status(200).json({ message: 'OTP sent successfully' });
         } catch (error) {
-            console.error("Send OTP Error:", error);
-            return res.status(500).json({ error: "Internal Server Error" });
+            console.error('Send OTP Error:', error);
+            return res.status(500).json({ error: 'Internal Server Error' });
         }
     }
 
     // /user/update-profile
-    async updateProfile(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+    async updateProfile(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | void> {
         try {
             // Check if user is logged in
             const user = req.session.authUser;
             if (!user) {
-                return res.status(401).json({ error: "Unauthorized" });
+                return res.status(401).json({ error: 'Unauthorized' });
             }
 
-            const {email, name, dob } = req.body;
-            console.log(
-                email,
-                name,
-                dob
-            );
+            const { email, name, dob } = req.body;
+            console.log(email, name, dob);
             await userService.updateProfile(user.id, email, name, dob);
         } catch (error) {
-            console.error("Update Profile Error:", error);
-            return res.status(500).json({ error: "Internal Server Error" });
+            console.error('Update Profile Error:', error);
+            return res.status(500).json({ error: 'Internal Server Error' });
         }
     }
 }

@@ -9,10 +9,15 @@
         "
     >
         <a
-            class="d-flex align-items-start w-75"
+            class="d-flex align-items-start w-75 overflow-hidden position-relative"
             style="text-decoration: none; color: unset"
             href="/article/{{ArticleID}}"
         >
+            {{#if this.IsPremium}}
+            <p class="text-center position-absolute premium_article_badge">
+                Premium
+            </p>
+            {{/if}}
             <div class="img-article w-50">
                 {{#if (eq this.URL 'null')}}
                 <img src="/null.jpg" alt="Logo" class="img-fluid" />

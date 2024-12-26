@@ -1,6 +1,6 @@
 import { DBConfig, DBConfig as db } from '../Utils/DBConfig';
 import { writer } from 'repl';
-import {getUsernameById} from "./UserPasswordService";
+import { getUsernameById } from './UserPasswordService';
 
 export interface ArticleData {
     id: number;
@@ -15,24 +15,36 @@ export interface ArticleData {
 }
 
 async function getNewIdForArticle(): Promise<number> {
-    return db('ARTICLE').max('ArticleID').first().then((result) => {
-        return result ? result['max(`ArticleID`)'] + 1 : 1;
-    });
+    return db('ARTICLE')
+        .max('ArticleID')
+        .first()
+        .then(result => {
+            return result ? result['max(`ArticleID`)'] + 1 : 1;
+        });
 }
 
-
-export const createArticle = async (articleData: ArticleData): Promise<void> => {
+export const createArticle = async (
+    articleData: ArticleData
+): Promise<void> => {
     // Tạo id cho bài viết không bị trùng trong database
     articleData.id = await getNewIdForArticle();
 
     // Kiểm tra các editor và writer có tồn tại không
-    const writerExists = await db('WRITER').where('WriterID', articleData.writerID).first();
+    const writerExists = await db('WRITER')
+        .where('WriterID', articleData.writerID)
+        .first();
     if (!writerExists) {
-        throw new Error(`Writer with ID ${articleData.writerID} does not exist.`);
+        throw new Error(
+            `Writer with ID ${articleData.writerID} does not exist.`
+        );
     }
-    const editorExists = await db('EDITOR').where('EditorID', articleData.editorID).first();
+    const editorExists = await db('EDITOR')
+        .where('EditorID', articleData.editorID)
+        .first();
     if (!editorExists) {
-        throw new Error(`Editor with ID ${articleData.editorID} does not exist.`);
+        throw new Error(
+            `Editor with ID ${articleData.editorID} does not exist.`
+        );
     }
 
     return db('ARTICLE').insert({
@@ -46,8 +58,7 @@ export const createArticle = async (articleData: ArticleData): Promise<void> => 
         WriterID: articleData.writerID,
         EditorID: articleData.editorID,
     });
-}
-
+};
 
 export const deleteArticle = async (articleID: number): Promise<void> => {
     try {
@@ -72,7 +83,9 @@ export const deleteArticle = async (articleID: number): Promise<void> => {
     }
 };
 
-export const updateArticle = async (articleData: ArticleData): Promise<void> => {
+export const updateArticle = async (
+    articleData: ArticleData
+): Promise<void> => {
     const {
         id,
         title,
@@ -802,11 +815,13 @@ export const getMostViewedArticles = async (
             '=',
             'ARTICLE_SUBCATEGORY.SubCategoryID'
         )
+        .orderBy('ARTICLE.IsPremium', 'desc')
         .orderBy('ARTICLE.ViewCount', 'desc')
         .limit(limit)
         .select(
             'ARTICLE.ArticleID as articleID',
             'ARTICLE.Title as title',
+            'ARTICLE.IsPremium as isPremium',
             'ARTICLE_URL.URL as img',
             DBConfig.raw("DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"),
             'SUBCATEGORY.Name as category',
@@ -847,7 +862,7 @@ export const getLatestArticles = async (
             '=',
             'ARTICLE_SUBCATEGORY.SubCategoryID'
         )
-
+        .orderBy('ARTICLE.IsPremium', 'desc')
         .orderBy('ARTICLE.DatePosted', 'desc')
         .limit(limit)
         .select(
@@ -855,6 +870,7 @@ export const getLatestArticles = async (
             'ARTICLE.Title as title',
             'ARTICLE.Abstract as abstract',
             'ARTICLE.ViewCount as viewCount',
+            'ARTICLE.IsPremium as isPremium',
             'ARTICLE_URL.URL as img',
             DBConfig.raw("DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"),
             'SUBCATEGORY.Name as category',
@@ -917,6 +933,7 @@ export const getTopArticles = async (
             '=',
             'ARTICLE_SUBCATEGORY.SubCategoryID'
         )
+        .orderBy('ARTICLE.IsPremium', 'desc')
         .orderBy('ARTICLE.ViewCount', 'desc')
         .limit(limit)
         .select(
@@ -925,7 +942,8 @@ export const getTopArticles = async (
             'SUBCATEGORY.Name as category',
             'SUBCATEGORY.SubCategoryID as categoryID',
             DBConfig.raw("DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"),
-            'ARTICLE.Title as title'
+            'ARTICLE.Title as title',
+            'ARTICLE.IsPremium as isPremium'
         );
 
     return response;
@@ -957,6 +975,7 @@ export const getCategoryArticles = async (
             '=',
             'ARTICLE_SUBCATEGORY.ArticleID'
         )
+        .orderBy('ARTICLE.IsPremium', 'desc')
         .orderBy('ARTICLE.ViewCount', 'desc')
         .limit(limit)
         .select('CATEGORY.CategoryID as CatID');
@@ -997,6 +1016,7 @@ export const getCategoryArticles = async (
                     'ARTICLE.ArticleID as articleID',
                     'ARTICLE.Title as title',
                     'ARTICLE_URL.URL as img',
+                    'ARTICLE.IsPremium as isPremium',
                     DBConfig.raw(
                         "DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"
                     ),
@@ -1009,8 +1029,10 @@ export const getCategoryArticles = async (
     return response;
 };
 
-export const countArticlesCategories =  async (categories : number): Promise<number> => {
-    const query =  db('ARTICLE as a')
+export const countArticlesCategories = async (
+    categories: number
+): Promise<number> => {
+    const query = db('ARTICLE as a')
         .join('ARTICLE_SUBCATEGORY as as', 'a.ArticleID', 'as.ArticleID')
         .join('SUBCATEGORY as s', 'as.SubcategoryID', 's.SubcategoryID')
         .join('CATEGORY as c', 's.CategoryID', 'c.CategoryID')
@@ -1022,16 +1044,23 @@ export const countArticlesCategories =  async (categories : number): Promise<num
             's.Name as subcategory',
             'c.Name as category'
         );
-    if(categories === -1) {
-        let count = await query.count("* as count").first();
-        return count?.count as number || 0;
+    if (categories === -1) {
+        let count = await query.count('* as count').first();
+        return (count?.count as number) || 0;
     }
-    let count = await query.where('c.CategoryID', categories).count("* as count").first();
-    return count?.count as number || 0;
+    let count = await query
+        .where('c.CategoryID', categories)
+        .count('* as count')
+        .first();
+    return (count?.count as number) || 0;
 };
 
-export const getArticlesCategories = (categories : number, offset: number = 0, limit: number = 0): Promise<any[]> => {
-    const query =  db('ARTICLE as a')
+export const getArticlesCategories = (
+    categories: number,
+    offset: number = 0,
+    limit: number = 0
+): Promise<any[]> => {
+    const query = db('ARTICLE as a')
         .join('ARTICLE_SUBCATEGORY as as', 'a.ArticleID', 'as.ArticleID')
         .join('SUBCATEGORY as s', 'as.SubcategoryID', 's.SubcategoryID')
         .join('CATEGORY as c', 's.CategoryID', 'c.CategoryID')
@@ -1043,7 +1072,7 @@ export const getArticlesCategories = (categories : number, offset: number = 0, l
             's.Name as subcategory',
             'c.Name as category'
         );
-    if(categories === -1) {
+    if (categories === -1) {
         return query.offset(offset).limit(limit);
     }
     return query.where('c.CategoryID', categories).offset(offset).limit(limit);
