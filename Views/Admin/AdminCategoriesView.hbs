@@ -4,6 +4,7 @@
     <h1 class="custom-title">Quản Lý Chuyên Mục</h1>
 </div>
 
+<!-- Thêm Chuyên Mục Cấp 1 -->
 <div class="categorySelection" style="justify-content: flex-start;">
     <h4 style="padding-top: 5px;">Thêm Chuyên Mục Cấp 1</h4>
     <button type="button" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;" data-bs-toggle="modal"
@@ -44,9 +45,11 @@
         {{/each}}
     </tbody>
 </table>
+{{> Component/Paging page_items=this.page_items previousLink=this.previousLink nextLink=this.nextLink}}
 
 <hr />
 
+<!-- Thêm Chuyên Mục Cấp 2 -->
 <div class="categorySelection" style="justify-content: flex-start;">
     <h4 style="padding-top: 5px;">Thêm Chuyên Mục Cấp 2</h4>
     <button type="button" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;" data-bs-toggle="modal"
@@ -55,7 +58,7 @@
     </button>
 </div>
 
-{{>Admin/Modal/AddSubcategory}}
+{{> Admin/Modal/AddSubcategory}}
 
 <h4>Danh Sách Chuyên Mục Cấp 2</h4>
 <form method="get" action="/admin/categories/">
@@ -70,14 +73,15 @@
             {{/each}}
         </select>
         <button type="submit" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;">
-            <i class="bi bi-funnel-fill" style="margin-right: 10px;"></i>Lọc</button>
+            <i class="bi bi-funnel-fill" style="margin-right: 10px;"></i>Lọc
+        </button>
     </div>
 </form>
 
 <table id="myTable2" class="display">
     <thead>
         <tr>
-            <th>Chuyên Mục Cấp 1 </th>
+            <th>Chuyên Mục Cấp 1</th>
             <th>Tên</th>
             <th>Thao Tác</th>
         </tr>
@@ -107,6 +111,4 @@
     </tbody>
 </table>
 
-<script>
-    console.log("Hello: ", Categories)
-</script>
+{{> Component/Paging page_items=this.subCategoryPageItems previousLink=this.subCategoryPreviousLink nextLink=this.subCategoryNextLink}}
