@@ -97,13 +97,38 @@ export class AdminController {
 
     // /admin/tags
     async getTags(req: Request, res: Response) {
-        tagData = await getTags();
+        const tagData = await getTags();
+
+        // Cấu hình phân trang
+        let page = parseInt(req.query.page as string) || 1;  
+        let itemPerPage = 3 
+        const totalTags = tagData.length;  
+        const totalPages = Math.ceil(totalTags / itemPerPage); 
+
+        page = Math.max(1, Math.min(page, totalPages));
+
+        let page_items = getPagingNumber(page, totalPages); 
+        page_items = page_items.map(item => ({
+            ...item,
+            link: `/admin/tags?page=${item.value}`, 
+        }));
+
+        const previousLink = page > 1 ? `/admin/tags?page=${page - 1}` : '';
+        const nextLink = page < totalPages ? `/admin/tags?page=${page + 1}` : '';
+
+        const currentTags = tagData.slice((page - 1) * itemPerPage, page * itemPerPage);
+
         res.render('Admin/AdminTagsView', {
             customCss: ['Admin.css'],
             customJs: ['AdminTagsDataTable.js'],
-            data: tagData,
+            data: currentTags,  
+            page_items,  
+            previousLink,  
+            nextLink,
         });
     }
+
+
 
     // /admin/articles?category=&page=
     async getArticles(req: Request, res: Response) {
@@ -197,12 +222,8 @@ export class AdminController {
         }
 
         await updateTagById(id, name);
-        tagData = await getTags();
-        res.render('Admin/AdminTagsView', {
-            customCss: ['Admin.css'],
-            customJs: ['AdminTagsDataTable.js'],
-            data: tagData,
-        });
+        
+        res.redirect('/admin/tags');
     }
 
     // /admin/category/edit
@@ -328,12 +349,8 @@ export class AdminController {
         }
 
         await createTag(name);
-        tagData = await getTags();
-        res.render('Admin/AdminTagsView', {
-            customCss: ['Admin.css'],
-            customJs: ['AdminTagsDataTable.js'],
-            data: tagData,
-        });
+        res.redirect('/admin/tags');
+
     }
 
     // /admin/category/new
@@ -417,12 +434,8 @@ export class AdminController {
         const id = req.body.id as string;
         try {
             await deleteTagById(parseInt(id));
-            tagData = await getTags();
-            res.render('Admin/AdminTagsView', {
-                customCss: ['Admin.css'],
-                customJs: ['AdminTagsDataTable.js'],
-                data: tagData,
-            })
+            res.redirect('/admin/tags');
+
         } catch (error) {
             res.status(500).json({
                 error: (error as Error).message,
@@ -546,12 +559,13 @@ export class AdminController {
     // }
     async deleteSubCategory(req: Request, res: Response) {
         const { parentName, id } = req.body;
+        console.log(req.query);
 
         await DBConfig('subcategory')
             .where('SubCategoryID', id)
             .andWhere('CategoryID', parentName)
             .del();
 
-        // res.redirect("/admin/categories/?category=" + parentName);
+        res.redirect("/admin/categories/?category=");
     }
 }
