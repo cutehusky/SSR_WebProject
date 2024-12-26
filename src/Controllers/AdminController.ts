@@ -20,7 +20,7 @@ import {
     updateUser,
 } from '../Services/AdminUserService';
 import { UserData } from '../Models/UserData';
-import { getTags } from '../Utils/getTags';
+import { createTag, deleteTagById, getTagByName, getTags, getTagsById, updateTagById } from '../Utils/getTags';
 import { get } from 'jquery';
 import { clamp, getPagingNumber } from '../Utils/MathUtils';
 
@@ -141,20 +141,21 @@ export class AdminController {
 
     // /admin/tag/edit
     async editTag(req: Request, res: Response) {
-        const tagId = req.body.id as string;
-        const tagName = req.body.name as string;
-        // let tagList = await DBConfig("tags").select("id", "name"); // có thể thêm nhiều mục khác
-        let tagList = tagData;
-        const tag = tagList.find(tag => tag.id === parseInt(tagId));
-        if (!tag) {
+        const { id, name } = req.body;
+
+        let tag = await getTagsById(id);
+
+        if (tag.length === 0) {
             res.status(404).send('Tag not found');
             return;
         }
-        tag.name = tagName;
+
+        await updateTagById(id, name);
+        tagData = await getTags();
         res.render('Admin/AdminTagsView', {
             customCss: ['Admin.css'],
             customJs: ['AdminTagsDataTable.js'],
-            data: tagList,
+            data: tagData,
         });
     }
 
@@ -270,16 +271,22 @@ export class AdminController {
 
     // /admin/tag/new
     async newTag(req: Request, res: Response) {
-        const tagName = req.body.name as string;
-        let tagList = tagData;
-        tagList.push({ name: tagName, id: tagList.length + 1 });
+        const {name} = req.body;
+        const existtag = await getTagByName(name);
+        console.log("existtag: ", existtag);
+        if (existtag.length > 0) {
+            res.status(400).json({
+                error: 'Tag already exists.',
+            });
+            return;
+        }
 
-        // await DBConfig("tags").insert({ name: tagName });
-
+        await createTag(name);
+        tagData = await getTags();
         res.render('Admin/AdminTagsView', {
             customCss: ['Admin.css'],
             customJs: ['AdminTagsDataTable.js'],
-            data: tagList,
+            data: tagData,
         });
     }
 
@@ -360,22 +367,21 @@ export class AdminController {
     }
 
     // /admin/tag/delete
-    deleteTag(req: Request, res: Response) {
-        const tagId = req.body.id as string;
-        let tagList = tagData;
-
-        const tagIndex = tagList.find(tag => tag.id === parseInt(tagId));
-        if (!tagIndex) {
-            res.status(404).send('Tag not found');
-            return;
+    async deleteTag(req: Request, res: Response) {
+        const id = req.body.id as string;
+        try {
+            await deleteTagById(parseInt(id));
+            tagData = await getTags();
+            res.render('Admin/AdminTagsView', {
+                customCss: ['Admin.css'],
+                customJs: ['AdminTagsDataTable.js'],
+                data: tagData,
+            })
+        } catch (error) {
+            res.status(500).json({
+                error: (error as Error).message,
+            })
         }
-        tagList = tagList.filter(tag => tag.id !== parseInt(tagId));
-        tagData = tagList;
-        res.render('Admin/AdminTagsView', {
-            customCss: ['Admin.css'],
-            customJs: ['AdminTagsDataTable.js'],
-            data: tagList,
-        });
     }
 
     // /admin/category/delete
