@@ -367,41 +367,6 @@ export class AdminController {
     //   "editorID": 2
     // }
 
-  editArticle(req: Request, res: Response) {
-    try {
-      const {id, title, datePosted, content, abstract, status, isPremium, writerID, editorID } = req.body;
-  
-       // Log dữ liệu để kiểm tra
-      console.log('Request body:', req.body);
-      // Validation cơ bản
-      
-  
-      // Gọi Service để tạo bài viết
-      const articleID = updateArticle({
-        id,
-        title,
-        datePosted,
-        content,
-        abstract,
-        status,
-        isPremium,
-        writerID,
-        editorID,
-      });
-      // Thông báo đã tạo bài viết thành công
-      res.status(201).json({
-        message: 'Article created successfully!',
-        articleID,
-      });
-    } catch (error) {
-      // Bắt lỗi nếu có
-      console.error('Error creating article:', error);
-      res.status(500).json({
-        error: 'Internal Server Error.',
-      });
-    }
-  }
-
     // /admin/tag/new
     async newTag(req: Request, res: Response) {
         const { name } = req.body;

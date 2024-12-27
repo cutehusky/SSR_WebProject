@@ -212,7 +212,7 @@ export class WriterController {
       Abstract: req.body.abstract,
       Status:'Draft',
       IsPremium: req.body.isPremium === 'on' ? 1: 0,
-      WriterID: req.session.authUser.role === UserRole.Admin ? null : writerId,
+      WriterID: req.session.authUser?.role === UserRole.Admin ? null : writerId,
     });
 
     await DBConfig("ARTICLE_SUBCATEGORY").insert({
@@ -252,7 +252,7 @@ export class WriterController {
         });
       }
     }
-    if (req.session.authUser.role === UserRole.Admin) {
+    if (req.session.authUser?.role === UserRole.Admin) {
       res.redirect("/admin/articles");
       return;
     }
@@ -270,7 +270,7 @@ export class WriterController {
     }
 
     const data = await GetArticleById(id);
-    if ((data.WriterID !== writerId && req.session.authUser.role !== UserRole.Admin) || (data.Status !== "Draft" && data.Status !== "Rejected")) {
+    if ((data.WriterID !== writerId && req.session.authUser?.role !== UserRole.Admin) || (data.Status !== "Draft" && data.Status !== "Rejected")) {
       res.redirect("/404");
       return;
     }
@@ -282,7 +282,7 @@ export class WriterController {
       return;
     }
 
-    if (data.WriterID !== writerId && req.session.authUser.role === UserRole.Admin) {
+    if (data.WriterID !== writerId && req.session.authUser?.role === UserRole.Admin) {
       await DBConfig("ARTICLE").where({'ArticleID': id}).update({
         Title: req.body.title,
         DatePosted: new Date(Date.now()),
@@ -349,7 +349,7 @@ export class WriterController {
         });
       }
     }
-    if (data.WriterID !== writerId && req.session.authUser.role === UserRole.Admin) {
+    if (data.WriterID !== writerId && req.session.authUser?.role === UserRole.Admin) {
       res.redirect("/admin/articles");
       return;
     }

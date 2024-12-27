@@ -79,7 +79,8 @@ export const updateUser = async (userData: UserData, category_add : number[] , c
           }
         }
         else if(userData.role === "User")
-          await db("SUBSCRIBER").insert({SubscriberID: userData.id, DateRegistered: new Date(0)})
+          await db("SUBSCRIBER").insert({SubscriberID: userData.id,
+            DateExpired: new Date(Date.now() + datePremium * 1000 * 60), })
       }
 
         // Update user trong database
