@@ -535,4 +535,19 @@ export class AdminController {
 
         res.redirect('/admin/categories/?category=');
     }
+
+    // /admin/article/publish/:id
+    async publishArticle(req: Request, res: Response) {
+        const articleId = parseInt(req.params.id);
+        if (articleId == null || isNaN(articleId)) {
+            res.status(400).json({
+                error: 'ID is required and must be a valid number.',
+            });
+            return;
+        }
+        await DBConfig('article')
+            .where('ArticleID', articleId)
+            .update({ Status: 'Published' });
+        res.redirect('/admin/articles');
+    }
 }

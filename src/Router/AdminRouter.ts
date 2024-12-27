@@ -26,5 +26,6 @@ router.post('/category/delete',adminController.verifyAdmin, adminController.dele
 router.post('/subcategory/delete',adminController.verifyAdmin, adminController.deleteSubCategory);
 router.post('/user/delete',adminController.verifyAdmin, adminController.deleteUser);
 router.post('/article/delete',adminController.verifyAdmin, adminController.deleteArticle);
+router.post('/article/publish/:id',adminController.verifyAdmin, adminController.publishArticle);
 
 export { router as AdminRouter };

@@ -82,6 +82,11 @@
     background-color: #d2042d;
 }
 
+.publishBtn:hover {
+    color: var(--color-white);
+    background-color: #1b76ff;
+}
+
 .dt-length {
     display: flex;
     justify-content: center;

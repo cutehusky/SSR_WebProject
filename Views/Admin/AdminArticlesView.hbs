@@ -61,6 +61,14 @@
                         <i class="bi bi-person-x-fill"></i>
                     </button>
                 </form>
+                {{#if (eq status "Draft")}}
+                   <form method="post" style="margin: 0px; display: inline">
+                        <input name="id" type="text" value="{{id}}" style="display: none;">
+                        <button name="" class="btn actionBtn publishBtn scale" formaction="/admin/article/publish/{{id}}" type="submit">
+                            <i class="bi bi-check"></i>
+                        </button>
+                    </form>
+                {{/if}}
             </td>
         </tr>
         {{/each}}
