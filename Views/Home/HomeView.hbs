@@ -8,6 +8,9 @@
                     class="position-relative overflow-hidden"
                     style="height: 500px"
                 >
+                    {{#if this.isPremium}}
+                    <p class="position-absolute premium_badge">Premium</p>
+                    {{/if}}
                     <img
                         class="img-fluid h-100"
                         src="{{this.img}}"
@@ -23,7 +26,7 @@
                             <span class="text-white">{{this.date}}</span>
                         </div>
                         <a
-                            class="h2 m-0 text-white text-uppercase text-truncate font-weight-bold truncate"
+                            class="h2 m-0 text-white text-uppercase text-truncate font-weight-bold truncate_one"
                             href="/article/{{this.articleID}}"
                             >{{this.title}}</a
                         >
@@ -40,6 +43,9 @@
                         class="position-relative overflow-hidden"
                         style="height: 250px"
                     >
+                        {{#if this.isPremium}}
+                        <p class="position-absolute premium_badge">Premium</p>
+                        {{/if}}
                         <img
                             class="img-fluid w-100 h-100"
                             src="{{this.img}}"
@@ -87,13 +93,18 @@
                 class="position-relative overflow-hidden"
                 style="height: 300px"
             >
+                {{#if this.isPremium}}
+                <p class="position-absolute premium_badge">Premium</p>
+                {{/if}}
                 <img
                     class="img-fluid h-100"
                     src="{{this.img}}"
                     style="object-fit: cover"
                 />
                 <div class="overlay">
-                    <div class="mb-2 d-flex justify-content-between">
+                    <div
+                        class="mb-2 d-flex flex-column justify-content-between"
+                    >
                         <a
                             class="badge bg-primary text-uppercase text-truncate font-weight-semi-bold p-2 me-2"
                             href="/category/subcategory/{{categoryID}}"
@@ -102,7 +113,7 @@
                         <span class="text-white">{{this.date}}</span>
                     </div>
                     <a
-                        class="h6 m-0 text-white text-uppercase text-truncate font-weight-semi-bold truncate"
+                        class="h6 m-0 text-white text-uppercase text-truncate font-weight-semi-bold truncate_one"
                         href="/article/{{articleID}}"
                         >{{this.title}}</a
                     >
@@ -131,11 +142,16 @@
                     <div class="col-lg-12">
                         <div class="row news-lg mx-0 mb-3">
                             <div
-                                class="col-md-6 h-100 px-0"
+                                class="col-md-6 h-100 px-0 position-relative"
                                 style="height: 300px"
                             >
+                                {{#if this.isPremium}}
+                                <p class="position-absolute premium_badge">
+                                    Premium
+                                </p>
+                                {{/if}}
                                 <img
-                                    class="img-fluid h-100"
+                                    class="img-fluid w-100 h-100"
                                     src="{{this.img}}"
                                     style="object-fit: cover"
                                 />
@@ -143,7 +159,9 @@
                             <div
                                 class="col-md-6 d-flex flex-column border bg-white h-100 px-0"
                             >
-                                <div class="mt-auto p-4">
+                                <div
+                                    class="h-100 p-4 d-flex flex-column justify-content-between"
+                                >
                                     <div class="mb-2">
                                         <a
                                             class="badge bg-primary text-uppercase font-weight-semi-bold p-2 me-2"
@@ -157,9 +175,16 @@
                                     <a
                                         class="h4 d-block mb-3 text-secondary text-uppercase font-weight-bold"
                                         href="/article/{{articleID}}"
-                                        >{{this.title}}</a
+                                        ><p class="truncate">
+                                            {{this.title}}
+                                        </p></a
                                     >
-                                    <p class="m-0">{{this.abstract}}</p>
+                                    <p
+                                        class="m-0 overflow-hidden truncate_long"
+                                        style="height: 72px"
+                                    >
+                                        {{this.abstract}}
+                                    </p>
                                 </div>
                                 <div
                                     class="d-flex justify-content-between bg-white border-top mt-auto p-4"
@@ -184,6 +209,11 @@
                     {{/each}} {{#each (slice latest_articles 2 4)}}
                     <div class="col-lg-6">
                         <div class="position-relative mb-3">
+                            {{#if this.isPremium}}
+                            <p class="position-absolute premium_badge">
+                                Premium
+                            </p>
+                            {{/if}}
                             <img
                                 class="img-fluid w-100"
                                 src="{{this.img}}"
@@ -203,10 +233,14 @@
                                 <a
                                     class="h4 d-block mb-3 text-secondary text-uppercase font-weight-bold"
                                     href="/article/{{articleID}}"
-                                    style="height: 60px"
-                                    >{{this.title}}</a
+                                    ><p class="truncate">{{this.title}}</p></a
                                 >
-                                <p class="m-0">{{this.abstract}}</p>
+                                <p
+                                    class="m-0 overflow-hidden truncate_long"
+                                    style="height: 72px"
+                                >
+                                    {{this.abstract}}
+                                </p>
                             </div>
                             <div
                                 class="d-flex justify-content-between bg-white border border-top-0 p-4"
@@ -230,6 +264,11 @@
                     {{/each}} {{#each (slice latest_articles 4 6)}}
                     <div class="col-lg-6">
                         <div class="position-relative mb-3">
+                            {{#if this.isPremium}}
+                            <p class="position-absolute premium_badge">
+                                Premium
+                            </p>
+                            {{/if}}
                             <img
                                 class="img-fluid w-100"
                                 src="{{this.img}}"
@@ -249,9 +288,14 @@
                                 <a
                                     class="h4 d-block mb-0 text-secondary text-uppercase font-weight-bold"
                                     href="/article/{{articleID}}"
-                                    style="height: 60px"
-                                    >{{this.title}}</a
+                                    ><p class="truncate">{{this.title}}</p></a
                                 >
+                                <p
+                                    class="m-0 overflow-hidden truncate_long"
+                                    style="height: 72px"
+                                >
+                                    {{this.abstract}}
+                                </p>
                             </div>
                             <div
                                 class="d-flex justify-content-between bg-white border border-top-0 p-4"
@@ -276,19 +320,24 @@
                     latest_articles.length)}}
                     <div class="col-lg-6">
                         <div
-                            class="d-flex align-items-center bg-white mb-3 overflow-hidden"
+                            class="d-flex align-items-center bg-white mb-3 overflow-hidden position-relative"
                             style="height: 110px"
                         >
+                            {{#if this.isPremium}}
+                            <p class="position-absolute premium_badge">
+                                Premium
+                            </p>
+                            {{/if}}
                             <img
-                                class="img-fluid w-50"
+                                class="img-fluid w-50 h-100"
                                 src="{{this.img}}"
                                 alt=""
                                 style="object-fit: cover"
                             />
                             <div
-                                class="w-100 h-100 px-3 d-flex flex-column justify-content-center border border-left-0"
+                                class="w-100 h-100 px-3 d-flex flex-column justify-content-between border border-left-0"
                             >
-                                <div class="mb-2">
+                                <div class="mb-2 mt-2">
                                     <a
                                         class="badge bg-primary text-uppercase font-weight-semi-bold p-1 me-2"
                                         href="/category/subcategory/{{categoryID}}"
@@ -299,9 +348,9 @@
                                     >
                                 </div>
                                 <a
-                                    class="h6 m-0 text-secondary text-uppercase font-weight-bold truncate"
+                                    class="h6 mb-2 text-secondary text-uppercase font-weight-bold truncate"
                                     href="/article/{{articleID}}"
-                                    >{{this.title}}</a
+                                    >{{this.title}} ></a
                                 >
                             </div>
                         </div>
@@ -321,9 +370,14 @@
                     <div class="bg-white border border-top-0 p-3">
                         {{#each category_articles}}
                         <div
-                            class="d-flex align-items-center bg-white mb-3 overflow-hidden"
+                            class="d-flex align-items-center bg-white mb-3 overflow-hidden position-relative"
                             style="height: 110px"
                         >
+                            {{#if this.isPremium}}
+                            <p class="position-absolute premium_badge">
+                                Premium
+                            </p>
+                            {{/if}}
                             <img
                                 class="img-fluid w-50"
                                 src="{{this.img}}"
@@ -344,7 +398,7 @@
                                     >
                                 </div>
                                 <a
-                                    class="h6 m-0 text-secondary text-uppercase font-weight-bold"
+                                    class="h6 m-0 text-secondary text-uppercase font-weight-bold truncate"
                                     href="/article/{{articleID}}"
                                     >{{this.title}}</a
                                 >

@@ -28,7 +28,7 @@
                         <label for="roleSelect_{{id}}" class="form-label" style="padding-top: 8px; width: 200px;">
                             Vai Trò
                         </label>
-                        <select name="role" class="form-select" style="height: 40px;" id="roleSelect_{{id}}">
+                        <select name="role" class="form-select role_selectors" style="height: 40px;" id="roleSelect_{{id}}">
                             <option value="Admin" {{#if (eq role 'Admin' ) }}selected{{/if}}>
                                 Admin
                             </option>
@@ -44,7 +44,7 @@
                         </select>
                     </div>
                 
-                    <div class="form-group" id="categoryGroup_{{id}}">
+                    <div class="form-group d-none" id="categoryGroup_{{id}}">
                         <div id="hiddenCategory{{id}}">
                             <label for="hiddenInput{{id}}" class="form-label" style="padding-top: 8px; width: 200px;">
                             Chuyên mục phụ trách

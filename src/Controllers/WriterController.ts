@@ -3,11 +3,16 @@ import path from "path";
 import * as fs from "fs";
 import {DBConfig} from "../Utils/DBConfig";
 import {
-  AddBackgroundImageOfArticle, CountArticleOfWriterByStates,
-  createArticle,
-  GetArticleById, GetArticleOfWriterByStates,
+  AddBackgroundImageOfArticle,
+  CountArticleOfWriterByStates,
+  GetArticleById,
+  GetArticleOfWriterByStates,
   GetBackgroundImageOfArticle,
-  GetCategoryFullNameOfArticle, GetTagsOfArticle, UpdateBackgroundImageOfArticle
+  GetCategoryFullNameOfArticle,
+  GetCategoryOfArticle,
+  GetCommentOfArticle,
+  GetTagsOfArticle,
+  UpdateBackgroundImageOfArticle
 } from "../Services/AdminArticleService";
 import {UserRole} from "../Models/UserData";
 import {clamp, getPagingNumber} from "../Utils/MathUtils";
@@ -16,8 +21,18 @@ import session from "express-session";
 const articlePerPage = 6;
 export class WriterController {
 
-  verifyUser(req: Request, res: Response, Next: NextFunction) {
+  verifyUserForWriter(req: Request, res: Response, Next: NextFunction) {
     if (!req.session.authUser || req.session.authUser.role !== UserRole.Writer) {
+      res.redirect("/404");
+      return;
+    }
+    Next();
+  }
+
+  verifyUserForAdminAndWriter(req: Request, res: Response, Next: NextFunction) {
+    if (!req.session.authUser ||
+        (req.session.authUser.role !== UserRole.Writer
+            && req.session.authUser.role !== UserRole.Admin)) {
       res.redirect("/404");
       return;
     }
@@ -36,41 +51,74 @@ export class WriterController {
   async editArticleEditor(req: Request, res: Response) {
     const writerId = req.session.authUser?.id as number;
     const articleId = req.params.id;
-    const data = await GetArticleById(articleId);
-    if (!data || data.WriterID !== writerId || req.session.authUser?.role !== UserRole.Admin) {
+    console.log(writerId);
+    if (!articleId || !writerId) {
       res.redirect("/404");
       return;
     }
-
-    let category = await GetCategoryFullNameOfArticle(articleId);
+    const data = await GetArticleById(articleId);
+    console.log(data);
+    if (!data || (data.WriterID !== writerId && req.session.authUser?.role !== UserRole.Admin)) {
+      res.redirect("/404");
+      return;
+    }
 
     let bgURL = await GetBackgroundImageOfArticle(articleId);
 
     let tag = await GetTagsOfArticle(articleId);
 
-    res.render("Writer/WriterUpdateNews", {
-      customCss: ["Writer.css"],
-      customJs: ["Summernote.js"],
-      data: {
-        ID: articleId,
-        Title: data.Title,
-        DatePosted: data.DatePosted,
-        Content: data.Content,
-        Abstract: data.Abstract,
-        Status: data.Status,
-        IsPremium: data.IsPremium,
-        BackgroundImage: bgURL.replace("Static",""),
-        BackgroundImageFileName: path.basename(bgURL),
-        selectedCategory: category.id,
-        selectedCategoryName: category.fullname,
-        tags: tag
-      }
-    });
+    if (req.session.authUser?.role === UserRole.Admin || data.Status === "Draft" || data.Status === "Rejected") {
+      let category = await GetCategoryFullNameOfArticle(articleId);
+      res.render("Writer/WriterUpdateNews", {
+        customCss: ["Writer.css"],
+        customJs: ["Summernote.js"],
+        data: {
+          ID: articleId,
+          Title: data.Title,
+          DatePosted: data.DatePosted,
+          Content: data.Content,
+          Abstract: data.Abstract,
+          Status: data.Status,
+          IsPremium: data.IsPremium,
+          BackgroundImage: bgURL.replace("Static", ""),
+          BackgroundImageFileName: path.basename(bgURL),
+          selectedCategory: category.id,
+          selectedCategoryName: category.fullname,
+          tags: tag
+        }
+      });
+    } else {
+      const commentList = await GetCommentOfArticle(articleId);
+      let category = await GetCategoryOfArticle(articleId);
+      res.render('Writer/ViewNews', {
+        customCss: ['Home.css', 'News.css', 'Component.css'],
+        data: {
+          ID: articleId,
+          Title: data.Title,
+          DatePosted: data.DatePosted,
+          Content: data.Content,
+          Abstract: data.Abstract,
+          IsPremium: data.IsPremium,
+          BackgroundImage: bgURL.replace('Static', ''),
+          BackgroundImageFileName: path.basename(bgURL),
+          category: category.categoryName,
+          subcategory: category.subcategoryName,
+          categoryId: category.categoryId,
+          subcategoryId: category.subcategoryId,
+          tags: tag,
+          comments: commentList
+        },
+      });
+    }
   }
 
   // /writer/myArticles?state=
   async getMyArticleList(req: Request, res: Response) {
     const writerId = req.session.authUser?.id as number;
+    if (!writerId) {
+      res.redirect("/404");
+      return;
+    }
     let page = parseInt(req.query.page as string) || 1;
     let state = (req.query.state as string);
     let states:string[] = [];
@@ -83,8 +131,6 @@ export class WriterController {
     let articleNum = await CountArticleOfWriterByStates(writerId, states);
     let totalPages = Math.ceil(articleNum / articlePerPage);
     page = clamp(page, 1, totalPages);
-
-    console.log(totalPages);
 
     let page_items = getPagingNumber(page, totalPages);
     for (let i = 0; i < page_items.length;i++)
@@ -116,6 +162,10 @@ export class WriterController {
 
   getWriterHome = async (req: Request, res: Response) =>  {
     const writerId = req.session.authUser?.id as number;
+    if (!writerId) {
+      res.redirect("/404");
+      return;
+    }
     const states = [
       { id: "Published", label: "Số lượng bài viết đã xuất bảng", states: ["Published"] },
       { id: "Approved", label: "Số lượng bài viết chờ xuất bảng", states: ["Approved"] },
@@ -141,24 +191,34 @@ export class WriterController {
 
   // /writer/new
   async newArticle(req: Request, res: Response) {
-    const writerId = req.session.authUser?.id as number;
     console.log(req.body);
+    const writerId = req.session.authUser?.id as number;
+    if (!writerId) {
+      res.redirect("/404");
+      return;
+    }
+
+    if (!req.body.category || !req.body.title
+        || !req.body.content || !req.body.abstract
+        || !req.body.tags) {
+      res.redirect("/404");
+      return;
+    }
+
     const [id] = await DBConfig("ARTICLE").insert({
       Title: req.body.title,
       DatePosted: new Date(Date.now()),
       Content: req.body.content,
       Abstract: req.body.abstract,
       Status:'Draft',
-      IsPremium: req.body.isPremium == 'on' ? 1: 0,
-      WriterID: writerId,
+      IsPremium: req.body.isPremium === 'on' ? 1: 0,
+      WriterID: req.session.authUser.role === UserRole.Admin ? null : writerId,
     });
 
-    if (req.body.category) {
-      await DBConfig("ARTICLE_SUBCATEGORY").insert({
-        ArticleID: id,
-        SubCategoryID: req.body.category
-      })
-    }
+    await DBConfig("ARTICLE_SUBCATEGORY").insert({
+      ArticleID: id,
+      SubCategoryID: req.body.category
+    });
 
     const tags = req.body.tags;
     const listOfTags = tags ? tags.split(","): [];
@@ -192,6 +252,10 @@ export class WriterController {
         });
       }
     }
+    if (req.session.authUser.role === UserRole.Admin) {
+      res.redirect("/admin/articles");
+      return;
+    }
     res.redirect("/writer/myArticles?state=Draft");
   }
 
@@ -200,33 +264,55 @@ export class WriterController {
     console.log(req.body);
     const writerId = req.session.authUser?.id as number;
     const id = req.body.id;
-    const data = await GetArticleById(id);
-    if (data.WriterID !== writerId) {
+    if (!id || !writerId) {
       res.redirect("/404");
       return;
     }
-    await DBConfig("ARTICLE").where({'ArticleID': id}).update({
-      Title: req.body.title,
-      DatePosted: new Date(Date.now()),
-      Content: req.body.content,
-      Abstract: req.body.abstract,
-      Status: 'Draft',
-      IsPremium: req.body.isPremium === 'on' ? 1: 0,
-      WriterID: writerId,
-    });
 
-    if (req.body.category) {
-      const affectedRows  = await DBConfig("ARTICLE_SUBCATEGORY").where({
-        ArticleID: id
-      }).update({
-        SubCategoryID: req.body.category
-      });
-      if (affectedRows === 0)
-        await DBConfig("ARTICLE_SUBCATEGORY").insert({
-          SubCategoryID: req.body.category,
-          ArticleID: id
-        });
+    const data = await GetArticleById(id);
+    if ((data.WriterID !== writerId && req.session.authUser.role !== UserRole.Admin) || (data.Status !== "Draft" && data.Status !== "Rejected")) {
+      res.redirect("/404");
+      return;
     }
+
+    if (!req.body.category || !req.body.title
+        || !req.body.content || !req.body.abstract
+        || !req.body.tags) {
+      res.redirect("/404");
+      return;
+    }
+
+    if (data.WriterID !== writerId && req.session.authUser.role === UserRole.Admin) {
+      await DBConfig("ARTICLE").where({'ArticleID': id}).update({
+        Title: req.body.title,
+        DatePosted: new Date(Date.now()),
+        Content: req.body.content,
+        Abstract: req.body.abstract,
+        Status: 'Draft',
+        IsPremium: req.body.isPremium === 'on' ? 1: 0,
+      });
+    }else {
+      await DBConfig("ARTICLE").where({'ArticleID': id}).update({
+        Title: req.body.title,
+        DatePosted: new Date(Date.now()),
+        Content: req.body.content,
+        Abstract: req.body.abstract,
+        Status: 'Draft',
+        IsPremium: req.body.isPremium === 'on' ? 1: 0,
+        WriterID: writerId,
+      });
+    }
+
+    const affectedRows  = await DBConfig("ARTICLE_SUBCATEGORY").where({
+      ArticleID: id
+    }).update({
+      SubCategoryID: req.body.category
+    });
+    if (affectedRows === 0)
+      await DBConfig("ARTICLE_SUBCATEGORY").insert({
+        SubCategoryID: req.body.category,
+        ArticleID: id
+      });
 
     const tags = req.body.tags;
     const listOfTags = tags ? tags.split(","): [];
@@ -262,6 +348,10 @@ export class WriterController {
               await UpdateBackgroundImageOfArticle(id, filePath.replace("Static",""));
         });
       }
+    }
+    if (data.WriterID !== writerId && req.session.authUser.role === UserRole.Admin) {
+      res.redirect("/admin/articles");
+      return;
     }
     res.redirect("/writer/myArticles?state=Draft");
   }

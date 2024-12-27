@@ -10,6 +10,7 @@ router.post('/forgot-password', userController.forgotPasswordPost);
 
 router.get('/forgot-password-email', userController.forgotPasswordEmail);
 router.post('/forgot-password-email', userController.forgotPasswordEmailPost);
+router.post('/resent-otp', userController.resentOTP);
 
 router.get('/profile',userController.isLoggedIn, userController.getUserProfile);
 
@@ -57,4 +58,7 @@ router.post('/update-profile', async (req, res, next) => {
     next(error);
   }
 });
+
+router.post('/add-premium', userController.addPremium);
+
 export { router as UserRouter };

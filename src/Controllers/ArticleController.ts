@@ -1,8 +1,4 @@
-import { log, time } from 'console';
-import { Response, Request } from 'express';
-import { get } from 'http';
-import { data } from 'jquery';
-import { title } from 'process';
+import { Response, Request, NextFunction } from 'express';
 import { DBConfig } from '../Utils/DBConfig';
 import path from 'path';
 import * as pdf from 'html-pdf';
@@ -30,188 +26,44 @@ import {
     getTopArticles,
     getCategoryArticles,
 } from '../Services/AdminArticleService';
-import { getUsernameById, getWriterNameById } from '../Services/UserPasswordService';
+import { getWriterNameById } from '../Services/UserPasswordService';
 import { clamp, getPagingNumber } from '../Utils/MathUtils';
+import { UserRole } from '../Models/UserData';
 
 const articlePerPage = 4;
 
-const News = {
-    title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
-    date: 'Thứ ba, 3/12/2024, 17:30 (GMT+7)',
-    dicription:
-        'Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.',
-    content: `
-            <style>
-                .Image {
-                    font: 400 14px arial;
-                    line-height: 160%;
-                    color: #222;
-                    padding: 10px 0 0 0;
-                    margin: 0;
-                    text-align: left;
-                }
-            </style>
-            <img style="width:80%" src="https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0" alt="Mô tả hình ảnh" />
-            <figcaption style="width: 100% float: left text-align: left;">
-                <p class="Image">Phiến quân HTS tại khu vực ngoại ô Aleppo, Syria ngày 29/11. Ảnh: <em>AP</em></p>
-            </figcaption>
-            <p>Đây là đoạn đầu tiên của bài viết.</p>
-            <img style="width:80%" src="https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0" alt="Mô tả hình ảnh" />
-            <figcaption style="width: 100% float: left text-align: left;">
-                <p class="Image">Phiến quân HTS tại khu vực ngoại ô Aleppo, Syria ngày 29/11. Ảnh: <em>AP</em></p>
-            </figcaption>
-            <p>Tiếp tục với nội dung khác. Viết tiếp nhé</p>`,
-    tagList: [
-        { tag: 'Địa lý', link: '#' },
-        { tag: 'Khoa học', link: '#' },
-        { tag: 'Hiện tượng siêu nhiên', link: '#' },
-    ],
-    category: 'Khoa học',
-    subcategory: 'Khoa học trong nước',
-    writer: 'Pham Thanh Đạt',
-};
-
-const listCardResult = [
-    {
-        img: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
-        description:
-            'Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.',
-        date: '10/10/2024',
-        tagTitle: 'Khoa học',
-        tagDescription: 'Khoa học trong nước',
-        tagList: [
-            { tag: 'Địa lý', link: '#' },
-            { tag: 'Khoa học', link: '#' },
-            { tag: 'Hiện tượng siêu nhiên', link: '#' },
-        ],
-    },
-    {
-        img: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
-        description:
-            'Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.',
-        date: '10/10/2024',
-        tagTitle: 'Khoa học',
-        tagDescription: 'Khoa học trong nước',
-        tagList: [
-            { tag: 'Địa lý', link: '#' },
-            { tag: 'Khoa học', link: '#' },
-            { tag: 'Hiện tượng siêu nhiên', link: '#' },
-            { tag: 'Viễn tưởng', link: '#' },
-            { tag: 'Tâm linh', link: '#' },
-        ],
-    },
-    {
-        img: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
-        description:
-            'Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.',
-        date: '10/10/2024',
-        tagTitle: 'Khoa học',
-        tagDescription: 'Khoa học trong nước',
-        tagList: [
-            { tag: 'Địa lý', link: '#' },
-            { tag: 'Khoa học', link: '#' },
-            { tag: 'Hiện tượng siêu nhiên', link: '#' },
-            { tag: 'Viễn tưởng', link: '#' },
-            { tag: 'Tâm linh', link: '#' },
-        ],
-    },
-    {
-        img: 'https://th.bing.com/th/id/R.ca7911324b10651bbbf6733698ddde53?rik=1VZk4kppp9Iw%2fw&pid=ImgRaw&r=0',
-        title: 'Mây giống đĩa bay trên ngọn núi chứa chan',
-        description:
-            'Đồng Nai - Những đám mây bao trùm trên đỉnh núi Chứa Chan như hình đĩa bay khiến nhiều người dân thích thú.',
-        date: '10/10/2024',
-        tagTitle: 'Khoa học',
-        tagDescription: 'Khoa học trong nước',
-        tagList: [
-            { tag: 'Địa lý', link: '#' },
-            { tag: 'Khoa học', link: '#' },
-            { tag: 'Hiện tượng siêu nhiên', link: '#' },
-            { tag: 'Viễn tưởng', link: '#' },
-            { tag: 'Tâm linh', link: '#' },
-        ],
-    },
-];
-
-const listCategories = [
-    {
-        id: 1,
-        name: 'Khoa học',
-        SubCategories: [
-            { id: 1, name: 'Khoa học trong nước' },
-            { id: 2, name: 'Khoa học quốc tế' },
-            { id: 3, name: 'Khoa học vũ trụ' },
-            { id: 4, name: 'Khoa học tự nhiên' },
-            { id: 5, name: 'Khoa học xã hội' },
-        ],
-    },
-    {
-        id: 2,
-        name: 'Kinh doanh',
-        SubCategories: [
-            { id: 1, name: 'Kinh doanh trong nước' },
-            { id: 2, name: 'Kinh doanh quốc tế' },
-            { id: 3, name: 'Kinh doanh vũ trụ' },
-            { id: 4, name: 'Kinh doanh tự nhiên' },
-            { id: 5, name: 'Kinh doanh xã hội' },
-        ],
-    },
-    {
-        id: 3,
-        name: 'Giải trí',
-        SubCategories: [
-            { id: 1, name: 'Giải trí trong nước' },
-            { id: 2, name: 'Giải trí quốc tế' },
-            { id: 3, name: 'Giải trí vũ trụ' },
-            { id: 4, name: 'Giải trí tự nhiên' },
-            { id: 5, name: 'Giải trí xã hội' },
-        ],
-    },
-    {
-        id: 4,
-        name: 'Thể thao',
-        SubCategories: [
-            { id: 1, name: 'Thể thao trong nước' },
-            { id: 2, name: 'Thể thao quốc tế' },
-            { id: 3, name: 'Thể thao vũ trụ' },
-            { id: 4, name: 'Thể thao tự nhiên' },
-            { id: 5, name: 'Thể thao xã hội' },
-        ],
-    },
-];
-
-const topNews = {
-    img: 'https://i1-vnexpress.vnecdn.net/2024/11/13/bao-9731-1731466141.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=-B1swA7YvV95zbdjBJPBMA',
-    title: 'Bão số 9 đổ bộ vào miền Trung',
-    description:
-        'Bão số 9 đổ bộ vào miền Trung vào chiều ngay 13/11, gây mưa to, gió lớn và sóng biển cao.',
-    date: '15/10/2024',
-    tagTitle: 'Thời sự',
-    tagDescription: 'Thời sự trong nước',
-    tagList: [
-        { tag: 'Bão', link: '#' },
-        { tag: 'Thời tiết', link: '#' },
-        { tag: 'Miền Trung', link: '#' },
-    ],
-};
-
-function getFirstTwoTags(data: { tagList: { tag: string; link: string }[] }[]) {
-    return data.map(item => {
-        item.tagList = item.tagList.slice(0, 2);
-        return item;
-    });
-}
-
 export class ArticleController {
+    verifyUser(req: Request, res: Response, Next: NextFunction) {
+        if (
+            req.session.authUser &&
+            req.session.authUser.role !== UserRole.User
+        ) {
+            res.redirect('/404');
+            return;
+        }
+        Next();
+    }
+
+    // Check if the user has premium account or not
+    isPremium = async (req: Request) => {
+        if (
+            !req.session.authUser ||
+            req.session.authUser.role !== UserRole.User
+        )
+            return false;
+        let userData = await DBConfig('SUBSCRIBER')
+            .where('SubscriberID', req.session.authUser.id)
+            .first();
+        return new Date(Date.now()) < userData.DateExpired;
+    };
+
     // /home
-    async getHome(req: Request, res: Response) {
-        const top_articles = await getTopArticles();
-        const view_articles = await getMostViewedArticles();
-        const category_articles = await getCategoryArticles();
-        const latest_articles = await getLatestArticles();
+    getHome = async (req: Request, res: Response) => {
+        const isUserPremium = await this.isPremium(req);
+        const top_articles = await getTopArticles(isUserPremium);
+        const view_articles = await getMostViewedArticles(isUserPremium);
+        const category_articles = await getCategoryArticles(isUserPremium);
+        const latest_articles = await getLatestArticles(isUserPremium);
 
         res.render('Home/HomeView', {
             customCss: ['HomePage.css'],
@@ -224,7 +76,7 @@ export class ArticleController {
     }
 
     // /category/:id?page=
-    async getArticleListByCategory(req: Request, res: Response) {
+    getArticleListByCategory = async (req: Request, res: Response) => {
         const categoryId = req.params.id as string;
         const { categoryName, subcategoryInfo } =
             await getFullCategoryNameByCatID(categoryId);
@@ -250,7 +102,8 @@ export class ArticleController {
         const articles = await getArticlesByCategoryID(
             categoryId,
             articlePerPage,
-            (page - 1) * articlePerPage
+            (page - 1) * articlePerPage,
+            await this.isPremium(req)
         );
         const [topNews, ...newsOfCategory] = articles;
 
@@ -273,7 +126,7 @@ export class ArticleController {
     }
 
     // /category/subcategory/:id?page=
-    async getArticleListBySubCategory(req: Request, res: Response) {
+    getArticleListBySubCategory = async (req: Request, res: Response) => {
         const subcategoryId = req.params.id as string;
         const { categoryID, categoryName, subcategoryInfo } =
             await getSubcategoryInfoBySubCatID(subcategoryId);
@@ -301,7 +154,8 @@ export class ArticleController {
         const articles = await getArticlesBySubCatID(
             subcategoryId,
             articlePerPage,
-            (page - 1) * articlePerPage
+            (page - 1) * articlePerPage,
+            await this.isPremium(req)
         );
         const [topNews, ...listOfNews] = articles;
 
@@ -411,7 +265,7 @@ export class ArticleController {
     };
 
     // /article/:id
-    async getArticle(req: Request, res: Response) {
+    getArticle = async (req: Request, res: Response) => {
         const articleId = req.params.id;
         if (!articleId) return;
         console.log(articleId);
@@ -432,13 +286,14 @@ export class ArticleController {
             articleId
         );
 
-        const commentList = await GetCommentOfArticle(articleId);
-        for (let i = 0; i < commentList.length; i++) {
-            if (commentList[i].SubscriberID)
-                commentList[i].Name = await getUsernameById(
-                    commentList[i].SubscriberID as number
-                );
+        let isPremiumUser = await this.isPremium(req);
+        if (data.IsPremium && !isPremiumUser) {
+            // res.redirect('/404');
+            res.redirect('back'); // should be redirected back to the original page!
+            return;
         }
+
+        const commentList = await GetCommentOfArticle(articleId);
         console.log(commentList);
 
         const writer = await getWriterNameById(data.WriterID);
@@ -447,6 +302,7 @@ export class ArticleController {
 
         res.render('Home/HomeGuestNews', {
             customCss: ['Home.css', 'News.css', 'Component.css'],
+            isPremiumUser: isPremiumUser,
             data: {
                 ID: articleId,
                 Title: data.Title,
@@ -466,7 +322,7 @@ export class ArticleController {
                 writer: writer,
             },
         });
-    }
+    };
 
     // /search?q=&page=
     searchArticle = async (req: Request, res: Response) => {
@@ -495,7 +351,8 @@ export class ArticleController {
             result: await SearchArticle(
                 searchValue,
                 (page - 1) * articlePerPage,
-                articlePerPage
+                articlePerPage,
+                await this.isPremium(req)
             ),
             searchValue: searchValue,
             page_items: page_items,
@@ -505,9 +362,10 @@ export class ArticleController {
     };
 
     // /download/:id
-    async downloadArticle(req: Request, res: Response) {
+    downloadArticle = async (req: Request, res: Response) => {
         let articleId = req.params.id;
-        if (!articleId) return;
+
+        if (!articleId || !(await this.isPremium(req))) return;
         console.log(articleId);
         let data = await GetArticleById(articleId);
         if (!data) {

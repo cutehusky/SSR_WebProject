@@ -6,13 +6,13 @@ const router = express.Router();
 
 const writerController = new WriterController();
 
-router.get("/", writerController.verifyUser, writerController.getWriterHome);
-router.get("/new",  writerController.verifyUser, writerController.createArticleEditor);
+router.get("/", writerController.verifyUserForWriter, writerController.getWriterHome);
+router.get("/new",  writerController.verifyUserForAdminAndWriter, writerController.createArticleEditor);
+router.get("/edit/:id", writerController.verifyUserForAdminAndWriter, writerController.editArticleEditor);
 
-router.get("/edit/:id", writerController.verifyUser, writerController.editArticleEditor);
-router.get("/myArticles", writerController.verifyUser, writerController.getMyArticleList);
+router.get("/myArticles", writerController.verifyUserForWriter, writerController.getMyArticleList);
 
-router.post("/new",bufferUploader.any(),writerController.verifyUser, writerController.newArticle);
-router.post("/edit",bufferUploader.any(),writerController.verifyUser, writerController.editArticle);
+router.post("/new",bufferUploader.any(),writerController.verifyUserForAdminAndWriter, writerController.newArticle);
+router.post("/edit",bufferUploader.any(),writerController.verifyUserForAdminAndWriter, writerController.editArticle);
 
 export { router as WriterRouter };

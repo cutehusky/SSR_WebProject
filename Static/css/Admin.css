@@ -82,6 +82,11 @@
     background-color: #d2042d;
 }
 
+.publishBtn:hover {
+    color: var(--color-white);
+    background-color: #1b76ff;
+}
+
 .dt-length {
     display: flex;
     justify-content: center;
@@ -199,4 +204,8 @@ h4 {
     margin-left: 5px;
     cursor: pointer;
     font-weight: bold;
+}
+
+#myTable2_paginate {
+    display: none;
 }

@@ -7,7 +7,7 @@
 <form method="get">
     <div class="categorySelection" style="justify-content: flex-start;">
         <h4 style="padding-top: 5px;">Thêm Bài Viết</h4>
-        <button formaction="/admin/article/new" type="submit" class="btn actionBtn scale"
+        <button formaction="/writer/new" type="submit" class="btn actionBtn scale"
             style="margin-left: 30px;width: 120px;"><i class="bi bi-file-earmark-plus-fill"
                 style="margin-right: 5px;"></i> Thêm</button>
     </div>
@@ -36,7 +36,7 @@
             <th>Tiêu Đề</th>
             <th>Tác Giả</th>
             <th>Ngày Viết</th>
-            <th>Nhãn</th>
+            <th>Trạng Thái</th>
             <th>Chuyên Mục</th>
             <th>Thao Tác</th>
         </tr>
@@ -47,7 +47,7 @@
             <td>{{title}}</td>
             <td>{{writer}}</td>
             <td>{{date}}</td>
-            <td>{{tag}}</td>
+            <td>{{status}}</td>
             <td>{{category}}</td>
             <td>
                 <form method="get" style="margin: 0px; display: inline">
@@ -57,12 +57,22 @@
                 </form>
                 <form method="post" style="margin: 0px; display: inline">
                     <input name="id" type="text" value="{{id}}" style="display: none;">
-                    <button name="" class="btn actionBtn delBtn scale" formaction="/article/delete" type="submit">
+                    <button name="" class="btn actionBtn delBtn scale" formaction="/admin/article/delete" type="submit">
                         <i class="bi bi-person-x-fill"></i>
                     </button>
                 </form>
+                {{#if (eq status "Draft")}}
+                   <form method="post" style="margin: 0px; display: inline">
+                        <input name="id" type="text" value="{{id}}" style="display: none;">
+                        <button name="" class="btn actionBtn publishBtn scale" formaction="/admin/article/publish/{{id}}" type="submit">
+                            <i class="bi bi-check"></i>
+                        </button>
+                    </form>
+                {{/if}}
             </td>
         </tr>
         {{/each}}
     </tbody>
 </table>
+
+{{> Component/Paging page_items=this.page_items previousLink=this.previousLink nextLink=this.nextLink}}

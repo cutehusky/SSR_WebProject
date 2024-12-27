@@ -7,7 +7,7 @@ export const getPagingNumber = (page: number, totalPages: number, maxDisplayPage
         1,
         page - Math.floor(maxDisplayPages / 2)
     );
-    let endPage = Math.min(totalPages, startPage + Math.floor(maxDisplayPages / 2));
+    let endPage = Math.min(totalPages, page + Math.floor(maxDisplayPages / 2));
     if (endPage - startPage + 1 < maxDisplayPages) {
         if (startPage === 1) {
             endPage = Math.min(totalPages, startPage + maxDisplayPages - 1);

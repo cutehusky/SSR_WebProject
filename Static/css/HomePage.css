@@ -276,8 +276,35 @@ h6,
 }
 
 .truncate {
-    width: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.truncate_one {
+    display: block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.truncate_long {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.premium_badge {
+    top: 5%;
+    background-color: var(--color-red-primary);
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    color: var(--color-white);
+    padding: 4px 16px;
+    box-shadow: 4px 4px 4px rgba(229, 228, 226, 0.25);
+    z-index: 99;
 }

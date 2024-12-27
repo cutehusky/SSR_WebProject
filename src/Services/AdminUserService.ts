@@ -1,8 +1,10 @@
 import {DBConfig as db} from "../Utils/DBConfig";
-import {UserData} from "../Models/UserData";
+import {UserData, UserRole} from "../Models/UserData";
+
+const datePremium = 10; //min
 import {getRole, getRoleName} from "../Utils/getRole";
 
-export const createUser = async (userData: UserData): Promise<void> => {
+export const createUser = async (userData: any): Promise<void> => {
   // Kiểm tra xem user đã tồn tại chưa
   const userExists = await db('USER').where('Email', userData.email).first();
   if (userExists) {
@@ -17,7 +19,7 @@ export const createUser = async (userData: UserData): Promise<void> => {
         Password: userData.password,
         DOB: userData.dob || null,
         Role: getRole(userData.role as string),
-        isAdministator: userData.role === "Admin"
+        isAdministator: userData.role === "Admin" ? 1:0
       });
       
     if(userData.role === "Writer")
@@ -25,7 +27,8 @@ export const createUser = async (userData: UserData): Promise<void> => {
     else if (userData.role === "Editor")
       await db("EDITOR").insert({EditorID: id})
     else if(userData.role === "User")
-      await db("SUBSCRIBER").insert({SubscriberID: id, DateRegistered: new Date(0)})
+      await db("SUBSCRIBER").insert({SubscriberID: id,
+        DateExpired: new Date(Date.now() + datePremium * 1000 * 60), });
 
   } catch (error : any) {
     console.log(error);
@@ -107,4 +110,15 @@ export const deleteUser = async (id: number): Promise<void> => {
         console.log(error);
         throw new Error('Failed to delete user.');
     }
-    };
+};
+
+export const addPremium = async (id: number)=> {
+    let date = await db("subscriber").where({SubscriberID: id}).first();
+    if (date.DateExpired.getTime() > Date.now()) {
+        await db("subscriber").where({SubscriberID: id}).update({"DateExpired":
+                new Date(date.DateExpired.getTime() + datePremium * 1000 * 60)});
+    } else {
+        await db("subscriber").where({SubscriberID: id}).update({"DateExpired":
+                new Date(Date.now() + datePremium * 1000 * 60)});
+    }
+}

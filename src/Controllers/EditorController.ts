@@ -1,15 +1,25 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { getEditorCategories } from '../Utils/getEditorCategories';
 import { getArticlesCategories } from '../Utils/getArticlesCategories';
 import { getArticleDetails } from '../Utils/getArticleDetails';
 import { getArticleTags } from '../Utils/getArticleTags';
 import { updateArticleStateEditor } from '../Utils/updateArticleStateEditor';
 import { getCategorySubcategories } from '../Utils/getEditorCategories';
+import { UserRole } from '../Models/UserData';
 
 export class EditorController {
+
+    verifyUserForEditor(req: Request, res: Response, Next: NextFunction) {
+        if (!req.session.authUser || req.session.authUser.role !== UserRole.Editor) {
+            res.redirect('/404');
+            return;
+        }
+        Next();
+    }
+
     // /editor/:editorID/articles
     async getArticles(req: Request, res: Response) {
-        const editorID = Number(req.params.editorID);
+        const editorID = req.session.authUser?.id as number;
         const categories = await getEditorCategories(editorID);
         let selectedCategory = undefined;
         if (!isNaN(Number(req.query.category)) && Number(req.query.category) !== -1)
@@ -38,32 +48,32 @@ export class EditorController {
         });
     }
 
-    // /editor/:editorID/articles/:id/approve
+    // /editor/articles/:id/approve
     async approveArticle(req: Request, res: Response) {
         const articleId = req.params.id;
-        const editorId = req.params.editorID;
+        const editorId = req.session.authUser?.id as number;
         const result = req.body;
         const tags = result.tags.split(',').map((tag: string) => Number(tag.trim()));
         const subcategoryId = result.subcategory;
         const date = result.date;
         const time = result.time;
         const dateTime = `${date} ${time}`;
-        await updateArticleStateEditor(Number(editorId), Number(articleId), 'approved', null, tags, subcategoryId, dateTime);
-        res.redirect(`/editor/${editorId}/articles`);
+        await updateArticleStateEditor(Number(editorId), Number(articleId), 'Approved', null, tags, subcategoryId, dateTime);
+        res.redirect(`/editor/articles`);
     }
 
-    // /editor/:editorID/articles/:id/reject
+    // /editor/articles/:id/reject
     async rejectArticle(req: Request, res: Response) {
         const articleId = req.params.id;
-        const editorId = req.params.editorID;
-        await updateArticleStateEditor(Number(editorId), Number(articleId), 'rejected', req.body.reason);
-        res.redirect(`/editor/${editorId}/articles`);
+        const editorId = req.session.authUser?.id as number;
+        await updateArticleStateEditor(Number(editorId), Number(articleId), 'Rejected', req.body.reason);
+        res.redirect(`/editor/articles`);
     }
 
-    // /editor/:editorID/articles/:id
+    // /editor/articles/:id
     async viewArticle(req: Request, res: Response) {
         const articleId = req.params.id;
-        const editorId = req.params.editorID;
+        const editorId = req.session.authUser?.id as number;
         const article_details = await getArticleDetails(Number(articleId));
         let article;
         let date = new Date(article_details[0].DatePosted);

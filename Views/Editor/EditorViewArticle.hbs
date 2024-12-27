@@ -42,7 +42,6 @@
 <div class="container editor-content-view mt-3">
     <div class="text-center mb-3">
         <img src="{{article.cover}}" alt="Logo" class="img-fluid" style="max-width: 750px" />
-        {{!-- <span class="d-inline-block text-center w-100 image-description">Hình gái a-li-me. Ảnh: Lý Nghị Hoằng</span> --}}
     </div>
     <hr />
     <div class="text-content">
@@ -50,7 +49,7 @@
     </div>
 </div>
 
-<form action="/editor/{{editorId}}/articles/{{articleId}}/reject" method="post" class="modal fade" id="editor-decline-modal" tabindex="-1" aria-hidden="true">
+<form action="/editor/articles/{{articleId}}/reject" method="post" class="modal fade" id="editor-decline-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -77,7 +76,7 @@
     </div>
 </form>
 
-<form action="/editor/{{editorId}}/articles/{{articleId}}/approve" method="post" class="modal fade" id="editor-adjust-modal" tabindex="-1" aria-hidden="true">
+<form action="/editor/articles/{{articleId}}/approve" method="post" class="modal fade" id="editor-adjust-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
