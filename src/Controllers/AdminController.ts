@@ -1,17 +1,18 @@
-import { Response, Request } from 'express';
+import { Response, Request, NextFunction } from 'express';
 
-import { GetSubCategories, countCategories, GetCategoriesPage, countSubCategories } from '../Services/AdminCategoryService';
+import {
+    GetSubCategories,
+    countCategories,
+    GetCategoriesPage,
+    countSubCategories,
+} from '../Services/AdminCategoryService';
 import { getCategories } from '../Utils/getCategories';
 import { countUsers, getUsers } from '../Utils/getUsers';
 import { DBConfig } from '../Utils/DBConfig';
 
 import {
-    ArticleData,
-    createArticle,
     deleteArticle,
-    updateArticle,
     getArticlesCategories,
-    CountArticleOfWriterByStates,
     countArticlesCategories,
 } from '../Services/AdminArticleService';
 import {
@@ -19,11 +20,18 @@ import {
     deleteUser,
     updateUser,
 } from '../Services/AdminUserService';
-import { UserData } from '../Models/UserData';
-import { createTag, deleteTagById, getTagByName, getTags, getTagsById, updateTagById } from '../Utils/getTags';
+import { UserData, UserRole } from '../Models/UserData';
+import {
+    createTag,
+    deleteTagById,
+    getTagByName,
+    getTags,
+    getTagsById,
+    updateTagById,
+} from '../Utils/getTags';
 import { get } from 'jquery';
 import { clamp, getPagingNumber } from '../Utils/MathUtils';
-import {getWriterNameById} from "../Services/UserPasswordService";
+import { getWriterNameById } from '../Services/UserPasswordService';
 
 const itemPerPage = 5;
 
@@ -36,49 +44,94 @@ let tagData = [
 ];
 
 export class AdminController {
+    verifyAdmin(req: Request, res: Response, next: NextFunction) {
+        if (
+            !req.session.authUser ||
+            req.session.authUser.role !== UserRole.Admin
+        ) {
+            res.redirect('/404');
+            return;
+        }
+        next();
+    }
     // /admin/categories?category=
     async getCategories(req: Request, res: Response) {
-        const category = req.query.category && !isNaN(Number(req.query.category)) ? Number(req.query.category) : -1;
+        const category =
+            req.query.category && !isNaN(Number(req.query.category))
+                ? Number(req.query.category)
+                : -1;
         const categoryId = category;
         const CategoryList = res.locals.Categories;
-    
+
         // Phân trang cho Chuyên Mục Cấp 1
         let page = parseInt(req.query.page as string) || 1;
         let itemPerPage = 5;
         const categoryNum = await countCategories();
         const totalPages = Math.ceil(categoryNum / itemPerPage);
         page = Math.max(1, Math.min(page, totalPages));
-    
+
         let page_items = getPagingNumber(page, totalPages);
         page_items = page_items.map(item => ({
             ...item,
             link: `/admin/categories?page=${item.value}&category=${categoryId}`,
         }));
-    
-        const previousLink = page > 1 ? `/admin/categories?page=${page - 1}&category=${categoryId}` : '';
-        const nextLink = page < totalPages ? `/admin/categories?page=${page + 1}&category=${categoryId}` : '';
-    
+
+        const previousLink =
+            page > 1
+                ? `/admin/categories?page=${page - 1}&category=${categoryId}`
+                : '';
+        const nextLink =
+            page < totalPages
+                ? `/admin/categories?page=${page + 1}&category=${categoryId}`
+                : '';
+
         // Lấy danh sách Chuyên Mục Cấp 1
-        const categoryList = await GetCategoriesPage((page - 1) * itemPerPage, itemPerPage);
-    
+        const categoryList = await GetCategoriesPage(
+            (page - 1) * itemPerPage,
+            itemPerPage
+        );
+
         // Phân trang cho Chuyên Mục Cấp 2
-        let subCategoryPage = parseInt(req.query.subCategoryPage as string) || 1;
+        let subCategoryPage =
+            parseInt(req.query.subCategoryPage as string) || 1;
         const subCategoryNum = await countSubCategories();
-        const totalSubCategoryPages = Math.ceil(subCategoryNum[0].count / itemPerPage);
-        subCategoryPage = Math.max(1, Math.min(subCategoryPage, totalSubCategoryPages));
-    
-        let subCategoryPageItems = getPagingNumber(subCategoryPage, totalSubCategoryPages);
+        const totalSubCategoryPages = Math.ceil(
+            subCategoryNum[0].count / itemPerPage
+        );
+        subCategoryPage = Math.max(
+            1,
+            Math.min(subCategoryPage, totalSubCategoryPages)
+        );
+
+        let subCategoryPageItems = getPagingNumber(
+            subCategoryPage,
+            totalSubCategoryPages
+        );
         subCategoryPageItems = subCategoryPageItems.map(item => ({
             ...item,
             link: `/admin/categories?category=${categoryId}&subCategoryPage=${item.value}`,
-        }));        
-    
-        const subCategoryPreviousLink = subCategoryPage > 1 ? `/admin/categories?category=${categoryId}&subCategoryPage=${subCategoryPage - 1}` : '';
-        const subCategoryNextLink = subCategoryPage < totalSubCategoryPages ? `/admin/categories?category=${categoryId}&subCategoryPage=${subCategoryPage + 1}` : '';
-    
+        }));
+
+        const subCategoryPreviousLink =
+            subCategoryPage > 1
+                ? `/admin/categories?category=${categoryId}&subCategoryPage=${
+                      subCategoryPage - 1
+                  }`
+                : '';
+        const subCategoryNextLink =
+            subCategoryPage < totalSubCategoryPages
+                ? `/admin/categories?category=${categoryId}&subCategoryPage=${
+                      subCategoryPage + 1
+                  }`
+                : '';
+
         // Lấy danh sách Chuyên Mục Cấp 2
-        const subCategoryList = await GetSubCategories(categoryId, (subCategoryPage - 1) * itemPerPage, itemPerPage);
-    
+        const subCategoryList = await GetSubCategories(
+            categoryId,
+            (subCategoryPage - 1) * itemPerPage,
+            itemPerPage
+        );
+
         res.render('Admin/AdminCategoriesView', {
             customCss: ['Admin.css'],
             customJs: ['AdminCategoryDataTable.js'],
@@ -93,43 +146,43 @@ export class AdminController {
             subCategoryNextLink,
         });
     }
-    
-    
 
     // /admin/tags
     async getTags(req: Request, res: Response) {
         const tagData = await getTags();
 
         // Cấu hình phân trang
-        let page = parseInt(req.query.page as string) || 1;  
-        let itemPerPage = 3 
-        const totalTags = tagData.length;  
-        const totalPages = Math.ceil(totalTags / itemPerPage); 
+        let page = parseInt(req.query.page as string) || 1;
+        let itemPerPage = 3;
+        const totalTags = tagData.length;
+        const totalPages = Math.ceil(totalTags / itemPerPage);
 
         page = Math.max(1, Math.min(page, totalPages));
 
-        let page_items = getPagingNumber(page, totalPages); 
+        let page_items = getPagingNumber(page, totalPages);
         page_items = page_items.map(item => ({
             ...item,
-            link: `/admin/tags?page=${item.value}`, 
+            link: `/admin/tags?page=${item.value}`,
         }));
 
         const previousLink = page > 1 ? `/admin/tags?page=${page - 1}` : '';
-        const nextLink = page < totalPages ? `/admin/tags?page=${page + 1}` : '';
+        const nextLink =
+            page < totalPages ? `/admin/tags?page=${page + 1}` : '';
 
-        const currentTags = tagData.slice((page - 1) * itemPerPage, page * itemPerPage);
+        const currentTags = tagData.slice(
+            (page - 1) * itemPerPage,
+            page * itemPerPage
+        );
 
         res.render('Admin/AdminTagsView', {
             customCss: ['Admin.css'],
             customJs: ['AdminTagsDataTable.js'],
-            data: currentTags,  
-            page_items,  
-            previousLink,  
+            data: currentTags,
+            page_items,
+            previousLink,
             nextLink,
         });
     }
-
-
 
     // /admin/articles?category=&page=
     async getArticles(req: Request, res: Response) {
@@ -158,15 +211,15 @@ export class AdminController {
             (page - 1) * itemPerPage,
             itemPerPage
         );
-        for (let i = 0; i<data.length;i++)
+        for (let i = 0; i < data.length; i++)
             data[i].writer = await getWriterNameById(data[i].writerID);
 
         console.log('Data: ', data);
-        console.log(categoryId)
+        console.log(categoryId);
 
         res.render('Admin/AdminArticlesView', {
             selectedCategory: categoryId,
-            data: data, 
+            data: data,
             customJs: ['AdminArticlesDataTable.js'],
             customCss: ['Admin.css'],
             page_items,
@@ -205,7 +258,7 @@ export class AdminController {
 
         res.render('Admin/AdminUsersView', {
             selectedRole: role,
-            customJs: ['AdminUsersDataTable.js'],
+            customJs: ['AdminUsersDataTable.js', 'AdminEditUsers.js'],
             customCss: ['Admin.css'],
             data: data,
             page_items,
@@ -226,7 +279,7 @@ export class AdminController {
         }
 
         await updateTagById(id, name);
-        
+
         res.redirect('/admin/tags');
     }
 
@@ -298,9 +351,9 @@ export class AdminController {
 
     // /admin/tag/new
     async newTag(req: Request, res: Response) {
-        const {name} = req.body;
+        const { name } = req.body;
         const existtag = await getTagByName(name);
-        console.log("exist tag: ", existtag);
+        console.log('exist tag: ', existtag);
         if (existtag.length > 0) {
             res.status(400).json({
                 error: 'Tag already exists.',
@@ -310,7 +363,6 @@ export class AdminController {
 
         await createTag(name);
         res.redirect('/admin/tags');
-
     }
 
     // /admin/category/new
@@ -363,11 +415,10 @@ export class AdminController {
         try {
             await deleteTagById(parseInt(id));
             res.redirect('/admin/tags');
-
         } catch (error) {
             res.status(500).json({
                 error: (error as Error).message,
-            })
+            });
         }
     }
 
@@ -482,6 +533,6 @@ export class AdminController {
             .andWhere('CategoryID', parentName)
             .del();
 
-        res.redirect("/admin/categories/?category=");
+        res.redirect('/admin/categories/?category=');
     }
 }

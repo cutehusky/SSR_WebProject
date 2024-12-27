@@ -2,7 +2,7 @@
     class="w-100 d-flex justify-content-center"
     style="background-color: rgba(255, 255, 255, 0.4)"
 >
-    <div class="w-75">
+    <div class="w-75 h-100 overflow-hidden d-flex flex-column">
         <section class="mt-5">
             <div class="header-content mb-1 d-flex justify-content-between">
                 <ul class="d-flex list-unstyled">
@@ -45,7 +45,11 @@
             <div>
                 <img src="{{data.BackgroundImage}}" style="width: 100%" />
             </div>
-            {{{data.Content}}}
+            <div
+                class="d-flex flex-column align-items-center justify-content-center"
+            >
+                {{{data.Content}}}
+            </div>
         </section>
 
         <hr class="mb-4" />

@@ -70,4 +70,15 @@ export const deleteUser = async (id: number): Promise<void> => {
         console.log(error);
         throw new Error('Failed to delete user.');
     }
-    };
+};
+
+export const addPremium = async (id: number)=> {
+    let date = await db("subscriber").where({SubscriberID: id}).first();
+    if (date.DateExpired.getTime() > Date.now()) {
+        await db("subscriber").where({SubscriberID: id}).update({"DateExpired":
+                new Date(date.DateExpired.getTime() + datePremium * 1000 * 60)});
+    } else {
+        await db("subscriber").where({SubscriberID: id}).update({"DateExpired":
+                new Date(Date.now() + datePremium * 1000 * 60)});
+    }
+}

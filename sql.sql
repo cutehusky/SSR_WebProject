@@ -4,7 +4,7 @@
 -- ------------------------------------------------------
 -- Server version	9.1.0
 
--- create database newspaper;
+create database newspaper;
 use newspaper;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -279,8 +279,7 @@ DROP TABLE IF EXISTS `subscriber`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `subscriber` (
   `SubscriberID` int NOT NULL,
-  `DateRegistered` date DEFAULT NULL,
-  `Duration` int DEFAULT NULL,
+  `DateExpired` datetime DEFAULT NULL,
   PRIMARY KEY (`SubscriberID`),
   CONSTRAINT `FK_SUBSCRIBER_USER` FOREIGN KEY (`SubscriberID`) REFERENCES `user` (`UserID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -292,7 +291,7 @@ CREATE TABLE `subscriber` (
 
 LOCK TABLES `subscriber` WRITE;
 /*!40000 ALTER TABLE `subscriber` DISABLE KEYS */;
-INSERT INTO `subscriber` VALUES (6,'1970-01-01',NULL);
+INSERT INTO `subscriber` VALUES (6,'1970-01-01');
 /*!40000 ALTER TABLE `subscriber` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -349,7 +348,10 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'admin','admin@example.com','$2a$10$igZBWZjMDnI1Zi1uHDwsU.YpUMWARVGO8r92KYzOJPwaqGYpVQozm','2024-12-25',1,3,NULL,NULL),(2,'jack writer','writer@example.com','$2a$10$igZBWZjMDnI1Zi1uHDwsU.YpUMWARVGO8r92KYzOJPwaqGYpVQozm','0001-01-01',0,1,NULL,NULL),(5,'henry editor','editor@example.com','123$2a$10$igZBWZjMDnI1Zi1uHDwsU.YpUMWARVGO8r92KYzOJPwaqGYpVQozm',NULL,0,2,NULL,NULL),(6,'user','user@example.com','123$2a$10$igZBWZjMDnI1Zi1uHDwsU.YpUMWARVGO8r92KYzOJPwaqGYpVQozm',NULL,0,0,NULL,NULL);
+INSERT INTO `user` VALUES (1,'admin','admin@example.com','$2a$10$igZBWZjMDnI1Zi1uHDwsU.YpUMWARVGO8r92KYzOJPwaqGYpVQozm','2024-12-25',1,3,NULL,NULL),
+(2,'jack writer','writer@example.com','$2a$10$igZBWZjMDnI1Zi1uHDwsU.YpUMWARVGO8r92KYzOJPwaqGYpVQozm','0001-01-01',0,1,NULL,NULL),
+(5,'henry editor','editor@example.com','$2a$10$igZBWZjMDnI1Zi1uHDwsU.YpUMWARVGO8r92KYzOJPwaqGYpVQozm',NULL,0,2,NULL,NULL),
+(6,'user','user@example.com','$2a$10$igZBWZjMDnI1Zi1uHDwsU.YpUMWARVGO8r92KYzOJPwaqGYpVQozm',NULL,0,0,NULL,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -387,4 +389,7 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+
+ALTER TABLE ARTICLE
+ADD FULLTEXT(Title, Content, Abstract);
 -- Dump completed on 2024-12-26 14:17:58
