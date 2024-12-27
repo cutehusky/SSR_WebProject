@@ -126,7 +126,7 @@ export const verifyOTP = async (email: string, otp: string): Promise<boolean> =>
         throw new Error('Failed to verify OTP.');
     }
 };
-export const updateProfile = async (id : string, email : string, name : string, dob : string): Promise<void> => {
+export const updateProfile = async (id : number, email : string, name : string, dob : string): Promise<void> => {
     try {
         // Kiểm tra xem user có tồn tại không
         const userExists = await db('USER').where('UserID', id).first();
@@ -136,7 +136,7 @@ export const updateProfile = async (id : string, email : string, name : string, 
         
         // Update user trong database
         await db('USER').where('UserID', id).update({
-            Name: name,
+            fullName: name,
             Email: email,
             DOB: dob
         })

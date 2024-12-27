@@ -4,20 +4,14 @@ import { GetSubCategories } from "../Utils/getSubCategories";
 import { getCategories } from "../Utils/getCategories";
 import {getUsers} from "../Utils/getUsers";
 import { DBConfig } from "../Utils/DBConfig";
+import { getEditorCategories } from "../Utils/getEditorCategories";
 
 import { ArticleData, createArticle, deleteArticle, updateArticle, getArticlesCategories } from "../Services/AdminArticleService";
 import { createUser, deleteUser, updateUser } from "../Services/AdminUserService";
-import { UserData } from "../Models/UserData";
+import { UserData, UserRole } from "../Models/UserData";
 import { getTags } from "../Utils/getTags";
 import { get } from "jquery";
-let tagData = [
-  { name: "test 1", id: 1 },
-  { name: "test 2", id: 2 },
-  { name: "test 3", id: 3 },
-  { name: "test 4", id: 4 },
-  { name: "test 5", id: 5 },
-];
-
+import bcrypt from "bcryptjs";
 
 export class AdminController {
   // /admin/categories?category=
@@ -37,7 +31,8 @@ export class AdminController {
 
   // /admin/tags
   async getTags(req: Request, res: Response) {
-    tagData = await getTags();
+    const tagData = await getTags();
+    
     res.render("Admin/AdminTagsView", {
       customCss: ["Admin.css"],
       customJs: ["AdminTagsDataTable.js"],
@@ -70,13 +65,24 @@ export class AdminController {
     const role = (req.query.role || "all") as string;
     console.log("Role: ", role);
     const data = await getUsers(role);
+    
+    // lấy các category của những editor quản lý
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].role === "Editor") {
+        data[i].categories = await getEditorCategories(data[i].id);
+        console.log(JSON.stringify(data[i].categories, null, 2));
+      } else
+      {
+        data[i].categories = [];
+      }
+    }
     console.log("Data: ", data);
-
     res.render("Admin/AdminUsersView", {
       selectedRole: role,
       customJs: ["AdminUsersDataTable.js"],
       customCss: ["Admin.css"],
       data: data,
+      Categories: res.locals.Categories,
     });
   }
 
@@ -84,20 +90,8 @@ export class AdminController {
   async editTag(req: Request, res: Response) {
     const tagId = req.body.id as string;
     const tagName = req.body.name as string;
-    // let tagList = await DBConfig("tags").select("id", "name"); // có thể thêm nhiều mục khác
-    let tagList = tagData;
-    const tag = tagList.find((tag) => tag.id === parseInt(tagId));
-    if (!tag) {
-      res.status(404).send("Tag not found");
-      return;
-    }
-    tag.name = tagName;
-    res.render("Admin/AdminTagsView", {
-      customCss: ["Admin.css"],
-      customJs: ["AdminTagsDataTable.js"],
-      data: tagList,
-    });
-
+    await DBConfig("tag").where("TagID", "=", tagId).update({ name: tagName });
+    res.redirect("/admin/tags");
   }
 
   // /admin/category/edit
@@ -129,7 +123,17 @@ export class AdminController {
   editUser(req: Request, res: Response) {
     try {
       const userData : UserData = req.body;
-      console.log('Request body:', req.body);
+      let category_add: number[] = req.body.category_add;
+      let category_remove: number[] = req.body.category_remove;
+      console.log('Request body:', req.body); 
+
+      // Đảm bảo `category_add` và `category_remove` luôn là mảng
+    if (!Array.isArray(category_add)) {
+      category_add = category_add ? [Number(category_add)] : [];
+    }
+    if (!Array.isArray(category_remove)) {
+      category_remove = category_remove ? [Number(category_remove)] : [];
+    }
       // Validation cơ bản
       if (userData.id == null || isNaN(userData.id)) {
         res.status(400).json({
@@ -139,7 +143,7 @@ export class AdminController {
       }
   
       // Gọi Service để tạo user
-      updateUser(userData);
+      updateUser(userData, category_add, category_remove);
       res.redirect("/admin/users");
     } catch (error) {
       // Bắt lỗi nếu có
@@ -200,16 +204,9 @@ export class AdminController {
   // /admin/tag/new
   async newTag(req: Request, res: Response) {
     const tagName = req.body.name as string;
-    let tagList = tagData;
-    tagList.push({ name: tagName, id: tagList.length + 1 });
 
-    // await DBConfig("tags").insert({ name: tagName });
-
-    res.render("Admin/AdminTagsView", {
-      customCss: ["Admin.css"],
-      customJs: ["AdminTagsDataTable.js"],
-      data: tagList,
-    });
+    await DBConfig("tag").insert({ name: tagName });
+    res.redirect("/admin/tags");
   }
 
   // /admin/category/new
@@ -237,11 +234,12 @@ export class AdminController {
   //     "dob": "1990-01-01",
   //     "role": 0
   // }
-  newUser(req: Request, res: Response) {
+  async newUser(req: Request, res: Response) {
     try {
       const userData : UserData = req.body;
       console.log('Request body:', req.body);  
       // Gọi Service để tạo user
+      userData.password = await bcrypt.hash(userData.password, 10);
       createUser(userData);
 
       res.redirect("/admin/users");
@@ -287,22 +285,18 @@ export class AdminController {
   }
 
   // /admin/tag/delete
-  deleteTag(req: Request, res: Response) {
+  async deleteTag(req: Request, res: Response) {
     const tagId = req.body.id as string;
-    let tagList = tagData;
 
-    const tagIndex = tagList.find((tag) => tag.id === parseInt(tagId));
-    if (!tagIndex) {
-      res.status(404).send("Tag not found");
+    if (tagId == null || isNaN(parseInt(tagId))) {
+      res.status(400).json({
+        error: 'ID is required and must be a valid number.',
+      });
       return;
     }
-    tagList = tagList.filter((tag) => tag.id !== parseInt(tagId));
-    tagData = tagList;
-    res.render("Admin/AdminTagsView", {
-      customCss: ["Admin.css"],
-      customJs: ["AdminTagsDataTable.js"],
-      data: tagList,
-    });
+    await DBConfig("tag").where("TagID", "=", tagId).del();
+
+    res.redirect("/admin/tags");
   }
 
   // /admin/category/delete

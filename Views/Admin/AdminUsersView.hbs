@@ -24,16 +24,16 @@
             <option value="all" {{#if (eq selectedRole 'all' ) }}selected{{/if}}>
                 Tất Cả
             </option>
-            <option value="admin" {{#if (eq selectedRole 'admin' ) }}selected{{/if}}>
+            <option value="Admin" {{#if (eq selectedRole 'Admin' ) }}selected{{/if}}>
                 Admin
             </option>
-            <option value="user" {{#if (eq selectedRole 'user' ) }}selected{{/if}}>
+            <option value="User" {{#if (eq selectedRole 'User' ) }}selected{{/if}}>
                 User
             </option>
-            <option value="writer" {{#if (eq selectedRole 'writer' ) }}selected{{/if}}>
+            <option value="Writer" {{#if (eq selectedRole 'Writer' ) }}selected{{/if}}>
                 Writer
             </option>
-            <option value="editor" {{#if (eq selectedRole 'editor' ) }}selected{{/if}}>
+            <option value="Editor" {{#if (eq selectedRole 'Editor' ) }}selected{{/if}}>
                 Editor
             </option>
         </select>
@@ -69,7 +69,7 @@
                         <i class="bi bi-person-x-fill"></i>
                     </button>
                 </form>
-                {{> Admin/Modal/EditUser name=name email=email role=role dateOfBirth=dateOfBirth id=id}}
+                {{> Admin/Modal/EditUser name=name email=email role=role dateOfBirth=dateOfBirth id=id Categories=../Categories editorCat = categories}}
             </td>
         </tr>
         {{/each}}

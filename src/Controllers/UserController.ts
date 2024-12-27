@@ -8,6 +8,13 @@ import { createUser } from "../Services/AdminUserService";
 import nodemailer from 'nodemailer';
 
 export class UserController {
+    //Kiểm tra người dùng đã đăng nhập chưa
+    isLoggedIn(req: Request, res: Response, next: NextFunction) {
+        if (!req.session.authUser) {
+            return res.redirect('/');
+        }
+        next();
+    }
     // /user/login
     async logIn(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         const { email, password } = req.body;
@@ -70,7 +77,7 @@ export class UserController {
                 email,
                 password: hashedPassword,
                 dob : dob,
-                role: "Subcriber"
+                role: UserRole.User
             };
 
             // Tạo mới người dùng trong DB
@@ -79,8 +86,8 @@ export class UserController {
             // Lưu thông tin người dùng vào session sau khi đăng ký thành công
             req.session.authUser = newUser;
 
-            // Redirect đến trang profile hoặc trang chính
-            return res.redirect('/home');
+            // Redirect đến trang cập nhật thông tin người dùng
+            res.redirect('/user/profile');
         } catch (error) {
             console.error("Registration Error:", error);
             return res.status(500).json({ error: "Internal Server Error" });
@@ -196,7 +203,7 @@ export class UserController {
         }
     }
 
-    // /user/profile/
+    // /user/profile
     getUserProfile(req: Request, res: Response) {
         res.render('User/UserProfileView', {
             customCss: ['User.css']});
