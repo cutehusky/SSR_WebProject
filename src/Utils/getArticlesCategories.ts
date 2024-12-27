@@ -7,7 +7,7 @@ export const getArticlesCategories = (categories: any[], editorID: number | null
         .join('CATEGORY as c', 's.CategoryID', 'c.CategoryID')
         .join('WRITER as w', 'a.WriterID', 'w.WriterID')
         .whereIn('c.CategoryID', categories.map((category) => category.id))
-        .where('a.Status', 'Pending')
+        .where('a.Status', 'Draft')
         .where(function () {
             this.whereNull('a.EditorID').orWhere('a.EditorID', editorID);
         })

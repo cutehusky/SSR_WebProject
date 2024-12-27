@@ -10,11 +10,11 @@ export const updateArticleStateEditor = async (
     dateTime: string = ''
 ): Promise<any> => {
     return DBConfig.transaction(async (trx) => {
-        if (status === 'approved') {
+        if (status === 'Approved') {
             await trx('ARTICLE')
                 .where('ArticleID', articleID)
                 .update({
-                    Status: 'approved',
+                    Status: 'Approved',
                     EditorID: editorID,
                     Reason: null,
                     DatePublished: dateTime,
@@ -48,7 +48,7 @@ export const updateArticleStateEditor = async (
             await trx('ARTICLE')
                 .where('ArticleID', articleID)
                 .update({
-                    State: status,
+                    Status: status,
                     EditorID: editorID,
                     Reason: reason,
                 });

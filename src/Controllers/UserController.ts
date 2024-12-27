@@ -41,10 +41,11 @@ export class UserController {
 
             // Lưu thông tin người dùng vào session
             req.session.authUser = user;
-
             // Redirect về URL trước đó nếu có
             const retUrl = req.session.retUrl || '/';
             req.session.retUrl = undefined;
+            if (req.session.authUser.role === UserRole.Editor)
+                req.session.retUrl = '/editor/articles';
             return res.redirect(retUrl);
         } catch (error) {
             console.error('Login Error:', error);
