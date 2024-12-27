@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import * as userService from '../Services/UserPasswordService';
 import { UserRole } from '../Models/UserData';
 import { UserData } from '../Models/UserData';
-import {addPremium, createUser} from '../Services/AdminUserService';
+import { addPremium, createUser } from '../Services/AdminUserService';
 import nodemailer from 'nodemailer';
 
 export class UserController {
@@ -50,7 +50,7 @@ export class UserController {
             req.session.authUser = user;
             // Redirect về URL trước đó nếu có
             const retUrl = req.session.retUrl || '/';
-            req.session.retUrl = undefined
+            req.session.retUrl = undefined;
             return res.redirect(retUrl);
         } catch (error) {
             console.error('Login Error:', error);
@@ -86,8 +86,8 @@ export class UserController {
                 fullname,
                 email,
                 password: hashedPassword,
-                dob : dob,
-                role: UserRole.User
+                dob: dob,
+                role: UserRole.User,
             };
 
             // Tạo mới người dùng trong DB
@@ -96,12 +96,76 @@ export class UserController {
 
             // Lưu thông tin người dùng vào session sau khi đăng ký thành công
             req.session.authUser = userDb;
-
             // Redirect đến trang cập nhật thông tin người dùng
             res.redirect('/user/profile');
         } catch (error) {
             console.error('Registration Error:', error);
             return res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+
+    // /user/register-with-google
+    async googleRegister(req: Request, res: Response): Promise<void> {
+        // console.log(req.user);
+
+        const { displayName, email } = req.user as {
+            displayName: string;
+            email: string;
+        };
+
+        if (!displayName || !email) {
+            res.redirect('/404');
+        }
+
+        try {
+            // Check the existance of the user
+            const user = await userService.getUserByEmail(email);
+
+            if (!user) {
+                const newUser = {
+                    fullname: displayName,
+                    email: email,
+                    passowrd: null,
+                    dob: null,
+                    role: 'Subcriber',
+                };
+                console.log(newUser);
+
+                await createUser(newUser);
+
+                const userDB = await userService.getUserByEmail(email);
+                console.log(userDB);
+
+                if (!userDB) {
+                    res.redirect('/404');
+                }
+
+                req.session.authUser = userDB;
+
+                // Redirect về URL trước đó nếu có
+                const retUrl = req.session.retUrl || '/';
+                req.session.retUrl = undefined;
+
+                if (
+                    req.session.authUser &&
+                    req.session.authUser.role === UserRole.Editor
+                )
+                    req.session.retUrl = '/editor/articles';
+
+                res.redirect(retUrl);
+            } else {
+                // Lưu thông tin người dùng vào session sau khi đăng ký thành công
+                req.session.authUser = user;
+
+                // Redirect về URL trước đó nếu có
+                const retUrl = req.session.retUrl || '/';
+                req.session.retUrl = undefined;
+                if (req.session.authUser.role === UserRole.Editor)
+                    req.session.retUrl = '/editor/articles';
+                res.redirect(retUrl);
+            }
+        } catch (error) {
+            res.redirect('/404');
         }
     }
 
@@ -114,7 +178,7 @@ export class UserController {
     }
 
     async forgotPasswordPost(req: Request, res: Response) {
-        const { otp, newPassword,  email } = req.body;
+        const { otp, newPassword, email } = req.body;
         const user = await DBConfig('USER').where('Email', email).first();
         if (otp != user.otp) {
             res.render('User/ForgotPasswordView', {
@@ -241,7 +305,7 @@ export class UserController {
             debug: true,
         });
         try {
-            const OTP = user.otp
+            const OTP = user.otp;
             // Gửi email
             const info = await transporter.sendMail({
                 from: '"Reset password" <nguyengiakiet0987654321@gmail.com>',
@@ -383,9 +447,12 @@ export class UserController {
         }
     }
 
-    async addPremium( req: Request, res: Response) {
-        if (!req.session.authUser || req.session.authUser.role !== UserRole.User) {
-            res.redirect("/404");
+    async addPremium(req: Request, res: Response) {
+        if (
+            !req.session.authUser ||
+            req.session.authUser.role !== UserRole.User
+        ) {
+            res.redirect('/404');
             return;
         }
         await addPremium(req.session.authUser.id);

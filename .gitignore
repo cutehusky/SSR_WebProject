@@ -134,3 +134,5 @@ dist
 .prettierrc
 
 Static/uploads
+
+gg_auth.json
