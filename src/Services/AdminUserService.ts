@@ -21,12 +21,14 @@ export const createUser = async (userData: any): Promise<void> => {
         Role: getRole(userData.role as string),
         isAdministator: userData.role === "Admin" ? 1:0
       });
+    
+      console.log(userData.role);
       
-    if(userData.role === "Writer")
+    if(userData.role === UserRole.Writer)
       await db("WRITER").insert({WriterID: id, Alias: userData.fullname})
-    else if (userData.role === "Editor")
+    else if (userData.role === UserRole.Editor)
       await db("EDITOR").insert({EditorID: id})
-    else if(userData.role === "User")
+    else if(userData.role === UserRole.User)
       await db("SUBSCRIBER").insert({SubscriberID: id,
         DateExpired: new Date(Date.now() + datePremium * 1000 * 60), });
 

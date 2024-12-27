@@ -17,8 +17,9 @@ export const getRoleName = (role: number): string => {
     }
 }
 export const getRole = (role: string): number => {
+
     switch (role) {
-        case "User":
+        case "Subcriber":
             return 0;
         case "Writer":
             return 1;
