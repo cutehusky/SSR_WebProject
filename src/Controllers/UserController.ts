@@ -129,12 +129,14 @@ export class UserController {
                     email: email,
                     passowrd: null,
                     dob: null,
-                    role: 0,
+                    role: 'Subcriber',
                 };
+                console.log(newUser);
 
                 await createUser(newUser);
 
                 const userDB = await userService.getUserByEmail(email);
+                console.log(userDB);
 
                 if (!userDB) {
                     res.redirect('/404');
