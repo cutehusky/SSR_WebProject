@@ -50,7 +50,7 @@ export class UserController {
             req.session.authUser = user;
             // Redirect về URL trước đó nếu có
             const retUrl = req.session.retUrl || '/';
-            req.session.retUrl = undefined
+            req.session.retUrl = undefined;
             return res.redirect(retUrl);
         } catch (error) {
             console.error('Login Error:', error);
@@ -86,8 +86,8 @@ export class UserController {
                 fullname,
                 email,
                 password: hashedPassword,
-                dob : dob,
-                role: UserRole.User
+                dob: dob,
+                role: UserRole.User,
             };
 
             // Tạo mới người dùng trong DB
@@ -135,13 +135,21 @@ export class UserController {
                 await createUser(newUser);
 
                 const userDB = await userService.getUserByEmail(email);
+
+                if (!userDB) {
+                    res.redirect('/404');
+                }
+
                 req.session.authUser = userDB;
 
                 // Redirect về URL trước đó nếu có
                 const retUrl = req.session.retUrl || '/';
                 req.session.retUrl = undefined;
 
-                if (req.session.authUser.role === UserRole.Editor)
+                if (
+                    req.session.authUser &&
+                    req.session.authUser.role === UserRole.Editor
+                )
                     req.session.retUrl = '/editor/articles';
 
                 res.redirect(retUrl);
