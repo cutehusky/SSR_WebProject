@@ -56,11 +56,14 @@ export class AdminController {
             req.query.category && !isNaN(Number(req.query.category))
                 ? Number(req.query.category)
                 : -1;
+        let page = parseInt(req.query.page as string) || 1;
+        let subCategoryPage =
+            parseInt(req.query.subCategoryPage as string) || 1;
+        
         const categoryId = category;
-        const CategoryList = res.locals.Categories;
 
         // Phân trang cho Chuyên Mục Cấp 1
-        let page = parseInt(req.query.page as string) || 1;
+        
         let itemPerPage = 5;
         const categoryNum = await countCategories();
         const totalPages = Math.ceil(categoryNum / itemPerPage);
@@ -69,16 +72,16 @@ export class AdminController {
         let page_items = getPagingNumber(page, totalPages);
         page_items = page_items.map(item => ({
             ...item,
-            link: `/admin/categories?page=${item.value}&category=${categoryId}`,
+            link: `/admin/categories?page=${item.value}&category=${categoryId}&subCategoryPage=${subCategoryPage}`,
         }));
 
         const previousLink =
             page > 1
-                ? `/admin/categories?page=${page - 1}&category=${categoryId}`
+                ? `/admin/categories?page=${page - 1}&category=${categoryId}&subCategoryPage=${subCategoryPage}`
                 : '';
         const nextLink =
             page < totalPages
-                ? `/admin/categories?page=${page + 1}&category=${categoryId}`
+                ? `/admin/categories?page=${page + 1}&category=${categoryId}&subCategoryPage=${subCategoryPage}`
                 : '';
 
         // Lấy danh sách Chuyên Mục Cấp 1
@@ -87,10 +90,12 @@ export class AdminController {
             itemPerPage
         );
 
+        const allCategories = await getCategories();
+
         // Phân trang cho Chuyên Mục Cấp 2
-        let subCategoryPage =
-            parseInt(req.query.subCategoryPage as string) || 1;
-        const subCategoryNum = await countSubCategories();
+        
+        const subCategoryNum = await countSubCategories(categoryId);
+        
         const totalSubCategoryPages = Math.ceil(
             subCategoryNum[0].count / itemPerPage
         );
@@ -105,20 +110,20 @@ export class AdminController {
         );
         subCategoryPageItems = subCategoryPageItems.map(item => ({
             ...item,
-            link: `/admin/categories?category=${categoryId}&subCategoryPage=${item.value}`,
+            link: `/admin/categories?category=${categoryId}&subCategoryPage=${item.value}&page=${page}`,
         }));
 
         const subCategoryPreviousLink =
             subCategoryPage > 1
                 ? `/admin/categories?category=${categoryId}&subCategoryPage=${
                       subCategoryPage - 1
-                  }`
+                  }&page=${page}`
                 : '';
         const subCategoryNextLink =
             subCategoryPage < totalSubCategoryPages
                 ? `/admin/categories?category=${categoryId}&subCategoryPage=${
                       subCategoryPage + 1
-                  }`
+                  }&page=${page}`
                 : '';
 
         // Lấy danh sách Chuyên Mục Cấp 2
@@ -140,6 +145,8 @@ export class AdminController {
             subCategoryPageItems,
             subCategoryPreviousLink,
             subCategoryNextLink,
+            currentpage: page,
+            allCategories: allCategories,
         });
     }
 

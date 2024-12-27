@@ -96,7 +96,6 @@ export class UserController {
 
             // Lưu thông tin người dùng vào session sau khi đăng ký thành công
             req.session.authUser = userDb;
-            console.log("sé",req.session.authUser);
 
             // Redirect đến trang cập nhật thông tin người dùng
             res.redirect('/user/profile');
@@ -109,7 +108,6 @@ export class UserController {
     // /user/forgot-password/
     async forgotPassword(req: Request, res: Response) {
         const userId = req.params.id;
-        console.log(req.session.authUser);
         res.render('User/ForgotPasswordView', {
             customCss: ['User.css'],
         });
@@ -160,7 +158,6 @@ export class UserController {
     // /user/forgot-password-email/
     async forgotPasswordEmail(req: Request, res: Response) {
         const userId = req.params.id;
-        console.log(req.session.authUser);
         res.render('User/ForgotPasswordEmailView', {
             customCss: ['User.css'],
         });

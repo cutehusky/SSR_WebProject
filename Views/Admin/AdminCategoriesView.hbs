@@ -68,10 +68,11 @@
         </label>
         <select name="category" class="form-select" style="height: 40px;" id="roleSelect">
             <option value="-1" {{#if (eq ../selectedCategory -1 ) }}selected{{/if }}>Tất Cả</option>
-            {{#each Categories}}
+            {{#each allCategories}}
             <option value="{{id}}" {{#if (eq ../selectedCategory id ) }}selected{{/if }}>{{name}}</option>
             {{/each}}
         </select>
+        <input type="hidden" name="page" value="{{currentpage}}">
         <button type="submit" class="btn actionBtn scale" style="margin-left: 30px;width: 120px;">
             <i class="bi bi-funnel-fill" style="margin-right: 10px;"></i>Lọc
         </button>

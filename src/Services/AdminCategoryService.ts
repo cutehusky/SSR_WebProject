@@ -1,3 +1,4 @@
+import { Category } from './AdminArticleService';
 import { DBConfig } from "../Utils/DBConfig";
 
 export const countCategories = async (): Promise<number> => {
@@ -10,8 +11,11 @@ export const GetCategories = async () => {
     return DBConfig('CATEGORY').select('CategoryID as id', 'Name as name');
 }
 
-export const countSubCategories = async (): Promise<any> => {
-    return DBConfig('SUBCATEGORY').count('SubCategoryID as count');
+export const countSubCategories = async (categoryId: number): Promise<any> => {
+    if(categoryId === -1) {
+        return DBConfig('SUBCATEGORY').count('SubCategoryID as count');
+    }
+    return DBConfig('SUBCATEGORY').where('CategoryID', categoryId).count('SubCategoryID as count');
 }
 
 export const GetCategoriesPage = async (offset: number = 0, limit: number = 10): Promise<any> => {
@@ -47,7 +51,6 @@ export const GetSubCategories = (
                 'CONCAT(CATEGORY.Name, " / ", SUBCATEGORY.Name) as fullname'
             )
         );
-    
     // Nếu categoryID khác -1, lọc theo categoryID
     if (categoryID !== -1) {
         query.where('CATEGORY.CategoryID', '=', categoryID);

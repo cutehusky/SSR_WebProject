@@ -33,7 +33,6 @@ export class MiddlewareController {
 
     async getProfile(req: Request, res: Response, next: NextFunction) {
         if (req.session.authUser) {
-            console.log(req.session.authUser);
             res.locals.profile = req.session.authUser;
             res.locals.isLogin = true;
             res.locals.isUser = req.session.authUser.role === UserRole.User;
@@ -41,7 +40,6 @@ export class MiddlewareController {
             if (req.session.authUser.role === UserRole.User) {
                 let userData = await DBConfig("SUBSCRIBER")
                     .where("SubscriberID", req.session.authUser.id).first();
-                console.log(userData);
                 res.locals.isPremium = new Date(Date.now()) < userData.DateExpired;
                 let sec = (userData.DateExpired.getTime() - Date.now()) / 1000;
                 res.locals.premiumTime = Math.floor(sec / 60) + ":" + Math.round(sec % 60);
