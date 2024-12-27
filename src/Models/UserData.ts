@@ -7,10 +7,18 @@ export interface UserData {
     role: string | UserRole;
 }
 
+// export enum UserRole {
+//     Invalid= -1,
+//     User='Subcriber',
+//     Writer='Writer',
+//     Editor='Editor',
+//     Admin='Admin'
+// }
+
 export enum UserRole {
-    Invalid= -1,
-    User='Subcriber',
-    Writer='Writer',
-    Editor='Editor',
-    Admin='Admin'
+    Invalid = -1,
+    User = 0,
+    Writer = 1,
+    Editor = 2,
+    Admin = 3,
 }

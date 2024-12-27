@@ -8,6 +8,7 @@ import { UserRouter } from './Router/UserRouter';
 import { AdminRouter } from './Router/AdminRouter';
 import { EditorRouter } from './Router/EditorRouter';
 import { ErrorRouter } from './Router/ErrorRouter';
+import { GoogleAuthRouter } from './Router/AuthRouter';
 import Handlebars from 'handlebars';
 import { MiddlewareController } from './Controllers/Middleware';
 
@@ -15,6 +16,9 @@ import sections from 'express-handlebars-sections';
 import { UserRole } from '../src/Models/UserData';
 import { format, parse } from 'date-fns';
 import { DBConfig } from './Utils/DBConfig';
+
+import passport from 'passport';
+import './Utils/Auth';
 
 const app: Express = express();
 const port: number = 3000;
@@ -51,6 +55,9 @@ app.set('view engine', 'hbs');
 app.set('views', './Views');
 
 let middlewareController = new MiddlewareController();
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use((req: Request, res: Response, next: Function) => {
     res.locals.session = req.session; // sử dụng session.authUser ở handlebars
@@ -98,6 +105,8 @@ app.use(
     EditorRouter
 );
 
+app.use('/auth', GoogleAuthRouter);
+
 app.use('/404', ErrorRouter);
 
 // when user type wrong or not exist url it will return 404 page. (Temporary)
@@ -136,12 +145,17 @@ Handlebars.registerHelper('slice', function (array: any, start: any, end: any) {
 app.get('/', (req: Request, res: Response) => {
     if (req.session.authUser && req.session.authUser.role === UserRole.Writer) {
         res.redirect('/writer');
-    } else if (req.session.authUser && req.session.authUser.role === UserRole.Editor){
+    } else if (
+        req.session.authUser &&
+        req.session.authUser.role === UserRole.Editor
+    ) {
         res.redirect('/editor/articles');
-    } else if (req.session.authUser && req.session.authUser.role === UserRole.Admin) {
+    } else if (
+        req.session.authUser &&
+        req.session.authUser.role === UserRole.Admin
+    ) {
         res.redirect('/admin/categories');
-    } else
-        res.redirect('/home/');
+    } else res.redirect('/home/');
 });
 
 const updateArticlePublished = async () => {
@@ -154,9 +168,9 @@ const updateArticlePublished = async () => {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hour12: false
+        hour12: false,
     });
-    
+
     const separator = formatted_datetime.includes(', ') ? ', ' : ' ';
     const [time, date] = formatted_datetime.split(separator);
     const [day, month, year] = date.split('/');
