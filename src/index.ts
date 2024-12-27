@@ -14,6 +14,7 @@ import { MiddlewareController } from './Controllers/Middleware';
 import sections from 'express-handlebars-sections';
 import { UserRole } from '../src/Models/UserData';
 import { format, parse } from 'date-fns';
+import { DBConfig } from './Utils/DBConfig';
 
 const app: Express = express();
 const port: number = 3000;
@@ -142,6 +143,33 @@ app.get('/', (req: Request, res: Response) => {
     } else
         res.redirect('/home/');
 });
+
+const updateArticlePublished = async () => {
+    const curr_datetime = new Date();
+
+    let formatted_datetime = curr_datetime.toLocaleString('vi-VN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+    
+    const separator = formatted_datetime.includes(', ') ? ', ' : ' ';
+    const [time, date] = formatted_datetime.split(separator);
+    const [day, month, year] = date.split('/');
+    const final_datetime = `${year}-${month}-${day} ${time}`;
+    await DBConfig('ARTICLE')
+        .where('Status', 'Approved')
+        .where('DatePublished', '>', final_datetime)
+        .update('Status', 'Published');
+};
+
+updateArticlePublished();
+
+setInterval(updateArticlePublished, 60000);
 
 app.listen(port, function () {
     console.log(`running in http://localhost:${port}`);
