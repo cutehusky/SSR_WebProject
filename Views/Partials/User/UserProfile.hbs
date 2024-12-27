@@ -21,7 +21,13 @@
   </div>
   <div class="mb-3 mt-4">
     <label for="dob" class="form-label fw-bold">Ngày tháng năm sinh</label>
-    <input type="date" class="form-control" id="dob" name="dob" value="{{dateOfBirth}}" />
+    <input
+      type="date"
+      class="form-control"
+      id="dob"
+      name="dob"
+      value="{{formatDate dateOfBirth 'yyyy-MM-dd'}}"
+    />
   </div>
   <div class="button mt-4 d-flex justify-content-end">
     <button type="submit" class="btn btn-primary p-0 rounded fw-bold cancel">Hủy</button>

@@ -8,6 +8,13 @@ import { addPremium, createUser } from '../Services/AdminUserService';
 import nodemailer from 'nodemailer';
 
 export class UserController {
+    //Kiểm tra người dùng đã đăng nhập chưa
+    isLoggedIn(req: Request, res: Response, next: NextFunction) {
+        if (!req.session.authUser) {
+            return res.redirect('/');
+        }
+        next();
+    }
     // /user/login
     async logIn(
         req: Request,
@@ -43,9 +50,7 @@ export class UserController {
             req.session.authUser = user;
             // Redirect về URL trước đó nếu có
             const retUrl = req.session.retUrl || '/';
-            req.session.retUrl = undefined;
-            if (req.session.authUser.role === UserRole.Editor)
-                req.session.retUrl = '/editor/articles';
+            req.session.retUrl = undefined
             return res.redirect(retUrl);
         } catch (error) {
             console.error('Login Error:', error);
@@ -81,8 +86,8 @@ export class UserController {
                 fullname,
                 email,
                 password: hashedPassword,
-                dob: dob,
-                role: 'Subcriber',
+                dob : dob,
+                role: UserRole.User
             };
 
             // Tạo mới người dùng trong DB
@@ -93,8 +98,8 @@ export class UserController {
             req.session.authUser = userDb;
             console.log('sé', req.session.authUser);
 
-            // Redirect đến trang profile hoặc trang chính
-            return res.redirect('/home');
+            // Redirect đến trang cập nhật thông tin người dùng
+            res.redirect('/user/profile');
         } catch (error) {
             console.error('Registration Error:', error);
             return res.status(500).json({ error: 'Internal Server Error' });
@@ -328,7 +333,7 @@ export class UserController {
         }
     }
 
-    // /user/profile/
+    // /user/profile
     getUserProfile(req: Request, res: Response) {
         if (!req.session.authUser) {
             res.redirect('/404');

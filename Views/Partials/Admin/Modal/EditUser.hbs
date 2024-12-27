@@ -12,11 +12,11 @@
                     <div class="form-group">
                         <label for="emailInput">Email</label>
                         <input type="text" value="{{email}}" class="form-control" name="email" id="emailInput"
-                            placeholder="">
+                            placeholder="" readonly> 
                     </div>
                     <div class="form-group">
                         <label for="nameInput">Họ tên</label>
-                        <input type="text" value="{{name}}" class="form-control" name="name" id="nameInput"
+                        <input type="text" value="{{name}}" class="form-control" name="fullname" id="nameInput"
                             placeholder="">
                     </div>
                     <div class="form-group">
@@ -28,36 +28,46 @@
                         <label for="roleSelect_{{id}}" class="form-label" style="padding-top: 8px; width: 200px;">
                             Vai Trò
                         </label>
-                        <select name="role" class="form-select role_selectors" style="height: 40px;" id="roleSelect_{{id}}">
-                            <option value="admin" {{#if (eq role 'admin' ) }}selected{{/if}}>
+                        <select name="role" class="form-select" style="height: 40px;" id="roleSelect_{{id}}">
+                            <option value="Admin" {{#if (eq role 'Admin' ) }}selected{{/if}}>
                                 Admin
                             </option>
-                            <option value="user" {{#if (eq role 'user' ) }}selected{{/if}}>
+                            <option value="User" {{#if (eq role 'User' ) }}selected{{/if}}>
                                 User
                             </option>
-                            <option value="writer" {{#if (eq role 'writer' ) }}selected{{/if}}>
+                            <option value="Writer" {{#if (eq role 'Writer' ) }}selected{{/if}}>
                                 Writer
                             </option>
-                            <option value="editor" {{#if (eq role 'editor' ) }}selected{{/if}}>
+                            <option value="Editor" {{#if (eq role 'Editor' ) }}selected{{/if}}>
                                 Editor
                             </option>
                         </select>
                     </div>
-                    <div class="form-group d-none">
-                        <label for="category_{{id}}" class="form-label" style="padding-top: 8px; width: 200px;">
+                
+                    <div class="form-group" id="categoryGroup_{{id}}">
+                        <div id="hiddenCategory{{id}}">
+                            <label for="hiddenInput{{id}}" class="form-label" style="padding-top: 8px; width: 200px;">
                             Chuyên mục phụ trách
-                        </label>
-                        <input type="text" class="form-control" value="" name="category" readonly
-                            style="display: none;">
-                        </input>
-                        <div class="categoryInputResult">
-                            <div class="categoryInputItem">abc <span class="categoryInputItemRemove" onclick="">×</span></div>
-                        </div>
-                        <select class="form-select" style="height: 40px;" id="category_{{id}}">
-                            {{#each ../Categories}}
-                            {{#each SubCategories}}
-                            <option value="{{id}}"> {{name}}</option>
+                            </label>
+                            {{#each editorCat}}
+                                <input type="hidden" class="form-control editorCat_{{../id}}" id="hiddenInput{{id}}"
+                                value="{{id}}" name="" readonly>
+                                </input>
                             {{/each}}
+
+                        </div>
+
+                        <div class="categoryInputResult" id="categoryResult_{{id}}">
+                            {{#each editorCat}}
+                            <div class="categoryInputItem" data-value="{{id}}">
+                                {{name}}
+                                <span class="categoryInputItemRemove" onclick="removeCategoryItem(this)">×</span>
+                            </div>
+                            {{/each}}
+                        </div>
+                        <select class="form-select" style="height: 40px;" id="categorySelect_{{id}}">
+                            {{#each Categories}}
+                            <option value="{{id}}"> {{name}}</option>
                             {{/each}}
                         </select>
                         <button type="button" id="addBtn_{{id}}" class="btn actionBtn">Add</button>
@@ -65,7 +75,7 @@
                 </div>
                 <div class="modal-footer custom-modal-footer ">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="sumbit" class="btn actionBtn" formaction="/admin/user/edit">Lưu</button>
+                    <button type="submit" class="btn actionBtn" formaction="/admin/user/edit">Lưu</button>
                 </div>
             </form>
         </div>

@@ -138,7 +138,7 @@ export const verifyOTP = async (
     }
 };
 export const updateProfile = async (
-    id: string,
+    id: number,
     email: string,
     name: string,
     dob: string
@@ -152,7 +152,7 @@ export const updateProfile = async (
 
         // Update user trong database
         await db('USER').where('UserID', id).update({
-            Name: name,
+            fullName: name,
             Email: email,
             DOB: dob,
         });

@@ -12,7 +12,7 @@ router.get('/forgot-password-email', userController.forgotPasswordEmail);
 router.post('/forgot-password-email', userController.forgotPasswordEmailPost);
 router.post('/resent-otp', userController.resentOTP);
 
-router.get('/profile', userController.getUserProfile);
+router.get('/profile',userController.isLoggedIn, userController.getUserProfile);
 
 router.post('/login', async (req, res, next) => {
   try {

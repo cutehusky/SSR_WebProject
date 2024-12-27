@@ -1,5 +1,7 @@
 import express from 'express';
 import { AdminController } from '../Controllers/AdminController';
+import {bufferUploader} from "../Utils/MulterConfig";
+
 
 const router = express.Router();
 router.use(express.json());
@@ -19,7 +21,7 @@ router.post('/user/edit',adminController.verifyAdmin, adminController.editUser);
 router.post('/tag/new',adminController.verifyAdmin, adminController.newTag);
 router.post('/category/new',adminController.verifyAdmin, adminController.newCategory);
 router.post('/subcategory/new',adminController.verifyAdmin, adminController.newSubCategory);
-router.post('/user/new',adminController.verifyAdmin, adminController.newUser);
+router.post('/user/new',adminController.verifyAdmin,bufferUploader.any() , adminController.newUser);
 
 router.post('/tag/delete',adminController.verifyAdmin, adminController.deleteTag);
 router.post('/category/delete',adminController.verifyAdmin, adminController.deleteCategory);

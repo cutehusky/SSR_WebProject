@@ -1,9 +1,10 @@
 import { DBConfig } from './DBConfig';
+import { getRole } from "./getRole";
 
 export const getUsers = async (
     role: string,
-    offset: number = 0,
-    limit: number = 0
+    offset: number,
+    limit: number
 ): Promise<
     {
         id: number;
@@ -11,7 +12,7 @@ export const getUsers = async (
         email: string;
         dateOfBirth: string;
         role: string;
-    }[]
+         categories: any}[]
 > => {
     try {
         const query = DBConfig('user').select(
@@ -19,12 +20,11 @@ export const getUsers = async (
             'FullName as name',
             'Email as email',
             DBConfig.raw("DATE_FORMAT(Dob, '%d/%m/%Y') as dateOfBirth"),
-            'Role as role'
+            DBConfig.raw("CASE Role WHEN 0 THEN 'User' WHEN 1 THEN 'Writer' WHEN 2 THEN 'Editor' WHEN 3 THEN 'Admin' ELSE 'Invalid' END as role")
+            
         );
-        //in ra mảng query
-
-        if (role !== 'all') {
-            query.where('Role', role);
+        if (role !== "all") {
+            query.where("Role", getRole(role));
         }
 
         const result = await query.offset(offset).limit(limit); // Thực thi truy vấn
@@ -38,13 +38,7 @@ export const getUsers = async (
 
 export const countUsers = async (role: string): Promise<number> => {
     try {
-        const query = DBConfig('user').select(
-            'UserID as id',
-            'FullName as name',
-            'Email as email',
-            DBConfig.raw("DATE_FORMAT(Dob, '%d/%m/%Y') as dateOfBirth"),
-            'Role as role'
-        );
+        const query = DBConfig('user');
 
         if (role !== 'all') {
             query.where('Role', role);
@@ -52,7 +46,7 @@ export const countUsers = async (role: string): Promise<number> => {
 
         const result = await query.count('* as count').first(); // Thực thi truy vấn
         console.log(result);
-        return (result?.count as number) || 0; // Trả về dữ liệu sau khi thực thi
+        return parseInt(result?.count as string, 10) || 0; // Trả về dữ liệu sau khi thực thi
     } catch (error) {
         console.error(error);
         throw error; // Ném lỗi để xử lý ở nơi gọi hàm

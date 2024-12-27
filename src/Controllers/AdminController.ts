@@ -9,6 +9,7 @@ import {
 import { getCategories } from '../Utils/getCategories';
 import { countUsers, getUsers } from '../Utils/getUsers';
 import { DBConfig } from '../Utils/DBConfig';
+import { getEditorCategories } from "../Utils/getEditorCategories";
 
 import {
     deleteArticle,
@@ -32,16 +33,11 @@ import {
 import { get } from 'jquery';
 import { clamp, getPagingNumber } from '../Utils/MathUtils';
 import { getWriterNameById } from '../Services/UserPasswordService';
+import bcrypt from "bcryptjs";
 
 const itemPerPage = 5;
 
-let tagData = [
-    { name: 'test 1', id: 1 },
-    { name: 'test 2', id: 2 },
-    { name: 'test 3', id: 3 },
-    { name: 'test 4', id: 4 },
-    { name: 'test 5', id: 5 },
-];
+
 
 export class AdminController {
     verifyAdmin(req: Request, res: Response, next: NextFunction) {
@@ -150,6 +146,7 @@ export class AdminController {
     // /admin/tags
     async getTags(req: Request, res: Response) {
         const tagData = await getTags();
+    
 
         // Cấu hình phân trang
         let page = parseInt(req.query.page as string) || 1;
@@ -254,8 +251,18 @@ export class AdminController {
             (page - 1) * itemPerPage,
             itemPerPage
         );
-        console.log('Data: ', data);
-
+        
+    // lấy các category của những editor quản lý
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].role === "Editor") {
+        data[i].categories = await getEditorCategories(data[i].id);
+        console.log(JSON.stringify(data[i].categories, null, 2));
+      } else
+      {
+        data[i].categories = [];
+      }
+    }
+    console.log('Data: ', data);
         res.render('Admin/AdminUsersView', {
             selectedRole: role,
             customJs: ['AdminUsersDataTable.js', 'AdminEditUsers.js'],
@@ -264,7 +271,8 @@ export class AdminController {
             page_items,
             previousLink,
             nextLink,
-        });
+          Categories: res.locals.Categories,
+    });
     }
 
     // /admin/tag/edit
@@ -316,8 +324,18 @@ export class AdminController {
     async editUser(req: Request, res: Response) {
         try {
             const userData: UserData = req.body;
-            console.log('Request body:', req.body);
-            // Validation cơ bản
+            let category_add: number[] = req.body.category_add;
+      let category_remove: number[] = req.body.category_remove;
+      console.log('Request body:', req.body); 
+      
+      // Đảm bảo `category_add` và `category_remove` luôn là mảng
+    if (!Array.isArray(category_add)) {
+      category_add = category_add ? [Number(category_add)] : [];
+    }
+    if (!Array.isArray(category_remove)) {
+      category_remove = category_remove ? [Number(category_remove)] : [];
+    }
+      // Validation cơ bản
             if (userData.id == null || isNaN(userData.id)) {
                 res.status(400).json({
                     error: 'ID is required and must be a valid number.',
@@ -326,7 +344,7 @@ export class AdminController {
             }
 
             // Gọi Service để tạo user
-            await updateUser(userData);
+            await updateUser(userData, category_add, category_remove);
             res.redirect('/admin/users');
         } catch (error) {
             // Bắt lỗi nếu có
@@ -392,11 +410,12 @@ export class AdminController {
     //     "dob": "1990-01-01",
     //     "role": 0
     // }
-    async newUser(req: Request, res: Response) {
+  async newUser(req: Request, res: Response) {
         try {
             const userData: UserData = req.body;
             console.log('Request body:', req.body);
             // Gọi Service để tạo user
+      userData.password = await bcrypt.hash(userData.password, 10);
             await createUser(userData);
 
             res.redirect('/admin/users');
