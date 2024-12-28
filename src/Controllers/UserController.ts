@@ -206,7 +206,11 @@ export class UserController {
             const hashedPassword = await bcrypt.hash(newPassword, 10);
             await DBConfig('USER')
                 .where('Email', email)
-                .update({ Password: hashedPassword });
+                .update({ 
+                    Password: hashedPassword,
+                    otp: null,
+                    otpExpiration: null 
+                });
             res.render('User/ForgotPasswordView', {
                 customCss: ['User.css'],
                 message: 'Mật khẩu đã được thay đổi thành công!',
