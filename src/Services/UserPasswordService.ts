@@ -53,15 +53,15 @@ export const getUserByEmail = async (
 
     if (!user)
         return null;
-    let role = await GetRoleOfUserById(user.UserID);
+    let role = await GetRoleOfUserById(user.id);
     if (role === UserRole.Writer) {
-        let writer = await db("writer").where({WriterID: user.UserID}).first();
+        let writer = await db("writer").where({WriterID: user.id}).first();
         return {
-            id: user.UserID,
-            fullname: user.FullName,
-            email: user.Email,
-            password: user.Password,
-            dob: user.DOB,
+            id: user.id,
+            fullname: user.fullName,
+            email: user.email,
+            password: user.password,
+            dob: user.dateOfBirth,
             role: role,
             penName: writer.Alias
         };
