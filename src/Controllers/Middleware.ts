@@ -10,16 +10,16 @@ export class MiddlewareController {
         next();
     }
     async getCategory(req: Request, res: Response, next: NextFunction) {
-        let categories = await DBConfig("CATEGORY").select("CategoryID as id", "Name as name");
+        let categories = await DBConfig("category").select("CategoryID as id", "Name as name");
 
         for (let i = 0; i < categories.length; i++) {
-            categories[i].SubCategories = await DBConfig("CATEGORY")
-                .where("CATEGORY.CategoryID", "=", categories[i].id)
-                .join("SUBCATEGORY", "CATEGORY.CategoryID", "=", "SUBCATEGORY.CategoryID")
+            categories[i].SubCategories = await DBConfig("category")
+                .where("category.CategoryID", "=", categories[i].id)
+                .join("subcategory", "category.CategoryID", "=", "subcategory.CategoryID")
                 .select("SubCategoryID as id",
-                    "CATEGORY.CategoryID as parentId",
-                    "SUBCATEGORY.Name as name", "CATEGORY.Name as parentName",
-                    DBConfig.raw("CONCAT(CATEGORY.Name, \" / \", SUBCATEGORY.Name) as fullname"));
+                    "category.CategoryID as parentId",
+                    "subcategory.Name as name", "category.Name as parentName",
+                    DBConfig.raw("CONCAT(category.Name, ' / ', subcategory.Name) as fullname"));
         }
         res.locals.Categories = categories;
         res.locals.Top10Categories = categories.slice(0, 10);
@@ -27,7 +27,7 @@ export class MiddlewareController {
     }
 
     async getTags(req: Request, res: Response, next: NextFunction) {
-        res.locals.tags = await DBConfig("TAG").select("TagID as id", "Name as name");
+        res.locals.tags = await DBConfig("tag").select("TagID as id", "Name as name");
         next();
     }
 
@@ -38,7 +38,7 @@ export class MiddlewareController {
             res.locals.isUser = req.session.authUser.role === UserRole.User;
             res.locals.isWriter = req.session.authUser.role === UserRole.Writer;
             if (req.session.authUser.role === UserRole.User) {
-                let userData = await DBConfig("SUBSCRIBER")
+                let userData = await DBConfig("subscriber")
                     .where("SubscriberID", req.session.authUser.id).first();
                 res.locals.isPremium = new Date(Date.now()) < userData.DateExpired;
                 let sec = (userData.DateExpired.getTime() - Date.now()) / 1000;

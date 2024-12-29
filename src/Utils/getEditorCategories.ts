@@ -1,14 +1,14 @@
 import { DBConfig } from "./DBConfig";
 
 export const getEditorCategories = async (editorID: number): Promise<any[]> => {
-    return await DBConfig('EDITOR_CATEGORY as ec')
-        .join('CATEGORY as c', 'ec.CategoryID', 'c.CategoryID')
+    return await DBConfig('editor_category as ec')
+        .join('category as c', 'ec.CategoryID', 'c.CategoryID')
         .where('ec.EditorID', editorID)
         .select('c.CategoryID as id', 'c.Name as name');
 };
 
 export const getCategorySubcategories = (categoryID: number): Promise<any[]> => {
-    return DBConfig('SUBCATEGORY')
+    return DBConfig('subcategory')
         .where('CategoryID', categoryID)
         .select('SubcategoryID as id', 'Name as name');
 }

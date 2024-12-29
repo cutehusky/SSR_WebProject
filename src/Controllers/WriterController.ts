@@ -154,7 +154,7 @@ export class WriterController {
   }
 
   countArticleInState = async (writerId: number, states: string[]) =>  {
-     let res = await DBConfig("ARTICLE")
+     let res = await DBConfig("article")
         .where({'WriterID': writerId})
         .whereIn("Status", states).count("* as count").first();
      return res?.count || 0;
@@ -205,7 +205,7 @@ export class WriterController {
       return;
     }
 
-    const [id] = await DBConfig("ARTICLE").insert({
+    const [id] = await DBConfig("article").insert({
       Title: req.body.title,
       DatePosted: new Date(Date.now()),
       Content: req.body.content,
@@ -215,7 +215,7 @@ export class WriterController {
       WriterID: req.session.authUser?.role === UserRole.Admin ? null : writerId,
     });
 
-    await DBConfig("ARTICLE_SUBCATEGORY").insert({
+    await DBConfig("article_subcategory").insert({
       ArticleID: id,
       SubCategoryID: req.body.category
     });
@@ -224,7 +224,7 @@ export class WriterController {
     const listOfTags = tags ? tags.split(","): [];
     if (listOfTags.length > 0) {
       const insertData = listOfTags.map((tagId: any) => ({ArticleID: id, TagID: tagId}));
-      await DBConfig('ARTICLE_TAG').insert(insertData);
+      await DBConfig('article_tag').insert(insertData);
     }
 
     const imageData = req.body.backgroundImageArticle;
@@ -283,7 +283,7 @@ export class WriterController {
     }
 
     if (data.WriterID !== writerId && req.session.authUser?.role === UserRole.Admin) {
-      await DBConfig("ARTICLE").where({'ArticleID': id}).update({
+      await DBConfig("article").where({'ArticleID': id}).update({
         Title: req.body.title,
         DatePosted: new Date(Date.now()),
         Content: req.body.content,
@@ -292,7 +292,7 @@ export class WriterController {
         IsPremium: req.body.isPremium === 'on' ? 1: 0,
       });
     }else {
-      await DBConfig("ARTICLE").where({'ArticleID': id}).update({
+      await DBConfig("article").where({'ArticleID': id}).update({
         Title: req.body.title,
         DatePosted: new Date(Date.now()),
         Content: req.body.content,
@@ -303,23 +303,23 @@ export class WriterController {
       });
     }
 
-    const affectedRows  = await DBConfig("ARTICLE_SUBCATEGORY").where({
+    const affectedRows  = await DBConfig("article_subcategory").where({
       ArticleID: id
     }).update({
       SubCategoryID: req.body.category
     });
     if (affectedRows === 0)
-      await DBConfig("ARTICLE_SUBCATEGORY").insert({
+      await DBConfig("article_subcategory").insert({
         SubCategoryID: req.body.category,
         ArticleID: id
       });
 
     const tags = req.body.tags;
     const listOfTags = tags ? tags.split(","): [];
-    await DBConfig('ARTICLE_TAG').where({'ArticleID': id}).del();
+    await DBConfig('article_tag').where({'ArticleID': id}).del();
     if (listOfTags.length > 0) {
       const insertData = listOfTags.map((tagId: any) => ({ArticleID: id, TagID: tagId}));
-      await DBConfig('ARTICLE_TAG').insert(insertData);
+      await DBConfig('article_tag').insert(insertData);
     }
 
     const imageData = req.body.backgroundImageArticle;

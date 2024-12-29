@@ -51,7 +51,7 @@ export class ArticleController {
             req.session.authUser.role !== UserRole.User
         )
             return false;
-        let userData = await DBConfig('SUBSCRIBER')
+        let userData = await DBConfig('subscriber')
             .where('SubscriberID', req.session.authUser.id)
             .first();
         return new Date(Date.now()) < userData.DateExpired;
@@ -200,8 +200,8 @@ export class ArticleController {
         const tagsArray = tags.split(',') as string[];
 
         try {
-            const validTag = await DBConfig('TAG').whereIn(
-                'TAG.Name',
+            const validTag = await DBConfig('tag').whereIn(
+                'tag.Name',
                 tagsArray
             );
 

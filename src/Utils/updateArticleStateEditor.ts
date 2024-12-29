@@ -11,7 +11,7 @@ export const updateArticleStateEditor = async (
 ): Promise<any> => {
     return DBConfig.transaction(async (trx) => {
         if (status === 'Approved') {
-            await trx('ARTICLE')
+            await trx('article')
                 .where('ArticleID', articleID)
                 .update({
                     Status: 'Approved',
@@ -21,18 +21,18 @@ export const updateArticleStateEditor = async (
                 });
 
             // Delete existing article subcategories
-            await trx('ARTICLE_SUBCATEGORY')
+            await trx('article_subcategory')
                 .where('ArticleID', articleID)
                 .del();
             
             // Insert new article subcategory
-            await trx('ARTICLE_SUBCATEGORY').insert({
+            await trx('article_subcategory').insert({
                 ArticleID: articleID,
                 SubcategoryID: subcategoryID,
             });
 
             // Delete existing tags
-            await trx('ARTICLE_TAG')
+            await trx('article_tag')
                 .where('ArticleID', articleID)
                 .del();
 
@@ -42,10 +42,10 @@ export const updateArticleStateEditor = async (
                     ArticleID: articleID,
                     TagID: tag,
                 }));
-                await trx('ARTICLE_TAG').insert(tagInserts);
+                await trx('article_tag').insert(tagInserts);
             }
         } else {
-            await trx('ARTICLE')
+            await trx('article')
                 .where('ArticleID', articleID)
                 .update({
                     Status: status,

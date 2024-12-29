@@ -2,7 +2,7 @@
     <div class="col col-lg-12 col-md-12 col-sm-12 mb-4">
         <h1 class="writer-publish-news-title">Đăng bài viết mới</h1>
     </div>
-    <form action="" method="POST" class="writer-publish-news-container col col-lg-12 col-md-12 col-sm-12"
+    <form action="/writer/new" method="POST" class="writer-publish-news-container col col-lg-12 col-md-12 col-sm-12"
         enctype="multipart/form-data">
         <div class="mb-4">
             <label for="title" class="form-label input-title">Nhập tiêu đề</label>
@@ -53,7 +53,7 @@
         <div class="mb-4">
             <label for="editor-tags" class="form-label fw-bold">Tags</label>
             <div class="d-flex mt-2">
-                <input type="text" class="d-none" id="tags-submission" name="tags" required />
+                <input type="text" class="d-none" id="tags-submission" name="tags"/>
                 <select id="editor-tags" class="form-control">
                     {{#each tags}}
                     <option value="{{id}}">{{name}}</option>
@@ -83,7 +83,7 @@
             </label>
         </div>
         <div class="writer-publish-news-footer d-flex justify-content-end w-100">
-            <button type="submit" formaction="#" class="submit-button">
+            <button type="submit" class="submit-button">
                 Đăng
             </button>
         </div>

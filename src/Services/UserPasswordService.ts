@@ -5,32 +5,32 @@ import bcrypt from 'bcryptjs';
 import { UserRole, UserData } from '../Models/UserData';
 
 export const getUsernameById = async (id: number): Promise<string> => {
-    const user = await db('USER').where('UserID', id).first();
+    const user = await db('user').where('UserID', id).first();
     if (!user) return '';
     return user.FullName;
 };
 
 export const getWriterNameById = async (id: string): Promise<string> => {
-    const user = await db('WRITER').where('WriterID', id).first();
+    const user = await db('writer').where('WriterID', id).first();
     if (!user) return '';
     return user.Alias;
 };
 
 export const GetRoleOfUserById = async (userId: string) => {
-    const user = await db('USER').where('UserID', userId).first();
+    const user = await db('user').where('UserID', userId).first();
     if (!user) return UserRole.Invalid;
     if (user.isAdministator) return UserRole.Admin;
-    const isWriter = await db('WRITER')
+    const isWriter = await db('writer')
         .where('WriterID', userId)
         .count('* as num')
         .first();
     if (isWriter && isWriter.num === 1) return UserRole.Writer;
-    const isEditor = await db('EDITOR')
+    const isEditor = await db('editor')
         .where('EditorID', userId)
         .count('* as num')
         .first();
     if (isEditor && isEditor.num === 1) return UserRole.Editor;
-    const isUser = await db('SUBSCRIBER')
+    const isUser = await db('subscriber')
         .where('SubscriberID', userId)
         .count('* as num')
         .first();
@@ -41,16 +41,23 @@ export const GetRoleOfUserById = async (userId: string) => {
 export const getUserByEmail = async (
     email: string
 ): Promise<UserData | null> => {
-    const user = await db('USER').where('Email', email).first();
+    const user = await db('user').where('Email', email).select(
+        'UserID as id',
+        'FullName as fullname',
+        'Email as email',
+        'Password   as password',
+        DBConfig.raw("DATE_FORMAT(Dob, '%d/%m/%Y') as dateOfBirth"),
+        DBConfig.raw("CASE Role WHEN 0 THEN 'User' WHEN 1 THEN 'Writer' WHEN 2 THEN 'Editor' WHEN 3 THEN 'Admin' ELSE 'Invalid' END as role")
+    ).first();
 
     if (!user) return null;
     return {
-        id: user.UserID,
-        fullname: user.FullName,
-        email: user.Email,
-        password: user.Password,
-        dob: user.DOB,
-        role: await GetRoleOfUserById(user.UserID),
+        id: user.id,
+        fullname: user.fullname,
+        email: user.email,
+        password: user.password,
+        dob: user.dateOfBirth,
+        role: await GetRoleOfUserById(user.id),
     };
 };
 
@@ -60,14 +67,14 @@ export const updatePassword = async (
 ): Promise<void> => {
     try {
         // Kiểm tra xem user có tồn tại không
-        const user = await db('USER').where('Email', email).first();
+        const user = await db('user').where('Email', email).first();
         if (!user) {
             throw new Error(`User with email ${email} does not exist.`);
         }
         const hashPassword = await bcrypt.hash(newPassword, 10);
 
         // Update password trong database
-        await db('USER').where('Email', email).update({
+        await db('user').where('Email', email).update({
             Password: hashPassword,
             otp: null, // Clear OTP and expiration time after password reset
             otpExpiration: null,
@@ -88,7 +95,7 @@ export const sendOTP = async (email: string): Promise<string> => {
         // const hashedOtp = await bcrypt.hash(otp, 10);
 
         // Store hashed OTP in the database with an expiration time
-        await db('USER')
+        await db('user')
             .where('Email', email)
             .update({
                 otp: otp,
@@ -120,7 +127,7 @@ export const verifyOTP = async (
     otp: string
 ): Promise<boolean> => {
     try {
-        const user = await db('USER').where('Email', email).first();
+        const user = await db('user').where('Email', email).first();
         if (!user) {
             throw new Error('User not found.');
         }
@@ -145,13 +152,13 @@ export const updateProfile = async (
 ): Promise<void> => {
     try {
         // Kiểm tra xem user có tồn tại không
-        const userExists = await db('USER').where('UserID', id).first();
+        const userExists = await db('user').where('UserID', id).first();
         if (!userExists) {
             throw new Error(`User with ID ${id} does not exist.`);
         }
 
         // Update user trong database
-        await db('USER').where('UserID', id).update({
+        await db('user').where('UserID', id).update({
             fullName: name,
             Email: email,
             DOB: dob,

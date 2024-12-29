@@ -5,7 +5,7 @@ import {getUsernameById, getWriterNameById} from './UserPasswordService';
 export const deleteArticle = async (articleID: number): Promise<void> => {
     try {
         // Kiểm tra xem bài viết có tồn tại không
-        const articleExists = await db('Article')
+        const articleExists = await db('article')
             .where('ArticleID', articleID)
             .first();
         if (!articleExists) {
@@ -15,7 +15,7 @@ export const deleteArticle = async (articleID: number): Promise<void> => {
         }
 
         // Xóa bài viết khỏi database
-        await db('ARTICLE').where('ArticleID', articleID).delete();
+        await db('article').where('ArticleID', articleID).delete();
         console.log('Deleted article with ID ' + articleID);
     } catch (error) {
         const errorMessage =
@@ -31,18 +31,18 @@ export const getFullCategoryNameByCatID = async (
     categoryName: string;
     subcategoryInfo: { subcategoryId: string; subcategoryName: string }[];
 }> => {
-    const response = await db('CATEGORY')
-        .where('CATEGORY.CategoryID', '=', categoryId)
+    const response = await db('category')
+        .where('category.CategoryID', '=', categoryId)
         .join(
-            'SUBCATEGORY',
-            'SUBCATEGORY.CategoryID',
+            'subcategory',
+            'subcategory.CategoryID',
             '=',
-            'CATEGORY.CategoryID'
+            'category.CategoryID'
         )
         .select(
-            'CATEGORY.Name as categoryName',
-            'SUBCATEGORY.Name as subcategoryName',
-            'SUBCATEGORY.SubCategoryID as subcategoryId'
+            'category.Name as categoryName',
+            'subcategory.Name as subcategoryName',
+            'subcategory.SubCategoryID as subcategoryId'
         );
     const categoryName = response[0].categoryName; // because all categoryName are the same
     const subcategoryInfo = response.map(item => ({
@@ -61,73 +61,73 @@ export const getArticlesByCategoryID = async (
 ): Promise<any[]> => {
     let response = [];
     if (isPremium) {
-        response = await db('CATEGORY')
-            .where('CATEGORY.CategoryID', '=', categoryId)
+        response = await db('category')
+            .where('category.CategoryID', '=', categoryId)
             .join(
-                'SUBCATEGORY',
-                'SUBCATEGORY.CategoryID',
+                'subcategory',
+                'subcategory.CategoryID',
                 '=',
-                'CATEGORY.CategoryID'
+                'category.CategoryID'
             )
             .join(
-                'ARTICLE_SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.SubCategoryID',
+                'article_subcategory',
+                'article_subcategory.SubCategoryID',
                 '=',
-                'SUBCATEGORY.SubCategoryID'
+                'subcategory.SubCategoryID'
             )
             .join(
-                'ARTICLE',
-                'ARTICLE.ArticleID',
-                '=',
-                'ARTICLE_SUBCATEGORY.ArticleID'
+                'article',
+                'article.ArticleID',    
+                '=',    
+                'article_subcategory.ArticleID'
             )
-            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
-            .orderBy('ARTICLE.IsPremium', 'desc')
-            .orderBy('ARTICLE.DatePosted', 'DESC')
+            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .orderBy('article.IsPremium', 'desc')
+            .orderBy('article.DatePosted', 'DESC')
             .select(
-                'ARTICLE.ArticleID as ArticleID',
-                'ARTICLE.Title as Title',
-                'ARTICLE.Abstract as Abstract',
-                'ARTICLE.DatePosted as DatePosted',
-                'ARTICLE_URL.URL as URL',
-                'SUBCATEGORY.Name as subcategory',
-                'SUBCATEGORY.SubcategoryID as subcategoryId',
-                'CATEGORY.Name as category'
+                'article.ArticleID as ArticleID',
+                'article.Title as Title',
+                'article.Abstract as Abstract',
+                'article.DatePosted as DatePosted',
+                'article_url.url as url',
+                'subcategory.Name as subcategory',
+                'subcategory.SubcategoryID as subcategoryId',
+                'category.Name as category'
             )
             .limit(limit)
             .offset(offset);
     } else {
-        response = await db('CATEGORY')
-            .where('CATEGORY.CategoryID', '=', categoryId)
+        response = await db('category')
+            .where('category.CategoryID', '=', categoryId)
             .join(
-                'SUBCATEGORY',
-                'SUBCATEGORY.CategoryID',
+                'subcategory',
+                'subcategory.CategoryID',
                 '=',
-                'CATEGORY.CategoryID'
+                'category.CategoryID'
             )
             .join(
-                'ARTICLE_SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.SubCategoryID',
+                'article_subcategory',
+                'article_subcategory.SubCategoryID',
                 '=',
-                'SUBCATEGORY.SubCategoryID'
+                'subcategory.SubCategoryID'
             )
             .join(
-                'ARTICLE',
-                'ARTICLE.ArticleID',
+                'article',
+                'article.ArticleID',
                 '=',
-                'ARTICLE_SUBCATEGORY.ArticleID'
+                'article_subcategory.ArticleID'
             )
-            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
-            .orderBy('ARTICLE.DatePosted', 'DESC')
+            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .orderBy('article.DatePosted', 'DESC')
             .select(
-                'ARTICLE.ArticleID as ArticleID',
-                'ARTICLE.Title as Title',
-                'ARTICLE.Abstract as Abstract',
-                'ARTICLE.DatePosted as DatePosted',
-                'ARTICLE_URL.URL as URL',
-                'SUBCATEGORY.Name as subcategory',
-                'SUBCATEGORY.SubcategoryID as subcategoryId',
-                'CATEGORY.Name as category'
+                'article.ArticleID as ArticleID',
+                'article.Title as Title',
+                'article.Abstract as Abstract',
+                'article.DatePosted as DatePosted',
+                'article_url.url as url',
+                'subcategory.Name as subcategory',
+                'subcategory.SubcategoryID as subcategoryId',
+                'category.Name as category'
             )
             .limit(limit)
             .offset(offset);
@@ -140,10 +140,10 @@ export const getArticlesByCategoryID = async (
                 .toISOString()
                 .slice(0, 19)
                 .replace('T', ' ');
-            const tags = await db('ARTICLE_TAG')
-                .where('ARTICLE_TAG.ArticleID', '=', item.ArticleID)
-                .join('TAG', 'TAG.TagID', '=', 'ARTICLE_TAG.TagID')
-                .select('TAG.Name as name');
+            const tags = await db('article_tag')
+                .where('article_tag.ArticleID', '=', item.ArticleID)
+                .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
+                .select('tag.Name as name');
 
             return {
                 ...item,
@@ -162,25 +162,25 @@ export const getArticlesByCategoryID = async (
 export const countArticlesByCatID = async (
     categoryId: string
 ): Promise<number> => {
-    let total = await db('CATEGORY')
-        .where('CATEGORY.CategoryID', '=', categoryId)
+    let total = await db('category')
+        .where('category.CategoryID', '=', categoryId)
         .join(
-            'SUBCATEGORY',
-            'SUBCATEGORY.CategoryID',
+            'subcategory',
+            'subcategory.CategoryID',
             '=',
-            'CATEGORY.CategoryID'
+            'category.CategoryID'
         )
         .join(
-            'ARTICLE_SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.SubCategoryID',
+            'article_subcategory',
+            'article_subcategory.SubCategoryID',
             '=',
-            'SUBCATEGORY.SubCategoryID'
+            'subcategory.SubCategoryID'
         )
         .join(
-            'ARTICLE',
-            'ARTICLE.ArticleID',
+            'article',
+            'article.ArticleID',
             '=',
-            'ARTICLE_SUBCATEGORY.ArticleID'
+            'article_subcategory.ArticleID'
         )
         .groupBy('CATEGORy.CategoryID')
         .count('* as total')
@@ -192,15 +192,15 @@ export const countArticlesByCatID = async (
 export const countArticlesBySubCatID = async (
     subcategoryId: string
 ): Promise<number> => {
-    let total = await db('ARTICLE_SUBCATEGORY')
-        .where('ARTICLE_SUBCATEGORY.SubCategoryID', '=', subcategoryId)
+    let total = await db('article_subcategory')
+        .where('article_subcategory.SubCategoryID', '=', subcategoryId)
         .join(
-            'ARTICLE',
-            'ARTICLE.ArticleID',
+            'article',
+            'article.ArticleID',
             '=',
-            'ARTICLE_SUBCATEGORY.ArticleID'
+            'article_subcategory.ArticleID'
         )
-        .groupBy('ARTICLE_SUBCATEGORY.SubCategoryID')
+        .groupBy('article_subcategory.SubCategoryID')
         .count('* as total')
         .first();
 
@@ -218,20 +218,20 @@ export const getSubcategoryInfoBySubCatID = async (
         name: string;
     }[];
 }> => {
-    let { categoryID, categoryName } = await db('SUBCATEGORY')
-        .where('SUBCATEGORY.SubCategoryID', '=', subcategoryId)
-        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+    let { categoryID, categoryName } = await db('subcategory')
+        .where('subcategory.SubCategoryID', '=', subcategoryId)
+        .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
         .select(
-            'CATEGORY.CategoryID as categoryID',
-            'CATEGORY.Name as categoryName'
+            'category.CategoryID as categoryID',
+            'category.Name as categoryName'
         )
         .first();
 
-    const response = await db('SUBCATEGORY')
-        .where('SUBCATEGORY.CategoryID', '=', categoryID)
+    const response = await db('subcategory')
+        .where('subcategory.CategoryID', '=', categoryID)
         .select(
-            'SUBCATEGORY.Name as name',
-            'SUBCATEGORY.SubCategoryID as subID'
+            'subcategory.Name as name',
+            'subcategory.SubCategoryID as subID'
         );
 
     const result = {
@@ -255,63 +255,63 @@ export const getArticlesBySubCatID = async (
 ): Promise<any[]> => {
     let response = [];
     if (isPremium) {
-        response = await db('SUBCATEGORY')
-            .where('SUBCATEGORY.SubCategoryID', '=', subcategoryId)
-            .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+        response = await db('subcategory')
+            .where('subcategory.SubCategoryID', '=', subcategoryId)
+            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
             .join(
-                'ARTICLE_SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.SubCategoryID',
+                'article_subcategory',
+                'article_subcategory.SubCategoryID',
                 '=',
-                'SUBCATEGORY.SubcategoryID'
+                'subcategory.SubcategoryID'
             )
             .join(
-                'ARTICLE',
-                'ARTICLE.ArticleID',
+                'article',
+                'article.ArticleID',
                 '=',
-                'ARTICLE_SUBCATEGORY.ArticleID'
+                'article_subcategory.ArticleID'
             )
-            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', 'ARTICLE.ArticleID')
-            .orderBy('ARTICLE.IsPremium', 'desc')
-            .orderBy('ARTICLE.DatePosted', 'DESC')
+            .join('article_url', 'article_url.ArticleID', 'article.ArticleID')
+            .orderBy('article.IsPremium', 'desc')
+            .orderBy('article.DatePosted', 'DESC')
             .select(
-                'ARTICLE.ArticleID as ArticleID',
-                'ARTICLE.Title as Title',
-                'ARTICLE.Abstract as Abstract',
-                'ARTICLE.DatePosted as DatePosted',
-                'ARTICLE_URL.URL as URL',
-                'SUBCATEGORY.Name as subcategory',
-                'SUBCATEGORY.SubcategoryID as subcategoryId',
-                'CATEGORY.Name as category'
+                'article.ArticleID as ArticleID',
+                'article.Title as Title',
+                'article.Abstract as Abstract',
+                'article.DatePosted as DatePosted',
+                'article_url.url as url',
+                'subcategory.Name as subcategory',
+                'subcategory.SubcategoryID as subcategoryId',
+                'category.Name as category'
             )
             .limit(limit)
             .offset(offset);
     } else {
-        response = await db('SUBCATEGORY')
-            .where('SUBCATEGORY.SubCategoryID', '=', subcategoryId)
-            .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+        response = await db('subcategory')
+            .where('subcategory.SubCategoryID', '=', subcategoryId)
+            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
             .join(
-                'ARTICLE_SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.SubCategoryID',
+                'article_subcategory',
+                'article_subcategory.SubCategoryID',
                 '=',
-                'SUBCATEGORY.SubcategoryID'
+                'subcategory.SubcategoryID'
             )
             .join(
-                'ARTICLE',
-                'ARTICLE.ArticleID',
+                'article',
+                'article.ArticleID',
                 '=',
-                'ARTICLE_SUBCATEGORY.ArticleID'
+                'article_subcategory.ArticleID'
             )
-            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', 'ARTICLE.ArticleID')
-            .orderBy('ARTICLE.DatePosted', 'DESC')
+            .join('article_url', 'article_url.ArticleID', 'article.ArticleID')
+            .orderBy('article.DatePosted', 'DESC')
             .select(
-                'ARTICLE.ArticleID as ArticleID',
-                'ARTICLE.Title as Title',
-                'ARTICLE.Abstract as Abstract',
-                'ARTICLE.DatePosted as DatePosted',
-                'ARTICLE_URL.URL as URL',
-                'SUBCATEGORY.Name as subcategory',
-                'SUBCATEGORY.SubcategoryID as subcategoryId',
-                'CATEGORY.Name as category'
+                'article.ArticleID as ArticleID',
+                'article.Title as Title',
+                'article.Abstract as Abstract',
+                'article.DatePosted as DatePosted',
+                'article_url.url as url',
+                'subcategory.Name as subcategory',
+                'subcategory.SubcategoryID as subcategoryId',
+                'category.Name as category'
             )
             .limit(limit)
             .offset(offset);
@@ -324,10 +324,10 @@ export const getArticlesBySubCatID = async (
                 .toISOString()
                 .slice(0, 19)
                 .replace('T', ' ');
-            const tags = await db('ARTICLE_TAG')
-                .where('ARTICLE_TAG.ArticleID', '=', item.ArticleID)
-                .join('TAG', 'TAG.TagID', '=', 'ARTICLE_TAG.TagID')
-                .select('TAG.Name as name');
+            const tags = await db('article_tag')
+                .where('article_tag.ArticleID', '=', item.ArticleID)
+                .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
+                .select('tag.Name as name');
 
             return {
                 ...item,
@@ -348,49 +348,49 @@ export const findPageByTagID = async (
     limit: number,
     offset: number
 ): Promise<any[]> => {
-    const response = await DBConfig('ARTICLE_TAG')
-        .join('TAG', 'TAG.TagID', '=', 'ARTICLE_TAG.TagID')
-        .join('ARTICLE', 'ARTICLE.ArticleID', '=', 'ARTICLE_TAG.ArticleID')
-        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+    const response = await DBConfig('article_tag')
+        .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
+        .join('article', 'article.ArticleID', '=', 'article_tag.ArticleID')
+        .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
         .join(
-            'ARTICLE_SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.ArticleID',
+            'article_subcategory',
+            'article_subcategory.ArticleID',
             '=',
-            'ARTICLE.ArticleID'
+            'article.ArticleID'
         )
         .join(
-            'SUBCATEGORY',
-            'SUBCATEGORY.SubCategoryID',
+            'subcategory',
+            'subcategory.SubCategoryID',
             '=',
-            'ARTICLE_SUBCATEGORY.SubCategoryID'
+            'article_subcategory.SubCategoryID'
         )
-        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
-        .whereIn('ARTICLE_TAG.TagID', tagIDs)
+        .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+        .whereIn('article_tag.TagID', tagIDs)
         .select(
-            'ARTICLE.ArticleID',
+            'article.ArticleID',
             'Title',
             'DatePosted',
             'Abstract',
             'IsPremium',
             'ViewCount',
-            'CATEGORY.Name as category',
-            'SUBCATEGORY.Name as subcategory',
-            'CATEGORY.CategoryID as categoryId',
-            'SUBCATEGORY.SubCategoryID as subcategoryId',
-            'URL'
+            'category.Name as category',
+            'subcategory.Name as subcategory',
+            'category.CategoryID as categoryId',
+            'subcategory.SubCategoryID as subcategoryId',
+            'url'
         )
         .groupBy(
-            'ARTICLE.ArticleID',
-            'ARTICLE.Title',
-            'ARTICLE.Abstract',
+            'article.ArticleID',
+            'article.Title',
+            'article.Abstract',
             'IsPremium',
             'ViewCount',
-            'ARTICLE.DatePosted',
-            'ARTICLE_URL.URL',
-            'CATEGORY.Name',
-            'SUBCATEGORY.Name',
-            'CATEGORY.CategoryID',
-            'SUBCATEGORY.SubCategoryID'
+            'article.DatePosted',
+            'article_url.url',
+            'category.Name',
+            'subcategory.Name',
+            'category.CategoryID',
+            'subcategory.SubCategoryID'
         )
         .limit(limit)
         .offset(offset);
@@ -403,10 +403,10 @@ export const findPageByTagID = async (
 export const countArticlesByTagID = async (
     tagIDs: string[]
 ): Promise<number> => {
-    let total = await DBConfig('ARTICLE_TAG')
-        .whereIn('ARTICLE_TAG.TagID', tagIDs)
+    let total = await DBConfig('article_tag')
+        .whereIn('article_tag.TagID', tagIDs)
         .count('* as total')
-        .groupBy('ARTICLE_TAG.TagID')
+        .groupBy('article_tag.TagID')
         .first();
 
     return total ? (total as { total: number }).total : 0;
@@ -415,7 +415,7 @@ export const countArticlesByTagID = async (
 export const CountSearchResult = async (
     searchValue: string
 ): Promise<number> => {
-    let count = await DBConfig('ARTICLE')
+    let count = await DBConfig('article')
         .whereRaw(
             'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
             [searchValue]
@@ -434,77 +434,77 @@ export const SearchArticle = async (
     let result = [];
     console.log(isPremium);
     if (isPremium) {
-        result = await DBConfig('ARTICLE')
+        result = await DBConfig('article')
             .whereRaw(
                 'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
                 [searchValue]
             )
             .join(
-                'ARTICLE_SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.ArticleID',
+                'article_subcategory',
+                'article_subcategory.ArticleID',
                 '=',
-                'ARTICLE.ArticleID'
+                'article.ArticleID'
             )
             .join(
-                'SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.SubCategoryID',
+                'subcategory',
+                'article_subcategory.SubCategoryID',
                 '=',
-                'SUBCATEGORY.SubCategoryID'
+                'subcategory.SubCategoryID'
             )
-            .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
-            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
             .where('STT', '=', '0')
-            .orderBy('ARTICLE.IsPremium', 'desc')
+            .orderBy('article.IsPremium', 'desc')
             .orderBy('DatePosted', 'desc')
             .select(
-                'ARTICLE.ArticleID',
+                'article.ArticleID',
                 'Title',
                 'DatePosted',
                 'Abstract',
                 'IsPremium',
                 'ViewCount',
-                'CATEGORY.Name as category',
-                'SUBCATEGORY.Name as subcategory',
-                'CATEGORY.CategoryID as categoryId',
-                'SUBCATEGORY.SubCategoryID as subcategoryId',
-                'URL'
+                'category.Name as category',
+                'subcategory.Name as subcategory',
+                'category.CategoryID as categoryId',
+                'subcategory.SubCategoryID as subcategoryId',
+                'url'
             )
             .offset(offset)
             .limit(limit);
     } else {
-        result = await DBConfig('ARTICLE')
+        result = await DBConfig('article')
             .whereRaw(
                 'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
                 [searchValue]
             )
             .join(
-                'ARTICLE_SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.ArticleID',
+                'article_subcategory',
+                'article_subcategory.ArticleID',
                 '=',
-                'ARTICLE.ArticleID'
+                'article.ArticleID'
             )
             .join(
-                'SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.SubCategoryID',
+                'subcategory',
+                'article_subcategory.SubCategoryID',
                 '=',
-                'SUBCATEGORY.SubCategoryID'
+                'subcategory.SubCategoryID'
             )
-            .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
-            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
             .where('STT', '=', '0')
             .orderBy('DatePosted', 'desc')
             .select(
-                'ARTICLE.ArticleID',
+                'article.ArticleID',
                 'Title',
                 'DatePosted',
                 'Abstract',
                 'IsPremium',
                 'ViewCount',
-                'CATEGORY.Name as category',
-                'SUBCATEGORY.Name as subcategory',
-                'CATEGORY.CategoryID as categoryId',
-                'SUBCATEGORY.SubCategoryID as subcategoryId',
-                'URL'
+                'category.Name as category',
+                'subcategory.Name as subcategory',
+                'category.CategoryID as categoryId',
+                'subcategory.SubCategoryID as subcategoryId',
+                'url'
             )
             .offset(offset)
             .limit(limit);
@@ -515,7 +515,7 @@ export const SearchArticle = async (
 };
 
 export const GetArticleById = async (articleId: string) => {
-    return DBConfig('ARTICLE').where({ ArticleID: articleId }).first();
+    return DBConfig('article').where({ ArticleID: articleId }).first();
 };
 
 export interface Tag {
@@ -527,10 +527,10 @@ export interface Tag {
 export const GetTagsOfArticle = async (
     articleId: string | number
 ): Promise<Array<Tag>> => {
-    let tags = await DBConfig('TAG')
-        .join('ARTICLE_TAG', 'ARTICLE_TAG.TagID', '=', 'TAG.TagID')
+    let tags = await DBConfig('tag')
+        .join('article_tag', 'article_tag.TagID', '=', 'tag.TagID')
         .where({ ArticleID: articleId })
-        .select('Name as name', 'TAG.TagID as id');
+        .select('Name as name', 'tag.TagID as id');
     if (tags)
         for (let i = 0; i < tags.length; i++)
             tags[i].name_encode = encodeURIComponent(tags[i].name);
@@ -538,12 +538,12 @@ export const GetTagsOfArticle = async (
 };
 
 export const AddViewCount = async (articleId: string) => {
-    let currentCnt = await DBConfig('ARTICLE')
+    let currentCnt = await DBConfig('article')
         .where({ ArticleId: articleId })
         .select('ViewCount')
         .first();
     if (!currentCnt) return;
-    await DBConfig('ARTICLE')
+    await DBConfig('article')
         .where({ ArticleId: articleId })
         .update({ ViewCount: currentCnt.ViewCount + 1 });
 };
@@ -552,7 +552,7 @@ export const CountArticleOfWriterByStates = async (
     writerId: number,
     states: string[]
 ) => {
-    let count = await DBConfig('ARTICLE')
+    let count = await DBConfig('article')
         .where({ WriterID: writerId })
         .whereIn('Status', states)
         .count('* as count')
@@ -566,21 +566,21 @@ export const GetArticleOfWriterByStates = async (
     offset: number,
     limit: number
 ) => {
-    return DBConfig('ARTICLE')
+    return DBConfig('article')
         .join(
-            'ARTICLE_SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.ArticleID',
+            'article_subcategory',
+            'article_subcategory.ArticleID',
             '=',
-            'ARTICLE.ArticleID'
+            'article.ArticleID'
         )
         .join(
-            'SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.SubCategoryID',
+            'subcategory',
+            'article_subcategory.SubCategoryID',
             '=',
-            'SUBCATEGORY.SubCategoryID'
+            'subcategory.SubCategoryID'
         )
-        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
-        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+        .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+        .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
         .where({ STT: 0 })
         .where({ WriterID: writerId })
         .whereIn('Status', states)
@@ -589,11 +589,11 @@ export const GetArticleOfWriterByStates = async (
             'Abstract as abstract',
             'DatePublished as datePublished',
             'DatePosted as datePosted',
-            'CATEGORY.Name as category',
-            'SUBCATEGORY.Name as subcategory',
-            'URL as cover',
+            'category.Name as category',
+            'subcategory.Name as subcategory',
+            'url as cover',
             'Status as state',
-            'ARTICLE.ArticleID as id'
+            'article.ArticleID as id'
         )
         .orderBy('DatePosted', 'desc')
         .offset(offset)
@@ -611,7 +611,7 @@ export interface ArticleListItem {
     subcategory: string;
     categoryId: number;
     subcategoryId: number;
-    URL: string;
+    url: string;
     tags?: Array<Tag>;
 }
 
@@ -620,37 +620,37 @@ export const GetRelativeArticle = async (
     articleId: string | number,
     limit: number = 5
 ): Promise<Array<ArticleListItem>> => {
-    let result = await DBConfig('ARTICLE')
+    let result = await DBConfig('article')
         .join(
-            'ARTICLE_SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.ArticleID',
+            'article_subcategory',
+            'article_subcategory.ArticleID',
             '=',
-            'ARTICLE.ArticleID'
+            'article.ArticleID'
         )
-        .where('ARTICLE.ArticleID', '!=', articleId)
-        .where('CATEGORY.CategoryID', '=', categoryId)
+        .where('article.ArticleID', '!=', articleId)
+        .where('category.CategoryID', '=', categoryId)
         .join(
-            'SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.SubCategoryID',
+            'subcategory',
+            'article_subcategory.SubCategoryID',
             '=',
-            'SUBCATEGORY.SubCategoryID'
+            'subcategory.SubCategoryID'
         )
-        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
-        .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+        .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+        .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
         .where('STT', '=', '0')
         .orderByRaw('RAND()')
         .select(
-            'ARTICLE.ArticleID',
+            'article.ArticleID',
             'Title',
             'DatePosted',
             'Abstract',
             'IsPremium',
             'ViewCount',
-            'CATEGORY.Name as category',
-            'SUBCATEGORY.Name as subcategory',
-            'CATEGORY.CategoryID as categoryId',
-            'SUBCATEGORY.SubCategoryID as subcategoryId',
-            'URL'
+            'category.Name as category',
+            'subcategory.Name as subcategory',
+            'category.CategoryID as categoryId',
+            'subcategory.SubCategoryID as subcategoryId',
+            'url'
         )
         .limit(limit);
     for (let i = 0; i < result.length; i++)
@@ -661,29 +661,29 @@ export const GetRelativeArticle = async (
 export const GetBackgroundImageOfArticle = async (
     articleId: string
 ): Promise<string> => {
-    let bgURL = await DBConfig('ARTICLE_URL')
+    let bgurl = await DBConfig('article_url')
         .where({ STT: 0, ArticleID: articleId })
         .first();
-    return bgURL && bgURL.URL ? bgURL.URL : 'null';
+    return bgurl && bgurl.url ? bgurl.url : 'null';
 };
 
 export const UpdateBackgroundImageOfArticle = async (
     articleId: string,
     value: string = 'null'
 ) => {
-    return DBConfig('ARTICLE_URL')
+    return DBConfig('article_url')
         .where({ ArticleID: articleId, STT: 0 })
-        .update({ URL: value });
+        .update({ url: value });
 };
 
 export const AddBackgroundImageOfArticle = async (
     articleId: number,
     value: string = 'null'
 ) => {
-    return DBConfig('ARTICLE_URL').insert({
+    return DBConfig('article_url').insert({
         ArticleID: articleId,
         STT: 0,
-        URL: value,
+        url: value,
     });
 };
 
@@ -700,19 +700,19 @@ export interface Category {
 }
 
 export const GetCategoryFullNameOfArticle = async (articleId: string) => {
-    let result = await DBConfig('ARTICLE_SUBCATEGORY')
+    let result = await DBConfig('article_subcategory')
         .join(
-            'SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.SubCategoryID',
+            'subcategory',
+            'article_subcategory.SubCategoryID',
             '=',
-            'SUBCATEGORY.SubCategoryID'
+            'subcategory.SubCategoryID'
         )
-        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+        .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
         .where({ ArticleID: articleId })
         .select(
-            'ARTICLE_SUBCATEGORY.SubCategoryID as id',
+            'article_subcategory.SubCategoryID as id',
             DBConfig.raw(
-                'CONCAT(CATEGORY.Name, " / ", SUBCATEGORY.Name) as fullname'
+                "CONCAT(category.Name, ' / ', subcategory.Name) as fullname"
             )
         )
         .first();
@@ -720,20 +720,20 @@ export const GetCategoryFullNameOfArticle = async (articleId: string) => {
 };
 
 export const GetCategoryOfArticle = async (articleId: string) => {
-    let category = await DBConfig('ARTICLE_SUBCATEGORY')
+    let category = await DBConfig('article_subcategory')
         .join(
-            'SUBCATEGORY',
-            'ARTICLE_SUBCATEGORY.SubCategoryID',
+            'subcategory',
+            'article_subcategory.SubCategoryID',
             '=',
-            'SUBCATEGORY.SubCategoryID'
+            'subcategory.SubCategoryID'
         )
-        .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+        .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
         .where({ ArticleID: articleId })
         .select(
-            'CATEGORY.Name as categoryName',
-            'SUBCATEGORY.Name as subcategoryName',
-            'CATEGORY.CategoryID as categoryId',
-            'SUBCATEGORY.SubCategoryID as subcategoryId'
+            'category.Name as categoryName',
+            'subcategory.Name as subcategoryName',
+            'category.CategoryID as categoryId',
+            'subcategory.SubCategoryID as subcategoryId'
         )
         .first();
     return category
@@ -757,7 +757,7 @@ export interface Comment {
 export const GetCommentOfArticle = async (
     articleId: string
 ): Promise<Array<Comment>> => {
-    let comment = await DBConfig('COMMENT')
+    let comment = await DBConfig('comment')
         .where({
             ArticleId: articleId,
         })
@@ -778,13 +778,13 @@ export const AddComment = async (
     userId: number = 0
 ) => {
     if (!userId) {
-        await DBConfig('COMMENT').insert({
+        await DBConfig('comment').insert({
             ArticleId: articleId,
             Content: content,
             DatePosted: date,
         });
     } else {
-        await DBConfig('COMMENT').insert({
+        await DBConfig('comment').insert({
             ArticleId: articleId,
             Content: content,
             DatePosted: date,
@@ -811,71 +811,71 @@ export const getMostViewedArticles = async (
     let response = [];
 
     if (isUserPremium) {
-        response = await db('ARTICLE')
+        response = await db('article')
             .join(
-                'ARTICLE_URL',
-                'ARTICLE_URL.ArticleID',
+                'article_url',
+                'article_url.ArticleID',
                 '=',
-                'ARTICLE.ArticleID'
+                'article.ArticleID'
             )
             .join(
-                'ARTICLE_SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.ArticleID',
+                'article_subcategory',
+                'article_subcategory.ArticleID',
                 '=',
-                'ARTICLE.ArticleID'
+                'article.ArticleID'
             )
             .join(
-                'SUBCATEGORY',
-                'SUBCATEGORY.SubCategoryID',
+                'subcategory',
+                'subcategory.SubCategoryID',
                 '=',
-                'ARTICLE_SUBCATEGORY.SubCategoryID'
+                'article_subcategory.SubCategoryID'
             )
-            .orderBy('ARTICLE.IsPremium', 'desc')
-            .orderBy('ARTICLE.ViewCount', 'desc')
+            .orderBy('article.IsPremium', 'desc')
+            .orderBy('article.ViewCount', 'desc')
             .limit(limit)
             .select(
-                'ARTICLE.ArticleID as articleID',
-                'ARTICLE.Title as title',
-                'ARTICLE.IsPremium as isPremium',
-                'ARTICLE_URL.URL as img',
+                'article.ArticleID as articleID',
+                'article.Title as title',
+                'article.IsPremium as isPremium',
+                'article_url.url as img',
                 DBConfig.raw(
-                    "DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"
+                    "DATE_FORMAT(article.DatePosted, '%d/%m/%Y') as date"
                 ),
-                'SUBCATEGORY.Name as category',
-                'SUBCATEGORY.SubCategoryID as categoryID'
+                'subcategory.Name as category',
+                'subcategory.SubCategoryID as categoryID'
             );
     } else {
-        response = await db('ARTICLE')
+        response = await db('article')
             .join(
-                'ARTICLE_URL',
-                'ARTICLE_URL.ArticleID',
+                'article_url',
+                'article_url.ArticleID',
                 '=',
-                'ARTICLE.ArticleID'
+                'article.ArticleID'
             )
             .join(
-                'ARTICLE_SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.ArticleID',
+                'article_subcategory',
+                'article_subcategory.ArticleID',
                 '=',
-                'ARTICLE.ArticleID'
+                'article.ArticleID'
             )
             .join(
-                'SUBCATEGORY',
-                'SUBCATEGORY.SubCategoryID',
+                'subcategory',
+                'subcategory.SubCategoryID',
                 '=',
-                'ARTICLE_SUBCATEGORY.SubCategoryID'
+                'article_subcategory.SubCategoryID'
             )
-            .orderBy('ARTICLE.ViewCount', 'desc')
+            .orderBy('article.ViewCount', 'desc')
             .limit(limit)
             .select(
-                'ARTICLE.ArticleID as articleID',
-                'ARTICLE.Title as title',
-                'ARTICLE.IsPremium as isPremium',
-                'ARTICLE_URL.URL as img',
+                'article.ArticleID as articleID',
+                'article.Title as title',
+                'article.IsPremium as isPremium',
+                'article_url.url as img',
                 DBConfig.raw(
-                    "DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"
+                    "DATE_FORMAT(article.DatePosted, '%d/%m/%Y') as date"
                 ),
-                'SUBCATEGORY.Name as category',
-                'SUBCATEGORY.SubCategoryID as categoryID'
+                'subcategory.Name as category',
+                'subcategory.SubCategoryID as categoryID'
             );
     }
 
@@ -902,84 +902,84 @@ export const getLatestArticles = async (
     let response = [];
 
     if (isUserPremium) {
-        response = await db('ARTICLE')
+        response = await db('article')
             .join(
-                'ARTICLE_URL',
-                'ARTICLE_URL.ArticleID',
+                'article_url',
+                'article_url.ArticleID',
                 '=',
-                'ARTICLE.ArticleID'
+                'article.ArticleID'
             )
             .join(
-                'ARTICLE_SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.ArticleID',
+                'article_subcategory',
+                'article_subcategory.ArticleID',
                 '=',
-                'ARTICLE.ArticleID'
+                'article.ArticleID'
             )
             .join(
-                'SUBCATEGORY',
-                'SUBCATEGORY.SubCategoryID',
+                'subcategory',
+                'subcategory.SubCategoryID',
                 '=',
-                'ARTICLE_SUBCATEGORY.SubCategoryID'
+                'article_subcategory.SubCategoryID'
             )
-            .orderBy('ARTICLE.IsPremium', 'desc')
-            .orderBy('ARTICLE.DatePosted', 'desc')
+            .orderBy('article.IsPremium', 'desc')
+            .orderBy('article.DatePosted', 'desc')
             .limit(limit)
             .select(
-                'ARTICLE.ArticleID as articleID',
-                'ARTICLE.Title as title',
-                'ARTICLE.Abstract as abstract',
-                'ARTICLE.ViewCount as viewCount',
-                'ARTICLE.IsPremium as isPremium',
-                'ARTICLE_URL.URL as img',
+                'article.ArticleID as articleID',
+                'article.Title as title',
+                'article.Abstract as abstract',
+                'article.ViewCount as viewCount',
+                'article.IsPremium as isPremium',
+                'article_url.url as img',
                 DBConfig.raw(
-                    "DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"
+                    "DATE_FORMAT(article.DatePosted, '%d/%m/%Y') as date"
                 ),
-                'SUBCATEGORY.Name as category',
-                'SUBCATEGORY.SubCategoryID as categoryID',
-                'ARTICLE.WriterID as writerID'
+                'subcategory.Name as category',
+                'subcategory.SubCategoryID as categoryID',
+                'article.WriterID as writerID'
             );
     } else {
-        response = await db('ARTICLE')
+        response = await db('article')
             .join(
-                'ARTICLE_URL',
-                'ARTICLE_URL.ArticleID',
+                'article_url',
+                'article_url.ArticleID',
                 '=',
-                'ARTICLE.ArticleID'
+                'article.ArticleID'
             )
             .join(
-                'ARTICLE_SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.ArticleID',
+                'article_subcategory',
+                'article_subcategory.ArticleID',
                 '=',
-                'ARTICLE.ArticleID'
+                'article.ArticleID'
             )
             .join(
-                'SUBCATEGORY',
-                'SUBCATEGORY.SubCategoryID',
+                'subcategory',
+                'subcategory.SubCategoryID',
                 '=',
-                'ARTICLE_SUBCATEGORY.SubCategoryID'
+                'article_subcategory.SubCategoryID'
             )
-            .orderBy('ARTICLE.DatePosted', 'desc')
+            .orderBy('article.DatePosted', 'desc')
             .limit(limit)
             .select(
-                'ARTICLE.ArticleID as articleID',
-                'ARTICLE.Title as title',
-                'ARTICLE.Abstract as abstract',
-                'ARTICLE.ViewCount as viewCount',
-                'ARTICLE.IsPremium as isPremium',
-                'ARTICLE_URL.URL as img',
+                'article.ArticleID as articleID',
+                'article.Title as title',
+                'article.Abstract as abstract',
+                'article.ViewCount as viewCount',
+                'article.IsPremium as isPremium',
+                'article_url.url as img',
                 DBConfig.raw(
-                    "DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"
+                    "DATE_FORMAT(article.DatePosted, '%d/%m/%Y') as date"
                 ),
-                'SUBCATEGORY.Name as category',
-                'SUBCATEGORY.SubCategoryID as categoryID',
-                'ARTICLE.WriterID as writerID'
+                'subcategory.Name as category',
+                'subcategory.SubCategoryID as categoryID',
+                'article.WriterID as writerID'
             );
     }
 
     const result = await Promise.all(
         response.map(async item => {
-            const comments = await db('COMMENT')
-                .where('COMMENT.ArticleID', '=', item.articleID)
+            const comments = await db('comment')
+                .where('comment.ArticleID', '=', item.articleID)
                 .count('* as count')
                 .first();
 
@@ -1021,73 +1021,73 @@ export const getTopArticles = async (
     let response = [];
 
     if (isUserPremium) {
-        response = await db('ARTICLE')
-            .whereBetween('ARTICLE.DatePosted', [startWeek, endWeek])
+        response = await db('article')
+            .whereBetween('article.DatePosted', [startWeek, endWeek])
             .join(
-                'ARTICLE_URL',
-                'ARTICLE_URL.ArticleID',
+                'article_url',
+                'article_url.ArticleID',
                 '=',
-                'ARTICLE.ArticleID'
+                'article.ArticleID'
             )
             .join(
-                'ARTICLE_SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.ArticleID',
+                'article_subcategory',
+                'article_subcategory.ArticleID',
                 '=',
-                'ARTICLE.ArticleID'
+                'article.ArticleID'
             )
             .join(
-                'SUBCATEGORY',
-                'SUBCATEGORY.SubCategoryID',
+                'subcategory',
+                'subcategory.SubCategoryID',
                 '=',
-                'ARTICLE_SUBCATEGORY.SubCategoryID'
+                'article_subcategory.SubCategoryID'
             )
-            .orderBy('ARTICLE.IsPremium', 'desc')
-            .orderBy('ARTICLE.ViewCount', 'desc')
+            .orderBy('article.IsPremium', 'desc')
+            .orderBy('article.ViewCount', 'desc')
             .limit(limit)
             .select(
-                'ARTICLE.ArticleID as articleID',
-                'ARTICLE_URL.URL as img',
-                'SUBCATEGORY.Name as category',
-                'SUBCATEGORY.SubCategoryID as categoryID',
+                'article.ArticleID as articleID',
+                'article_url.url as img',
+                'subcategory.Name as category',
+                'subcategory.SubCategoryID as categoryID',
                 DBConfig.raw(
-                    "DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"
+                    "DATE_FORMAT(article.DatePosted, '%d/%m/%Y') as date"
                 ),
-                'ARTICLE.Title as title',
-                'ARTICLE.IsPremium as isPremium'
+                'article.Title as title',
+                'article.IsPremium as isPremium'
             );
     } else {
-        response = await db('ARTICLE')
-            .whereBetween('ARTICLE.DatePosted', [startWeek, endWeek])
+        response = await db('article')
+            .whereBetween('article.DatePosted', [startWeek, endWeek])
             .join(
-                'ARTICLE_URL',
-                'ARTICLE_URL.ArticleID',
+                'article_url',
+                'article_url.ArticleID',
                 '=',
-                'ARTICLE.ArticleID'
+                'article.ArticleID'
             )
             .join(
-                'ARTICLE_SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.ArticleID',
+                'article_subcategory',
+                'article_subcategory.ArticleID',
                 '=',
-                'ARTICLE.ArticleID'
+                'article.ArticleID'
             )
             .join(
-                'SUBCATEGORY',
-                'SUBCATEGORY.SubCategoryID',
+                'subcategory',
+                'subcategory.SubCategoryID',
                 '=',
-                'ARTICLE_SUBCATEGORY.SubCategoryID'
+                'article_subcategory.SubCategoryID'
             )
-            .orderBy('ARTICLE.ViewCount', 'desc')
+            .orderBy('article.ViewCount', 'desc')
             .limit(limit)
             .select(
-                'ARTICLE.ArticleID as articleID',
-                'ARTICLE_URL.URL as img',
-                'SUBCATEGORY.Name as category',
-                'SUBCATEGORY.SubCategoryID as categoryID',
+                'article.ArticleID as articleID',
+                'article_url.url as img',
+                'subcategory.Name as category',
+                'subcategory.SubCategoryID as categoryID',
                 DBConfig.raw(
-                    "DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"
+                    "DATE_FORMAT(article.DatePosted, '%d/%m/%Y') as date"
                 ),
-                'ARTICLE.Title as title',
-                'ARTICLE.IsPremium as isPremium'
+                'article.Title as title',
+                'article.IsPremium as isPremium'
             );
     }
 
@@ -1111,48 +1111,48 @@ export const getCategoryArticles = async (
     let mostViewedCatIDs = [];
 
     if (isUserPremium) {
-        mostViewedCatIDs = await db('CATEGORY')
+        mostViewedCatIDs = await db('category')
             .join(
-                'SUBCATEGORY',
-                'SUBCATEGORY.CategoryID',
-                'CATEGORY.CategoryID'
+                'subcategory',
+                'subcategory.CategoryID',
+                'category.CategoryID'
             )
             .join(
-                'ARTICLE_SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.SubCategoryID',
-                'SUBCATEGORY.SubCategoryID'
+                'article_subcategory',
+                'article_subcategory.SubCategoryID',
+                'subcategory.SubCategoryID'
             )
             .join(
-                'ARTICLE',
-                'ARTICLE.ArticleID',
+                'article',
+                'article.ArticleID',
                 '=',
-                'ARTICLE_SUBCATEGORY.ArticleID'
+                'article_subcategory.ArticleID'
             )
-            .orderBy('ARTICLE.IsPremium', 'desc')
-            .orderBy('ARTICLE.ViewCount', 'desc')
+            .orderBy('article.IsPremium', 'desc')
+            .orderBy('article.ViewCount', 'desc')
             .limit(limit)
-            .select('CATEGORY.CategoryID as CatID');
+            .select('category.CategoryID as CatID');
     } else {
-        mostViewedCatIDs = await db('CATEGORY')
+        mostViewedCatIDs = await db('category')
             .join(
-                'SUBCATEGORY',
-                'SUBCATEGORY.CategoryID',
-                'CATEGORY.CategoryID'
+                'subcategory',
+                'subcategory.CategoryID',
+                'category.CategoryID'
             )
             .join(
-                'ARTICLE_SUBCATEGORY',
-                'ARTICLE_SUBCATEGORY.SubCategoryID',
-                'SUBCATEGORY.SubCategoryID'
+                'article_subcategory',
+                'article_subcategory.SubCategoryID',
+                'subcategory.SubCategoryID'
             )
             .join(
-                'ARTICLE',
-                'ARTICLE.ArticleID',
+                'article',
+                'article.ArticleID',
                 '=',
-                'ARTICLE_SUBCATEGORY.ArticleID'
+                'article_subcategory.ArticleID'
             )
-            .orderBy('ARTICLE.ViewCount', 'desc')
+            .orderBy('article.ViewCount', 'desc')
             .limit(limit)
-            .select('CATEGORY.CategoryID as CatID');
+            .select('category.CategoryID as CatID');
     }
 
     const CatIDs = [...new Set(mostViewedCatIDs.map(item => item.CatID))];
@@ -1160,43 +1160,43 @@ export const getCategoryArticles = async (
     // Each subcategory, pick the latest one
     const response = await Promise.all(
         CatIDs.map(async catID => {
-            return await db('CATEGORY')
-                .where('CATEGORY.CategoryID', '=', catID)
+            return await db('category')
+                .where('category.CategoryID', '=', catID)
                 .join(
-                    'SUBCATEGORY',
-                    'SUBCATEGORY.CategoryID',
-                    'CATEGORY.CategoryID'
+                    'subcategory',
+                    'subcategory.CategoryID',
+                    'category.CategoryID'
                 )
                 .join(
-                    'ARTICLE_SUBCATEGORY',
-                    'ARTICLE_SUBCATEGORY.SubCategoryID',
-                    'SUBCATEGORY.SubCategoryID'
+                    'article_subcategory',
+                    'article_subcategory.SubCategoryID',
+                    'subcategory.SubCategoryID'
                 )
                 .join(
-                    'ARTICLE',
-                    'ARTICLE.ArticleID',
+                    'article',
+                    'article.ArticleID',
                     '=',
-                    'ARTICLE_SUBCATEGORY.ArticleID'
+                    'article_subcategory.ArticleID'
                 )
                 .join(
-                    'ARTICLE_URL',
-                    'ARTICLE_URL.ArticleID',
+                    'article_url',
+                    'article_url.ArticleID',
                     '=',
-                    'ARTICLE.ArticleID'
+                    'article.ArticleID'
                 )
-                .orderBy('ARTICLE.DatePosted', 'desc')
+                .orderBy('article.DatePosted', 'desc')
                 .limit(1)
                 .first()
                 .select(
-                    'ARTICLE.ArticleID as articleID',
-                    'ARTICLE.Title as title',
-                    'ARTICLE_URL.URL as img',
-                    'ARTICLE.IsPremium as isPremium',
+                    'article.ArticleID as articleID',
+                    'article.Title as title',
+                    'article_url.url as img',
+                    'article.IsPremium as isPremium',
                     DBConfig.raw(
-                        "DATE_FORMAT(ARTICLE.DatePosted, '%d/%m/%Y') as date"
+                        "DATE_FORMAT(article.DatePosted, '%d/%m/%Y') as date"
                     ),
-                    'SUBCATEGORY.Name as category',
-                    'SUBCATEGORY.SubCategoryID as categoryID'
+                    'subcategory.Name as category',
+                    'subcategory.SubCategoryID as categoryID'
                 );
         })
     );
@@ -1207,21 +1207,15 @@ export const getCategoryArticles = async (
 export const countArticlesCategories = async (
     categories: number
 ): Promise<number> => {
-    const query = db('ARTICLE as a')
-        .join('ARTICLE_SUBCATEGORY as as', 'a.ArticleID', 'as.ArticleID')
-        .join('SUBCATEGORY as s', 'as.SubcategoryID', 's.SubcategoryID')
-        .join('CATEGORY as c', 's.CategoryID', 'c.CategoryID')
-        .join('WRITER as w', 'a.WriterID', 'w.WriterID')
-        .select(
-            'a.ArticleID as id',
-            'a.Title as title',
-            DBConfig.raw("DATE_FORMAT(a.DatePosted, '%d/%m/%Y') as date"),
-            's.Name as subcategory',
-            'c.Name as category'
-        );
+    const query = db('article as a')
+        .join('article_subcategory as as', 'a.ArticleID', 'as.ArticleID')
+        .join('subcategory as s', 'as.SubcategoryID', 's.SubcategoryID')
+        .join('category as c', 's.CategoryID', 'c.CategoryID')
+        .join('writer as w', 'a.WriterID', 'w.WriterID')
+
     if (categories === -1) {
-        let count = await query.count('* as count').first();
-        return (count?.count as number) || 0;
+        let count = await query.count('* as countTotal').first();
+        return (count?.countTotal as number) || 0;
     }
     let count = await query
         .where('c.CategoryID', categories)
@@ -1235,10 +1229,10 @@ export const getArticlesCategories = (
     offset: number = 0,
     limit: number = 0
 ): Promise<any[]> => {
-    const query = db('ARTICLE as a')
-        .join('ARTICLE_SUBCATEGORY as as', 'a.ArticleID', 'as.ArticleID')
-        .join('SUBCATEGORY as s', 'as.SubcategoryID', 's.SubcategoryID')
-        .join('CATEGORY as c', 's.CategoryID', 'c.CategoryID')
+    const query = db('article as a')
+        .join('article_subcategory as as', 'a.ArticleID', 'as.ArticleID')
+        .join('subcategory as s', 'as.SubcategoryID', 's.SubcategoryID')
+        .join('category as c', 's.CategoryID', 'c.CategoryID')
         .select(
             'a.ArticleID as id',
             'a.Title as title',

@@ -311,7 +311,7 @@ export class AdminController {
             return;
         }
 
-        await DBConfig('CATEGORY')
+        await DBConfig('category')
             .where('CategoryID', '=', id)
             .update({ Name: name });
 
@@ -461,7 +461,7 @@ export class AdminController {
             res.status(404).send('Category not found');
             return;
         }
-        await DBConfig('CATEGORY').where('CategoryID', '=', categoryId).del();
+        await DBConfig('category').where('CategoryID', '=', categoryId).del();
         await DBConfig('subcategory')
             .where('CategoryID', '=', categoryId)
             .del();

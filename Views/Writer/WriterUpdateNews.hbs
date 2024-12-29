@@ -2,7 +2,7 @@
     <div class="wrapper col col-lg-12 col-md-12 col-sm-12 mb-4">
         <h1 class="writer-publish-news-title">Hiệu chỉnh bài viết</h1>
     </div>
-    <form action="" method="POST" class="writer-publish-news-container col col-lg-12 col-md-12 col-sm-12"
+    <form action="/writer/edit" method="POST" class="writer-publish-news-container col col-lg-12 col-md-12 col-sm-12"
         enctype="multipart/form-data">
         <input type="text" style="display: none;" name="id" value="{{data.ID}}">
         </input>
@@ -90,7 +90,7 @@
             <button type="submit" formaction="" class="back-button">
                 Quay về
             </button>
-            <button type="submit" formaction="/writer/edit" class="submit-button">
+            <button type="submit" class="submit-button">
                 Đăng
             </button>
         </div>

@@ -6,14 +6,14 @@ import { getRole, getRoleName } from '../Utils/getRole';
 
 export const createUser = async (userData: any): Promise<void> => {
     // Kiểm tra xem user đã tồn tại chưa
-    const userExists = await db('USER').where('Email', userData.email).first();
+    const userExists = await db('user').where('Email', userData.email).first();
     if (userExists) {
         throw new Error(`User with ID ${userData.id} already exists.`);
     }
 
     try {
         // Insert user vào database
-        const [id] = await db('USER').insert({
+        const [id] = await db('user').insert({
             FullName: userData.fullname,
             Email: userData.email,
             Password: userData.password,
@@ -25,14 +25,14 @@ export const createUser = async (userData: any): Promise<void> => {
         console.log(userData.role);
 
         if (userData.role === UserRole.Writer)
-            await db('WRITER').insert({
+            await db('writer').insert({
                 WriterID: id,
                 Alias: userData.fullname,
             });
         else if (userData.role === UserRole.Editor)
-            await db('EDITOR').insert({ EditorID: id });
+            await db('editor').insert({ EditorID: id });
         else if (userData.role === UserRole.User)
-            await db('SUBSCRIBER').insert({
+            await db('subscriber').insert({
                 SubscriberID: id,
                 DateExpired: new Date(Date.now() + datePremium * 1000 * 60),
             });
@@ -48,7 +48,7 @@ export const updateUser = async (
     category_remove: number[]
 ): Promise<void> => {
     // Kiểm tra xem user đã tồn tại chưa
-    const userExists = await db('USER').where('UserID', userData.id).first();
+    const userExists = await db('user').where('UserID', userData.id).first();
     if (!userExists) {
         throw new Error(`User with ID ${userData.id} does not exist.`);
     }
@@ -56,20 +56,20 @@ export const updateUser = async (
     try {
         if (userExists.Role === 2) {
             for (let i = 0; i < category_add.length; i++) {
-                const exit = await db('EDITOR_CATEGORY')
+                const exit = await db('editor_category')
                     .where({
                         EditorID: userData.id,
                         CategoryID: category_add[i],
                     })
                     .first();
                 if (!exit)
-                    await db('EDITOR_CATEGORY').insert({
+                    await db('editor_category').insert({
                         EditorID: userData.id,
                         CategoryID: category_add[i],
                     });
             }
             for (let i = 0; i < category_remove.length; i++) {
-                await db('EDITOR_CATEGORY')
+                await db('editor_category')
                     .where({
                         EditorID: userData.id,
                         CategoryID: category_remove[i],
@@ -80,51 +80,55 @@ export const updateUser = async (
         if (userExists.Role !== getRole(userData.role as string)) {
             // xóa role ở bảng khác
             if (userExists.Role === 1)
-                await db('WRITER').where('WriterID', userData.id).delete();
+                await db('writer').where('WriterID', userData.id).delete();
             else if (userExists.Role === 2) {
-                await db('EDITOR_CATEGORY')
+                await db('editor_category')
                     .where('EditorID', userData.id)
                     .delete();
-                await db('EDITOR').where('EditorID', userData.id).delete();
+                await db('editor').where('EditorID', userData.id).delete();
             } else if (userExists.Role === 0)
-                await db('SUBSCRIBER')
+                await db('subscriber')
                     .where('SubscriberID', userData.id)
                     .delete();
             else if (userExists.Role === 3)
-                await db('USER')
+                await db('user')
                     .where('UserID', userData.id)
                     .update('isAdministator', 0);
 
             // nếu update role thì phải update bảng khác
             if (userData.role === 'Writer')
-                await db('WRITER').insert({
+                await db('writer').insert({
                     WriterID: userData.id,
                     Alias: userData.fullname,
                 });
             else if (userData.role === 'Editor') {
-                await db('EDITOR').insert({ EditorID: userData.id });
+                await db('editor').insert({ EditorID: userData.id });
                 for (let i = 0; i < category_add.length; i++) {
-                    const exit = await db('EDITOR_CATEGORY')
+                    const exit = await db('editor_category')
                         .where({
                             EditorID: userData.id,
                             CategoryID: category_add[i],
                         })
                         .first();
                     if (!exit)
-                        await db('EDITOR_CATEGORY').insert({
+                        await db('editor_category').insert({
                             EditorID: userData.id,
                             CategoryID: category_add[i],
                         });
                 }
             } else if (userData.role === 'User')
-                await db('SUBSCRIBER').insert({
+                await db('subscriber').insert({
                     SubscriberID: userData.id,
                     DateExpired: new Date(Date.now() + datePremium * 1000 * 60),
                 });
+            else if (userData.role === 'Admin')
+                await db('user')
+                    .where('UserID', userData.id)
+                    .update('isAdministator', 1);
         }
 
         // Update user trong database
-        await db('USER')
+        await db('user')
             .where('UserID', userData.id)
             .update({
                 FullName: userData.fullname,
@@ -142,13 +146,13 @@ export const updateUser = async (
 export const deleteUser = async (id: number): Promise<void> => {
     try {
         // Kiểm tra xem user có tồn tại không
-        const userExists = await db('USER').where('UserID', id).first();
+        const userExists = await db('user').where('UserID', id).first();
         if (!userExists) {
             throw new Error(`User with ID ${id} does not exist.`);
         }
 
         // Xóa user khỏi database
-        await db('USER').where('UserID', id).delete();
+        await db('user').where('UserID', id).delete();
     } catch (error: any) {
         console.log(error);
         throw new Error('Failed to delete user.');
