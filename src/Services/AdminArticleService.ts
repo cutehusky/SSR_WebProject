@@ -1,6 +1,6 @@
 import { DBConfig, DBConfig as db } from '../Utils/DBConfig';
 import { writer } from 'repl';
-import {getUsernameById, getWriterNameById} from './UserPasswordService';
+import { getUsernameById, getWriterNameById } from './UserPasswordService';
 
 export const deleteArticle = async (articleID: number): Promise<void> => {
     try {
@@ -77,8 +77,8 @@ export const getArticlesByCategoryID = async (
             )
             .join(
                 'article',
-                'article.ArticleID',    
-                '=',    
+                'article.ArticleID',
+                '=',
                 'article_subcategory.ArticleID'
             )
             .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
@@ -89,7 +89,7 @@ export const getArticlesByCategoryID = async (
                 'article.Title as Title',
                 'article.Abstract as Abstract',
                 'article.DatePosted as DatePosted',
-                'article_url.url as url',
+                'article_url.url as URL',
                 'subcategory.Name as subcategory',
                 'subcategory.SubcategoryID as subcategoryId',
                 'category.Name as category'
@@ -124,7 +124,7 @@ export const getArticlesByCategoryID = async (
                 'article.Title as Title',
                 'article.Abstract as Abstract',
                 'article.DatePosted as DatePosted',
-                'article_url.url as url',
+                'article_url.url as URL',
                 'subcategory.Name as subcategory',
                 'subcategory.SubcategoryID as subcategoryId',
                 'category.Name as category'
@@ -182,7 +182,7 @@ export const countArticlesByCatID = async (
             '=',
             'article_subcategory.ArticleID'
         )
-        .groupBy('CATEGORy.CategoryID')
+        .groupBy('category.CategoryID')
         .count('* as total')
         .first();
 
@@ -278,7 +278,7 @@ export const getArticlesBySubCatID = async (
                 'article.Title as Title',
                 'article.Abstract as Abstract',
                 'article.DatePosted as DatePosted',
-                'article_url.url as url',
+                'article_url.url as URL',
                 'subcategory.Name as subcategory',
                 'subcategory.SubcategoryID as subcategoryId',
                 'category.Name as category'
@@ -308,7 +308,7 @@ export const getArticlesBySubCatID = async (
                 'article.Title as Title',
                 'article.Abstract as Abstract',
                 'article.DatePosted as DatePosted',
-                'article_url.url as url',
+                'article_url.url as URL',
                 'subcategory.Name as subcategory',
                 'subcategory.SubcategoryID as subcategoryId',
                 'category.Name as category'
@@ -377,7 +377,7 @@ export const findPageByTagID = async (
             'subcategory.Name as subcategory',
             'category.CategoryID as categoryId',
             'subcategory.SubCategoryID as subcategoryId',
-            'url'
+            'url as URL'
         )
         .groupBy(
             'article.ArticleID',
@@ -386,7 +386,7 @@ export const findPageByTagID = async (
             'IsPremium',
             'ViewCount',
             'article.DatePosted',
-            'article_url.url',
+            'article_url.URL',
             'category.Name',
             'subcategory.Name',
             'category.CategoryID',
@@ -416,7 +416,7 @@ export const CountSearchResult = async (
     searchValue: string
 ): Promise<number> => {
     let count = await DBConfig('article')
-        .whereRaw(  
+        .whereRaw(
             'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
             [searchValue]
         )
@@ -504,7 +504,7 @@ export const SearchArticle = async (
                 'subcategory.Name as subcategory',
                 'category.CategoryID as categoryId',
                 'subcategory.SubCategoryID as subcategoryId',
-                'url'
+                'url as URL'
             )
             .offset(offset)
             .limit(limit);
@@ -651,7 +651,7 @@ export const GetRelativeArticle = async (
             'subcategory.Name as subcategory',
             'category.CategoryID as categoryId',
             'subcategory.SubCategoryID as subcategoryId',
-            'url'
+            'url as URL'
         )
         .limit(limit);
     for (let i = 0; i < result.length; i++)
@@ -665,7 +665,7 @@ export const GetBackgroundImageOfArticle = async (
     let bgurl = await DBConfig('article_url')
         .where({ STT: 0, ArticleID: articleId })
         .first();
-    return bgurl && bgurl.url ? bgurl.url : 'null';
+    return bgurl && bgurl.URL ? bgurl.URL : 'null';
 };
 
 export const UpdateBackgroundImageOfArticle = async (
