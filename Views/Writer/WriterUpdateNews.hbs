@@ -1,9 +1,33 @@
+<script>
+    function validateForm(event) {
+        const tag = document.getElementById("tags-submission");
+        console.log(tag.value);
+        if (tag.value.length == 0) {
+            alert("Hãy gán ít nhất 1 tag trước khi cập nhật.");
+            event.preventDefault();
+            return;
+        }
+        const radioButtons = document.getElementsByName("category");
+        let isChecked = false;
+        for (const radio of radioButtons) {
+            if (radio.checked) {
+                isChecked = true;
+                break;
+            }
+        }
+
+        if (!isChecked) {
+            alert("Hãy cho chuyên mục trước khi cập nhật.");
+            event.preventDefault();
+        }
+    }
+</script>
 <div class="row d-flex justify-content-center mt-5">
     <div class="wrapper col col-lg-12 col-md-12 col-sm-12 mb-4">
         <h1 class="writer-publish-news-title">Hiệu chỉnh bài viết</h1>
     </div>
-    <form action="" method="POST" class="writer-publish-news-container col col-lg-12 col-md-12 col-sm-12"
-        enctype="multipart/form-data">
+    <form onsubmit="validateForm(event)" action="" method="POST"
+        class="writer-publish-news-container col col-lg-12 col-md-12 col-sm-12" enctype="multipart/form-data">
         <input type="text" style="display: none;" name="id" value="{{data.ID}}">
         </input>
         <div class="mb-4">
@@ -41,9 +65,9 @@
                                     {{#each SubCategories}}
                                     <li class="leaf">
                                         <label class="form-label" for="subcategory_{{id}}">{{name}}</label>
-                                        <input required type="radio" data-category-fullname="{{fullname}}"
-                                            name="category" value="{{id}}" id="subcategory_{{id}}" {{#if (eq
-                                            ../../data.selectedCategory id)}} checked {{/if}}>
+                                        <input type="radio" data-category-fullname="{{fullname}}" name="category"
+                                            value="{{id}}" id="subcategory_{{id}}" {{#if (eq ../../data.selectedCategory
+                                            id)}} checked {{/if}}>
                                     </li>
                                     {{/each}}
                                 </ul>
@@ -57,7 +81,7 @@
         <div class="mb-4">
             <label for="editor-tags" class="form-label fw-bold">Tags</label>
             <div class="d-flex mt-2">
-                <input type="text" class="d-none" id="tags-submission" name="tags" required />
+                <input type="text" class="d-none" id="tags-submission" name="tags" />
                 <select id="editor-tags" class="form-control">
                     {{#each tags}}
                     <option value="{{id}}">{{name}}</option>
@@ -87,9 +111,9 @@
             </label>
         </div>
         <div class="writer-publish-news-footer d-flex justify-content-end w-100">
-            <button type="submit" formaction="" class="back-button">
+            <a style="text-decoration: none;" href="javascript:history.back()" class="back-button">
                 Quay về
-            </button>
+            </a>
             <button type="submit" formaction="/writer/edit" class="submit-button">
                 Đăng
             </button>
@@ -148,11 +172,12 @@
         $('#tag-container').on('click', '.delete-tag-button', function () {
             const parentDiv = $(this).parent();
             const tagValue = parentDiv.find('p').text().trim();
+            const tagId = parentDiv.find('p').attr("data-id");
 
             parentDiv.remove();
 
             let allTagValues = $('#tags-submission').val().split(',');
-            const index = allTagValues.indexOf(tagValue);
+            const index = allTagValues.indexOf(tagId);
 
             if (index > -1) {
                 allTagValues.splice(index, 1);
