@@ -1,8 +1,8 @@
-import { DBConfig, DBConfig as db } from '../Utils/DBConfig';
+import {DBConfig as db} from '../Utils/DBConfig';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import bcrypt from 'bcryptjs';
-import { UserRole, UserData } from '../Models/UserData';
+import {UserData, UserRole} from '../Models/UserData';
 import { getRole } from '../Utils/getRole';
 
 export const getUsernameById = async (id: number): Promise<string> => {
@@ -47,11 +47,25 @@ export const getUserByEmail = async (
         'FullName as fullname',
         'Email as email',
         'Password   as password',
-        DBConfig.raw("DATE_FORMAT(Dob, '%d/%m/%Y') as dateOfBirth"),
-        DBConfig.raw("CASE Role WHEN 0 THEN 'User' WHEN 1 THEN 'Writer' WHEN 2 THEN 'Editor' WHEN 3 THEN 'Admin' ELSE 'Invalid' END as role")
+        db.raw("DATE_FORMAT(Dob, '%d/%m/%Y') as dateOfBirth"),
+        db.raw("CASE Role WHEN 0 THEN 'User' WHEN 1 THEN 'Writer' WHEN 2 THEN 'Editor' WHEN 3 THEN 'Admin' ELSE 'Invalid' END as role")
     ).first();
 
-    if (!user) return null;
+    if (!user)
+        return null;
+    let role = await GetRoleOfUserById(user.UserID);
+    if (role === UserRole.Writer) {
+        let writer = await db("writer").where({WriterID: user.UserID}).first();
+        return {
+            id: user.UserID,
+            fullname: user.FullName,
+            email: user.Email,
+            password: user.Password,
+            dob: user.DOB,
+            role: role,
+            penName: writer.Alias
+        };
+    }
     return {
         id: user.id,
         fullname: user.fullname,

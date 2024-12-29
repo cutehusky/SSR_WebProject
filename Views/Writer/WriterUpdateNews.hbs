@@ -28,6 +28,12 @@
     </div>
     <form onsubmit="validateForm(event)" action="" method="POST"
         class="writer-publish-news-container col col-lg-12 col-md-12 col-sm-12" enctype="multipart/form-data">
+        {{#if (eq data.state "Rejected")}}
+        <label style="color: #b52759;" class="form-label input-title">Lí do bị từ chối</label>
+        <div class="reason">
+            <pre style="margin-bottom: 0px;">{{data.reason}}</pre>
+        </div>
+        {{/if}}
         <input type="text" style="display: none;" name="id" value="{{data.ID}}">
         </input>
         <div class="mb-4">
