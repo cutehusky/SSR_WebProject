@@ -84,7 +84,9 @@ export class WriterController {
           BackgroundImageFileName: path.basename(bgURL),
           selectedCategory: category.id,
           selectedCategoryName: category.fullname,
-          tags: tag
+          tags: tag,
+          state: data.Status,
+          reason: data.Reason
         }
       });
     } else {

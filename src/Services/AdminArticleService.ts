@@ -593,7 +593,8 @@ export const GetArticleOfWriterByStates = async (
             'SUBCATEGORY.Name as subcategory',
             'URL as cover',
             'Status as state',
-            'ARTICLE.ArticleID as id'
+            'ARTICLE.ArticleID as id',
+            'Reason as reason'
         )
         .orderBy('DatePosted', 'desc')
         .offset(offset)

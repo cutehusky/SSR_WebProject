@@ -1,8 +1,8 @@
-import { DBConfig, DBConfig as db } from '../Utils/DBConfig';
+import {DBConfig as db} from '../Utils/DBConfig';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import bcrypt from 'bcryptjs';
-import { UserRole, UserData } from '../Models/UserData';
+import {UserData, UserRole} from '../Models/UserData';
 
 export const getUsernameById = async (id: number): Promise<string> => {
     const user = await db('USER').where('UserID', id).first();
@@ -43,14 +43,28 @@ export const getUserByEmail = async (
 ): Promise<UserData | null> => {
     const user = await db('USER').where('Email', email).first();
 
-    if (!user) return null;
+    if (!user)
+        return null;
+    let role = await GetRoleOfUserById(user.UserID);
+    if (role === UserRole.Writer) {
+        let writer = await db("writer").where({WriterID: user.UserID}).first();
+        return {
+            id: user.UserID,
+            fullname: user.FullName,
+            email: user.Email,
+            password: user.Password,
+            dob: user.DOB,
+            role: role,
+            penName: writer.Alias
+        };
+    }
     return {
         id: user.UserID,
         fullname: user.FullName,
         email: user.Email,
         password: user.Password,
         dob: user.DOB,
-        role: await GetRoleOfUserById(user.UserID),
+        role: role,
     };
 };
 

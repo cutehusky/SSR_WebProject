@@ -4,6 +4,7 @@ export interface UserData {
     email: string;
     password: string;
     dob: string;
+    penName?: string;
     role: string | UserRole;
 }
 
