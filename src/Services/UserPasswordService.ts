@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import bcrypt from 'bcryptjs';
 import { UserRole, UserData } from '../Models/UserData';
+import { getRole } from '../Utils/getRole';
 
 export const getUsernameById = async (id: number): Promise<string> => {
     const user = await db('user').where('UserID', id).first();
@@ -57,7 +58,7 @@ export const getUserByEmail = async (
         email: user.email,
         password: user.password,
         dob: user.dateOfBirth,
-        role: await GetRoleOfUserById(user.id),
+        role: getRole(user.role),
     };
 };
 

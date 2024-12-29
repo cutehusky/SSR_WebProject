@@ -253,7 +253,8 @@ export class WriterController {
       }
     }
     if (req.session.authUser?.role === UserRole.Admin) {
-      res.redirect("/admin/articles");
+      const redirectUrl = req.session.retUrl || "/admin/articles";
+      res.redirect(redirectUrl);
       return;
     }
     res.redirect("/writer/myArticles?state=Draft");
@@ -350,7 +351,8 @@ export class WriterController {
       }
     }
     if (data.WriterID !== writerId && req.session.authUser?.role === UserRole.Admin) {
-      res.redirect("/admin/articles");
+      const redirectUrl = req.session.retUrl || "/admin/articles";
+      res.redirect(redirectUrl);
       return;
     }
     res.redirect("/writer/myArticles?state=Draft");

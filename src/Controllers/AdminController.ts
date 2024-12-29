@@ -32,6 +32,7 @@ import {
 } from '../Utils/getTags';
 import { get } from 'jquery';
 import { clamp, getPagingNumber } from '../Utils/MathUtils';
+import { isValidUrl } from '../Utils/isValidURL';
 import { getWriterNameById } from '../Services/UserPasswordService';
 import bcrypt from "bcryptjs";
 
@@ -221,6 +222,8 @@ export class AdminController {
         console.log('Data: ', data);
         console.log(categoryId);
 
+        req.session.retUrl = req.originalUrl;
+
         res.render('Admin/AdminArticlesView', {
             selectedCategory: categoryId,
             data: data,
@@ -269,6 +272,7 @@ export class AdminController {
         data[i].categories = [];
       }
     }
+    req.session.retUrl = req.originalUrl;
     console.log('Data: ', data);
         res.render('Admin/AdminUsersView', {
             selectedRole: role,
@@ -352,7 +356,8 @@ export class AdminController {
 
             // Gọi Service để tạo user
             await updateUser(userData, category_add, category_remove);
-            res.redirect('/admin/users');
+            const redirectUrl = req.session.retUrl || '/admin/users';
+            res.redirect(redirectUrl);
         } catch (error) {
             // Bắt lỗi nếu có
             console.error('Error updating user:', error);
@@ -422,10 +427,11 @@ export class AdminController {
             const userData: UserData = req.body;
             console.log('Request body:', req.body);
             // Gọi Service để tạo user
-      userData.password = await bcrypt.hash(userData.password, 10);
+            userData.password = await bcrypt.hash(userData.password, 10);
             await createUser(userData);
 
-            res.redirect('/admin/users');
+            const redirectUrl = req.session.retUrl || '/admin/users';
+            res.redirect(redirectUrl);
         } catch (error) {
             // Bắt lỗi nếu có
             console.error('Error creating user:', error);
@@ -486,7 +492,11 @@ export class AdminController {
 
             // Gọi Service để xóa user
             await deleteUser(id);
-            res.redirect('/admin/users');
+            let redirectUrl = req.session.retUrl || '/admin/users';
+            if (!isValidUrl(redirectUrl)) {
+                redirectUrl = '/admin/users';
+            }
+            res.redirect(redirectUrl);
         } catch (error) {
             // Bắt lỗi nếu có
             console.error('Error deleting user:', error);

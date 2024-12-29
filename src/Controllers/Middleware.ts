@@ -40,8 +40,9 @@ export class MiddlewareController {
             if (req.session.authUser.role === UserRole.User) {
                 let userData = await DBConfig("subscriber")
                     .where("SubscriberID", req.session.authUser.id).first();
-                res.locals.isPremium = new Date(Date.now()) < userData.DateExpired;
-                let sec = (userData.DateExpired.getTime() - Date.now()) / 1000;
+                const dateExpired = new Date(userData.DateExpired);
+                res.locals.isPremium = new Date(Date.now()) < dateExpired;
+                let sec = (dateExpired.getTime() - Date.now()) / 1000;
                 res.locals.premiumTime = Math.floor(sec / 60) + ":" + Math.round(sec % 60);
             }
         }

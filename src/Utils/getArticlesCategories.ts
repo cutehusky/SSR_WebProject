@@ -2,7 +2,7 @@ import { DBConfig } from "./DBConfig";
 
 export const getArticlesCategories = (categories: any[], editorID: number | null): Promise<any[]> => {
     return DBConfig('article as a')
-        .join('article_subcategoryas as', 'a.ArticleID', 'as.ArticleID')
+        .join('article_subcategory as as', 'a.ArticleID', 'as.ArticleID')
         .join('subcategory as s', 'as.SubcategoryID', 's.SubcategoryID')
         .join('category as c', 's.CategoryID', 'c.CategoryID')
         .join('writer as w', 'a.WriterID', 'w.WriterID')

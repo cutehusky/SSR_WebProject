@@ -9,7 +9,7 @@ export interface UserData {
 
 export enum UserRole {
     Invalid = -1,
-    User = 'Subcriber',
+    User = 'User',
     Writer = 'Writer',
     Editor = 'Editor',
     Admin = 'Admin',

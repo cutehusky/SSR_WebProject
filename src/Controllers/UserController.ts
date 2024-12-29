@@ -383,9 +383,10 @@ export class UserController {
 
             // Update the password
             await userService.updatePassword(user.email, newPassword);
-            return res
-                .status(200)
-                .json({ message: 'Password reset successfully' });
+            res.redirect('/user/profile');
+            // return res
+            //     .status(200)
+            //     .json({ message: 'Password reset successfully' });
         } catch (error) {
             next(error);
         }

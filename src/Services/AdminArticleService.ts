@@ -416,7 +416,7 @@ export const CountSearchResult = async (
     searchValue: string
 ): Promise<number> => {
     let count = await DBConfig('article')
-        .whereRaw(
+        .whereRaw(  
             'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
             [searchValue]
         )
