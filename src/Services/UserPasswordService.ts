@@ -162,8 +162,8 @@ export const verifyOTP = async (
 export const updateProfile = async (
     id: number,
     email: string,
-    name: string,
-    dob: string
+    name: string | null,
+    dob: string | null
 ): Promise<void> => {
     try {
         // Kiểm tra xem user có tồn tại không
@@ -174,12 +174,49 @@ export const updateProfile = async (
 
         // Update user trong database
         await db('user').where('UserID', id).update({
-            fullName: name,
-            Email: email,
-            DOB: dob,
+            FullName: name || null,
+            Email: email || null,
+            DOB: dob || null,
         });
     } catch (error: any) {
         console.log(error);
         throw new Error('Failed to update user.');
     }
 };
+export const getProfile = async (id: number): Promise<{
+    id: number,
+    fullname: string,
+    email: string,
+    password: string,
+    dateOfBirth: string,
+    penName?: string
+}> => {
+    try {
+        // Kiểm tra xem user có tồn tại không
+        const user = await db('user').where('UserID', id).select(
+            'UserID as id',
+            'FullName as fullName',
+            'Email as email',
+            'Password   as password',
+            db.raw("DATE_FORMAT(Dob, '%d/%m/%Y') as dateOfBirth"),
+            db.raw("CASE Role WHEN 0 THEN 'User' WHEN 1 THEN 'Writer' WHEN 2 THEN 'Editor' WHEN 3 THEN 'Admin' ELSE 'Invalid' END as role")
+        ).first();
+        if (!user) {
+            throw new Error(`User with ID ${id} does not exist.`);
+        }
+        return {
+            id: user.id,
+            fullname: user.fullName,
+            email: user.email,
+            password: user.password,
+            dateOfBirth: user.dateOfBirth,
+            penName: user.role === 'Writer'  ? (await getWriterNameById(user.UserID)) : undefined
+        };
+        
+
+    }
+    catch (error: any) {
+        console.log(error);
+        throw new Error('Failed to get user.');
+    }
+}

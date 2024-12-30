@@ -182,7 +182,7 @@ export const countArticlesByCatID = async (
             '=',
             'article_subcategory.ArticleID'
         )
-        .groupBy('CATEGORy.CategoryID')
+        .groupBy('category.CategoryID')
         .count('* as total')
         .first();
 

@@ -344,13 +344,15 @@ export class UserController {
     }
 
     // /user/profile
-    getUserProfile(req: Request, res: Response) {
+    async getUserProfile(req: Request, res: Response) {
         if (!req.session.authUser) {
             res.redirect('/404');
             return;
         }
+        const Profile =await userService.getProfile(req.session.authUser.id)
         res.render('User/UserProfileView', {
             customCss: ['User.css'],
+            Profile,
         });
     }
 

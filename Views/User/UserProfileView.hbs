@@ -13,11 +13,10 @@
     {{/if}}
 </ul>
 {{/if}}
-<p>{{profile.dateOfBirth}}</p>
 {{#if isWriter}}
-{{> User/UserProfile id=profile.id penName=profile.penName dateOfBirth=profile.dob email=profile.email
-name=profile.fullname}}
+{{> User/UserProfile id=Profile.id penName=Profile.penName dateOfBirth=Profile.dateOfBirth email=Profile.email
+name=Profile.fullname}}
 {{else}}
-{{> User/UserProfile id=profile.id dateOfBirth=profile.dob
-email=profile.email name=profile.fullname}}
+{{> User/UserProfile id=Profile.id dateOfBirth=Profile.dateOfBirth
+email=Profile.email name=Profile.fullname}}
 {{/if}}
