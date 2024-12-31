@@ -4,12 +4,13 @@ export interface UserData {
     email: string;
     password: string;
     dob: string;
+    penName?: string;
     role: string | UserRole;
 }
 
 export enum UserRole {
     Invalid = -1,
-    User = 'Subcriber',
+    User = 'User',
     Writer = 'Writer',
     Editor = 'Editor',
     Admin = 'Admin',

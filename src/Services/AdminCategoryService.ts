@@ -2,24 +2,24 @@ import { Category } from './AdminArticleService';
 import { DBConfig } from "../Utils/DBConfig";
 
 export const countCategories = async (): Promise<number> => {
-    const result = await DBConfig('CATEGORY').count('CategoryID as count');
+    const result = await DBConfig('category').count('CategoryID as count');
     return parseInt(result[0].count as string); 
 };
 
 
 export const GetCategories = async () => {
-    return DBConfig('CATEGORY').select('CategoryID as id', 'Name as name');
+    return DBConfig('category').select('CategoryID as id', 'Name as name');
 }
 
 export const countSubCategories = async (categoryId: number): Promise<any> => {
     if(categoryId === -1) {
-        return DBConfig('SUBCATEGORY').count('SubCategoryID as count');
+        return DBConfig('subcategory').count('SubCategoryID as count');
     }
-    return DBConfig('SUBCATEGORY').where('CategoryID', categoryId).count('SubCategoryID as count');
+    return DBConfig('subcategory').where('CategoryID', categoryId).count('SubCategoryID as count');
 }
 
 export const GetCategoriesPage = async (offset: number = 0, limit: number = 10): Promise<any> => {
-    return DBConfig('CATEGORY').select('CategoryID as id', 'Name as name').limit(limit).offset(offset);
+    return DBConfig('category').select('CategoryID as id', 'Name as name').limit(limit).offset(offset);
 }
 
 export const GetSubCategories = (
@@ -35,25 +35,25 @@ export const GetSubCategories = (
         fullname: string;
     }[]
 > => {
-    const query = DBConfig('CATEGORY')
+    const query = DBConfig('category')
         .join(
-            'SUBCATEGORY',
-            'CATEGORY.CategoryID',
+            'subcategory',
+            'category.CategoryID',
             '=',
-            'SUBCATEGORY.CategoryID'
+            'subcategory.CategoryID'
         )
         .select(
             'SubCategoryID as id',
-            'CATEGORY.CategoryID as parentId',
-            'SUBCATEGORY.Name as name',
-            'CATEGORY.Name as parentName',
+            'category.CategoryID as parentId',
+            'subcategory.Name as name',
+            'category.Name as parentName',
             DBConfig.raw(
-                'CONCAT(CATEGORY.Name, " / ", SUBCATEGORY.Name) as fullname'
+                "CONCAT(category.Name, ' / ', subcategory.Name) as fullname"
             )
         );
     // Nếu categoryID khác -1, lọc theo categoryID
     if (categoryID !== -1) {
-        query.where('CATEGORY.CategoryID', '=', categoryID);
+        query.where('category.CategoryID', '=', categoryID);
     }
 
     // Áp dụng phân trang

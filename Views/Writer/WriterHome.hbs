@@ -1,3 +1,11 @@
+<div style="margin-top: 50px;" class="addNews">
+  <h4 style="padding-top: 5px;">Thêm Bài Viết</h4>
+  <a style="margin-left: 50px;" name="" id="" class="btn btn1" href="/writer/new" role="button">
+    <class="bi bi-file-earmark-plus-fill" style="margin-right: 5px;"></i>
+      Thêm bài viết
+  </a>
+</div>
+
 <div class="statistics mt-4 mb-4 d-flex flex-wrap align-items-center justify-content-around">
   {{#each statistics}}
   <a style="text-decoration: none;" href="/writer/myArticles?state={{id}}"
@@ -9,7 +17,6 @@
   </a>
   {{/each}}
 </div>
-<a style="margin-top: 50px;" name="" id="" class="btn btn1" href="/writer/new" role="button">Thêm bài viết</a>
 
 <script>
   console.log("data: ", this.statistics)

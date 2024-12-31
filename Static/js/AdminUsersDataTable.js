@@ -4,11 +4,6 @@ $(document).ready(function () {
         searching: false,
         lengthChange: false,
         paging: false,
-        columnDefs: [
-            {
-                targets: 4,
-                orderable: false,
-            }
-        ]
+        ordering: false
     });
 });

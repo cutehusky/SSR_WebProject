@@ -69,6 +69,16 @@
                         <i class="bi bi-person-x-fill"></i>
                     </button>
                 </form>
+                {{#if (eq role "User")}}
+                    {{#if upPremium}}
+                        <form method="post" style="margin: 0px; display: inline">
+                            <input name="id" type="text" value="{{id}}" style="display: none;">
+                            <button name="" class="btn actionBtn scale" formaction="/admin/add-premium" type="submit">
+                                <i class="bi bi-arrow-up-circle"></i>
+                            </button>
+                        </form>
+                    {{/if}}
+                {{/if}}
                 {{> Admin/Modal/EditUser name=name email=email role=role dateOfBirth=dateOfBirth id=id Categories=../Categories editorCat = categories}}
             </td>
         </tr>

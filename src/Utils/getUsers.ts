@@ -1,19 +1,19 @@
 import { DBConfig } from './DBConfig';
-import { getRole } from "./getRole";
+import { getRole } from './getRole';
 
 export const getUsers = async (
     role: string,
     offset: number,
     limit: number
-): Promise<
-    {
+): Promise<{
         id: number;
         name: string;
         email: string;
         dateOfBirth: string;
         role: string;
-         categories: any}[]
-> => {
+        categories: any,
+        upPremium: boolean;
+}[]> => {
     try {
         const query = DBConfig('user').select(
             'UserID as id',
@@ -21,7 +21,6 @@ export const getUsers = async (
             'Email as email',
             DBConfig.raw("DATE_FORMAT(Dob, '%d/%m/%Y') as dateOfBirth"),
             DBConfig.raw("CASE Role WHEN 0 THEN 'User' WHEN 1 THEN 'Writer' WHEN 2 THEN 'Editor' WHEN 3 THEN 'Admin' ELSE 'Invalid' END as role")
-            
         );
         if (role !== "all") {
             query.where("Role", getRole(role));

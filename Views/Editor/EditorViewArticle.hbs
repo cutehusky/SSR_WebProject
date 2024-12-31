@@ -161,16 +161,22 @@
             return tagIds;
         }
 
+        function updateTagsSubmission() {
+            const allTagIds = getAllTagIds();
+            $('#tags-submission').val(allTagIds.join(','));
+        }
+
+        // Initialize the hidden input field with existing tags
+        updateTagsSubmission();
+
         // Add tag
         const addTagButton = $('#add-tag-icon');
 
         addTagButton.on('click', function () {
-            let allTagIds = getAllTagIds();
-            console.log(allTagIds);
             const tagValue = $('#editor-tags option:selected').text();
             const tagId = $('#editor-tags').val();
 
-            if (allTagIds.includes(tagId))
+            if (getAllTagIds().includes(tagId))
                 return;
 
             const html = `
@@ -189,27 +195,18 @@
             const tagsContainer = $('#tag-container');
             tagsContainer.append(html);
 
-            allTagIds.push(tagId);
-            $('#tags-submission').val(allTagIds.join(','));
-            //console.log('Add: ', $('#tags-submission').val());
+            updateTagsSubmission();
         });
 
         // Delete tag
         $('#tag-container').on('click', '.delete-tag-button', function () {
-            const parentDiv = $(this).parent();
-            const tagValue = parentDiv.find('p').text().trim();
+            $(this).parent().remove();
+            updateTagsSubmission();
+        });
 
-            parentDiv.remove();
-
-            let allTagValues = $('#tags-submission').val().split(',');
-            const index = allTagValues.indexOf(tagValue);
-
-            if (index > -1) {
-                allTagValues.splice(index, 1);
-            }
-
-            $('#tags-submission').val(allTagValues.join(','));
-            //console.log('Del: ', $('#tags-submission').val());
+        // Ensure tags are updated before form submission
+        $('#editor-approve-form').on('submit', function () {
+            updateTagsSubmission();
         });
     });
 </script>

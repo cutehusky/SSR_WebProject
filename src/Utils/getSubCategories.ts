@@ -9,24 +9,24 @@ export const GetSubCategories = (categoryID : number): Promise<
         fullname: string;
     }[]
 > => {
-    const query = DBConfig('CATEGORY')
+    const query = DBConfig('category')
         .join(
-            'SUBCATEGORY',
-            'CATEGORY.CategoryID',
+            'subcategory',
+            'category.CategoryID',
             '=',
-            'SUBCATEGORY.CategoryID'
+            'subcategory.CategoryID'
         )
         .select(
             'SubCategoryID as id',
-            'CATEGORY.CategoryID as parentId',
-            'SUBCATEGORY.Name as name',
-            'CATEGORY.Name as parentName',
+            'category.CategoryID as parentId',
+            'subcategory.Name as name',
+            'category.Name as parentName',
             DBConfig.raw(
-                'CONCAT(CATEGORY.Name, " / ", SUBCATEGORY.Name) as fullname'
+                'concat(category.Name, " / ", subcategory.Name) as fullname'
             )
         );
     if (categoryID !== -1) {
-        query.where('CATEGORY.CategoryID', '=', categoryID);
+        query.where('category.CategoryID', '=', categoryID);
     }
 
     return query;

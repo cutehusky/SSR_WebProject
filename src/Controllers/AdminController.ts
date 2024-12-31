@@ -20,6 +20,7 @@ import {
     createUser,
     deleteUser,
     updateUser,
+    addPremium,
 } from '../Services/AdminUserService';
 import { UserData, UserRole } from '../Models/UserData';
 import {
@@ -32,6 +33,7 @@ import {
 } from '../Utils/getTags';
 import { get } from 'jquery';
 import { clamp, getPagingNumber } from '../Utils/MathUtils';
+import { isValidUrl } from '../Utils/isValidURL';
 import { getWriterNameById } from '../Services/UserPasswordService';
 import bcrypt from 'bcryptjs';
 
@@ -158,7 +160,6 @@ export class AdminController {
 
         // Cấu hình phân trang
         let page = parseInt(req.query.page as string) || 1;
-        let itemPerPage = 3;
         const totalTags = tagData.length;
         const totalPages = Math.ceil(totalTags / itemPerPage);
 
@@ -222,6 +223,8 @@ export class AdminController {
         console.log('Data: ', data);
         console.log(categoryId);
 
+        req.session.retUrl = req.originalUrl;
+
         res.render('Admin/AdminArticlesView', {
             selectedCategory: categoryId,
             data: data,
@@ -268,7 +271,18 @@ export class AdminController {
             } else {
                 data[i].categories = [];
             }
+            if (data[i].role === 'User') {
+                data[i].upPremium = await DBConfig('subscriber')
+                    .where('SubscriberID', data[i].id)
+                    .first()
+                    .then(subscriber => {
+                        const dateExpired = new Date(subscriber.DateExpired);
+                        return new Date(Date.now()) > dateExpired;
+                    });
+            }
         }
+
+        req.session.retUrl = req.originalUrl;
         console.log('Data: ', data);
         res.render('Admin/AdminUsersView', {
             selectedRole: role,
@@ -311,7 +325,7 @@ export class AdminController {
             return;
         }
 
-        await DBConfig('CATEGORY')
+        await DBConfig('category')
             .where('CategoryID', '=', id)
             .update({ Name: name });
 
@@ -354,7 +368,8 @@ export class AdminController {
 
             // Gọi Service để tạo user
             await updateUser(userData, category_add, category_remove);
-            res.redirect('/admin/users');
+            const redirectUrl = req.session.retUrl || '/admin/users';
+            res.redirect(redirectUrl);
         } catch (error) {
             // Bắt lỗi nếu có
             console.error('Error updating user:', error);
@@ -427,7 +442,8 @@ export class AdminController {
             userData.password = await bcrypt.hash(userData.password, 10);
             await createUser(userData);
 
-            res.redirect('/admin/users');
+            const redirectUrl = req.session.retUrl || '/admin/users';
+            res.redirect(redirectUrl);
         } catch (error) {
             // Bắt lỗi nếu có
             console.error('Error creating user:', error);
@@ -463,7 +479,7 @@ export class AdminController {
             res.status(404).send('Category not found');
             return;
         }
-        await DBConfig('CATEGORY').where('CategoryID', '=', categoryId).del();
+        await DBConfig('category').where('CategoryID', '=', categoryId).del();
         await DBConfig('subcategory')
             .where('CategoryID', '=', categoryId)
             .del();
@@ -488,7 +504,11 @@ export class AdminController {
 
             // Gọi Service để xóa user
             await deleteUser(id);
-            res.redirect('/admin/users');
+            let redirectUrl = req.session.retUrl || '/admin/users';
+            if (!isValidUrl(redirectUrl)) {
+                redirectUrl = '/admin/users';
+            }
+            res.redirect(redirectUrl);
         } catch (error) {
             // Bắt lỗi nếu có
             console.error('Error deleting user:', error);
@@ -577,5 +597,18 @@ export class AdminController {
             .where('ArticleID', articleId)
             .update({ Status: 'Published' });
         res.redirect('/admin/articles');
+    }
+
+    async addPremium(req: Request, res: Response) {
+        if (
+            req.session.authUser &&
+            req.session.authUser.role === UserRole.Admin
+        ) {
+            await addPremium(req.body.id);
+            const retUrl = req.session.retUrl || '/';
+            res.redirect(retUrl);
+        } else {
+            res.redirect('/404');
+        }
     }
 }

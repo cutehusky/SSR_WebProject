@@ -51,7 +51,7 @@ router.post('/reset-password', async (req, res, next)=> {
   }
 });
 
-router.post('/update-profile', async (req, res, next) => {
+router.post('/update-profile', userController.isLoggedIn, async (req, res, next) => {
   try {
     await userController.updateProfile(req, res, next);
   } catch (error) {

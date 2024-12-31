@@ -1,11 +1,11 @@
 import { DBConfig } from "./DBConfig";
 
 export const getArticlesCategories = (categories: any[], editorID: number | null): Promise<any[]> => {
-    return DBConfig('ARTICLE as a')
-        .join('ARTICLE_SUBCATEGORY as as', 'a.ArticleID', 'as.ArticleID')
-        .join('SUBCATEGORY as s', 'as.SubcategoryID', 's.SubcategoryID')
-        .join('CATEGORY as c', 's.CategoryID', 'c.CategoryID')
-        .join('WRITER as w', 'a.WriterID', 'w.WriterID')
+    return DBConfig('article as a')
+        .join('article_subcategory as as', 'a.ArticleID', 'as.ArticleID')
+        .join('subcategory as s', 'as.SubcategoryID', 's.SubcategoryID')
+        .join('category as c', 's.CategoryID', 'c.CategoryID')
+        .join('writer as w', 'a.WriterID', 'w.WriterID')
         .whereIn('c.CategoryID', categories.map((category) => category.id))
         .where('a.Status', 'Draft')
         .where(function () {

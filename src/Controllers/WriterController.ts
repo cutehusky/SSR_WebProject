@@ -101,6 +101,8 @@ export class WriterController {
                     selectedCategory: category.id,
                     selectedCategoryName: category.fullname,
                     tags: tag,
+                    state: data.Status,
+                    reason: data.Reason,
                 },
             });
         } else {
@@ -186,7 +188,7 @@ export class WriterController {
     }
 
     countArticleInState = async (writerId: number, states: string[]) => {
-        let res = await DBConfig('ARTICLE')
+        let res = await DBConfig('article')
             .where({ WriterID: writerId })
             .whereIn('Status', states)
             .count('* as count')
@@ -263,7 +265,7 @@ export class WriterController {
             return;
         }
 
-        const [id] = await DBConfig('ARTICLE').insert({
+        const [id] = await DBConfig('article').insert({
             Title: req.body.title,
             DatePosted: new Date(Date.now()),
             Content: req.body.content,
@@ -274,7 +276,7 @@ export class WriterController {
                 req.session.authUser?.role === UserRole.Admin ? null : writerId,
         });
 
-        await DBConfig('ARTICLE_SUBCATEGORY').insert({
+        await DBConfig('article_subcategory').insert({
             ArticleID: id,
             SubCategoryID: req.body.category,
         });
@@ -286,7 +288,7 @@ export class WriterController {
                 ArticleID: id,
                 TagID: tagId,
             }));
-            await DBConfig('ARTICLE_TAG').insert(insertData);
+            await DBConfig('article_tag').insert(insertData);
         }
 
         const imageData = req.body.backgroundImageArticle;
@@ -330,7 +332,8 @@ export class WriterController {
             }
         }
         if (req.session.authUser?.role === UserRole.Admin) {
-            res.redirect('/admin/articles');
+            const redirectUrl = req.session.retUrl || '/admin/articles';
+            res.redirect(redirectUrl);
             return;
         }
         res.redirect('/writer/myArticles?state=Draft');
@@ -341,7 +344,7 @@ export class WriterController {
         console.log(req.body);
         const writerId = req.session.authUser?.id as number;
         const id = req.body.id;
-        if (!id || !writerId) {
+        if (!id) {
             res.redirect('/404');
             return;
         }
@@ -371,7 +374,7 @@ export class WriterController {
             data.WriterID !== writerId &&
             req.session.authUser?.role === UserRole.Admin
         ) {
-            await DBConfig('ARTICLE')
+            await DBConfig('article')
                 .where({ ArticleID: id })
                 .update({
                     Title: req.body.title,
@@ -382,7 +385,7 @@ export class WriterController {
                     IsPremium: req.body.isPremium === 'on' ? 1 : 0,
                 });
         } else {
-            await DBConfig('ARTICLE')
+            await DBConfig('article')
                 .where({ ArticleID: id })
                 .update({
                     Title: req.body.title,
@@ -395,7 +398,7 @@ export class WriterController {
                 });
         }
 
-        const affectedRows = await DBConfig('ARTICLE_SUBCATEGORY')
+        const affectedRows = await DBConfig('article_subcategory')
             .where({
                 ArticleID: id,
             })
@@ -403,20 +406,20 @@ export class WriterController {
                 SubCategoryID: req.body.category,
             });
         if (affectedRows === 0)
-            await DBConfig('ARTICLE_SUBCATEGORY').insert({
+            await DBConfig('article_subcategory').insert({
                 SubCategoryID: req.body.category,
                 ArticleID: id,
             });
 
         const tags = req.body.tags;
         const listOfTags = tags ? tags.split(',') : [];
-        await DBConfig('ARTICLE_TAG').where({ ArticleID: id }).del();
+        await DBConfig('article_tag').where({ ArticleID: id }).del();
         if (listOfTags.length > 0) {
             const insertData = listOfTags.map((tagId: any) => ({
                 ArticleID: id,
                 TagID: tagId,
             }));
-            await DBConfig('ARTICLE_TAG').insert(insertData);
+            await DBConfig('article_tag').insert(insertData);
         }
 
         const imageData = req.body.backgroundImageArticle;
@@ -465,7 +468,8 @@ export class WriterController {
             data.WriterID !== writerId &&
             req.session.authUser?.role === UserRole.Admin
         ) {
-            res.redirect('/admin/articles');
+            const redirectUrl = req.session.retUrl || '/admin/articles';
+            res.redirect(redirectUrl);
             return;
         }
         res.redirect('/writer/myArticles?state=Draft');

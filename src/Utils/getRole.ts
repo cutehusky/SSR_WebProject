@@ -1,5 +1,6 @@
 import exp from "constants";
 import { DBConfig } from "./DBConfig";
+import { UserData, UserRole } from "../Models/UserData";
 
 // chuyển từ 0 sang user, 1 sang writer, 2 sang editor, 3 sang admin
 export const getRoleName = (role: number): string => {
@@ -19,7 +20,7 @@ export const getRoleName = (role: number): string => {
 export const getRole = (role: string): number => {
 
     switch (role) {
-        case "Subcriber":
+        case "User":
             return 0;
         case "Writer":
             return 1;

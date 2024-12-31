@@ -175,7 +175,7 @@ const updateArticlePublished = async () => {
     const [time, date] = formatted_datetime.split(separator);
     const [day, month, year] = date.split('/');
     const final_datetime = `${year}-${month}-${day} ${time}`;
-    await DBConfig('ARTICLE')
+    await DBConfig('article')
         .where('Status', 'Approved')
         .where('DatePublished', '>', final_datetime)
         .update('Status', 'Published');

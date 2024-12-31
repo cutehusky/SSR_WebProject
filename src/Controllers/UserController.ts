@@ -179,7 +179,7 @@ export class UserController {
 
     async forgotPasswordPost(req: Request, res: Response) {
         const { otp, newPassword, email } = req.body;
-        const user = await DBConfig('USER').where('Email', email).first();
+        const user = await DBConfig('user').where('Email', email).first();
         if (otp != user.otp) {
             res.render('User/ForgotPasswordView', {
                 customCss: ['User.css'],
@@ -204,9 +204,13 @@ export class UserController {
         }
         try {
             const hashedPassword = await bcrypt.hash(newPassword, 10);
-            await DBConfig('USER')
+            await DBConfig('user')
                 .where('Email', email)
-                .update({ Password: hashedPassword });
+                .update({ 
+                    Password: hashedPassword,
+                    otp: null,
+                    otpExpiration: null 
+                });
             res.render('User/ForgotPasswordView', {
                 customCss: ['User.css'],
                 message: 'Mật khẩu đã được thay đổi thành công!',
@@ -221,14 +225,16 @@ export class UserController {
     }
     // /user/forgot-password-email/
     async forgotPasswordEmail(req: Request, res: Response) {
-        const userId = req.params.id;
+        if(req.session.authUser){
+            req.session.authUser = null;
+        }
         res.render('User/ForgotPasswordEmailView', {
             customCss: ['User.css'],
         });
     }
     async forgotPasswordEmailPost(req: Request, res: Response) {
         const { email } = req.body;
-        const user = await DBConfig('USER').where('Email', email).first();
+        const user = await DBConfig('user').where('Email', email).first();
         if (!user) {
             return res.render('User/ForgotPasswordEmailView', {
                 customCss: ['User.css'],
@@ -249,7 +255,7 @@ export class UserController {
             const OTPExpires = new Date(Date.now() + 3 * 60 * 60 * 1000); // 3 giờ
 
             // Lưu OTP vào database
-            await DBConfig('USER')
+            await DBConfig('user')
                 .where('Email', email)
                 .update({ otp: OTP, otpExpiration: OTPExpires });
 
@@ -288,7 +294,7 @@ export class UserController {
     // /user/resent-otp
     async resentOTP(req: Request, res: Response) {
         const { email } = req.body;
-        const user = await DBConfig('USER').where('Email', email).first();
+        const user = await DBConfig('user').where('Email', email).first();
         if (!user) {
             return res.render('User/ForgotPasswordEmailView', {
                 customCss: ['User.css'],
@@ -340,13 +346,15 @@ export class UserController {
     }
 
     // /user/profile
-    getUserProfile(req: Request, res: Response) {
+    async getUserProfile(req: Request, res: Response) {
         if (!req.session.authUser) {
             res.redirect('/404');
             return;
         }
+        const Profile =await userService.getProfile(req.session.authUser.id)
         res.render('User/UserProfileView', {
             customCss: ['User.css'],
+            Profile,
         });
     }
 
@@ -378,10 +386,11 @@ export class UserController {
             }
 
             // Update the password
-            await userService.updatePassword(user.email, newPassword);
-            return res
-                .status(200)
-                .json({ message: 'Password reset successfully' });
+            await userService.updatePassword(user, newPassword);
+            res.redirect('/user/profile');
+            // return res
+            //     .status(200)
+            //     .json({ message: 'Password reset successfully' });
         } catch (error) {
             next(error);
         }
@@ -441,6 +450,7 @@ export class UserController {
             const { email, name, dob } = req.body;
             console.log(email, name, dob);
             await userService.updateProfile(user.id, email, name, dob);
+            res.redirect('/user/profile');
         } catch (error) {
             console.error('Update Profile Error:', error);
             return res.status(500).json({ error: 'Internal Server Error' });
