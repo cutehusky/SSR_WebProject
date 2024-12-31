@@ -203,13 +203,11 @@ export class UserController {
         }
         try {
             const hashedPassword = await bcrypt.hash(newPassword, 10);
-            await DBConfig('user')
-                .where('Email', email)
-                .update({ 
-                    Password: hashedPassword,
-                    otp: null,
-                    otpExpiration: null 
-                });
+            await DBConfig('user').where('Email', email).update({
+                Password: hashedPassword,
+                otp: null,
+                otpExpiration: null,
+            });
             res.render('User/ForgotPasswordView', {
                 customCss: ['User.css'],
                 message: 'Mật khẩu đã được thay đổi thành công!',
@@ -224,7 +222,7 @@ export class UserController {
     }
     // /user/forgot-password-email/
     async forgotPasswordEmail(req: Request, res: Response) {
-        if(req.session.authUser){
+        if (req.session.authUser) {
             req.session.authUser = null;
         }
         res.render('User/ForgotPasswordEmailView', {
@@ -350,7 +348,7 @@ export class UserController {
             res.redirect('/404');
             return;
         }
-        const Profile =await userService.getProfile(req.session.authUser.id)
+        const Profile = await userService.getProfile(req.session.authUser.id);
         res.render('User/UserProfileView', {
             customCss: ['User.css'],
             Profile,

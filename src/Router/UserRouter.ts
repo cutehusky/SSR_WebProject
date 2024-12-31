@@ -1,5 +1,6 @@
 import express from 'express';
 import { UserController } from '../Controllers/UserController';
+import { recaptcha } from '../Utils/recaptcha';
 import ErrorHandler from "../Utils/ErrorHandle";
 
 const router = express.Router();
@@ -22,17 +23,21 @@ router.post('/login', async (req, res, next) => {
 	next(error);
   }
 });
-router.post('/logout',  (req, res) => {
+router.post('/logout',  (req, res, next) => {
     req.session.authUser = null;
     res.redirect("/");
 });
-router.post('/register', async (req, res, next) => {
-  try {
-    await userController.register(req, res, next);
-  } catch (error) {
-    next(error);
+router.post(
+  '/register',
+  recaptcha,
+  async (req, res, next) => {
+    try {
+      await userController.register(req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 router.post('/send-otp', async(req, res, next) =>{
   try {
     await userController.sendOTP(req, res, next);
