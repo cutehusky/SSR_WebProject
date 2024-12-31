@@ -370,54 +370,107 @@ export const getArticlesBySubCatID = async (
 export const findPageByTagID = async (
     tagIDs: string[],
     limit: number,
-    offset: number
+    offset: number,
+    isPremium: boolean
 ): Promise<any[]> => {
-    const response = await DBConfig('article_tag')
-        .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
-        .join('article', 'article.ArticleID', '=', 'article_tag.ArticleID')
-        .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
-        .join(
-            'article_subcategory',
-            'article_subcategory.ArticleID',
-            '=',
-            'article.ArticleID'
-        )
-        .join(
-            'subcategory',
-            'subcategory.SubCategoryID',
-            '=',
-            'article_subcategory.SubCategoryID'
-        )
-        .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
-        .whereIn('article_tag.TagID', tagIDs)
-        .select(
-            'article.ArticleID',
-            'Title',
-            'DatePosted',
-            'Abstract',
-            'IsPremium',
-            'ViewCount',
-            'category.Name as category',
-            'subcategory.Name as subcategory',
-            'category.CategoryID as categoryId',
-            'subcategory.SubCategoryID as subcategoryId',
-            'url as URL'
-        )
-        .groupBy(
-            'article.ArticleID',
-            'article.Title',
-            'article.Abstract',
-            'IsPremium',
-            'ViewCount',
-            'article.DatePosted',
-            'article_url.URL',
-            'category.Name',
-            'subcategory.Name',
-            'category.CategoryID',
-            'subcategory.SubCategoryID'
-        )
-        .limit(limit)
-        .offset(offset);
+    let response = []
+    if (isPremium) {
+        response = await DBConfig('article_tag')
+            .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
+            .join('article', 'article.ArticleID', '=', 'article_tag.ArticleID')
+            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .join(
+                'article_subcategory',
+                'article_subcategory.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
+            .join(
+                'subcategory',
+                'subcategory.SubCategoryID',
+                '=',
+                'article_subcategory.SubCategoryID'
+            )
+            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+            .whereIn('article_tag.TagID', tagIDs)
+            .select(
+                'article.ArticleID',
+                'Title',
+                'DatePosted',
+                'Abstract',
+                'IsPremium',
+                'ViewCount',
+                'category.Name as category',
+                'subcategory.Name as subcategory',
+                'category.CategoryID as categoryId',
+                'subcategory.SubCategoryID as subcategoryId',
+                'url as URL'
+            )
+            .groupBy(
+                'article.ArticleID',
+                'article.Title',
+                'article.Abstract',
+                'IsPremium',
+                'ViewCount',
+                'article.DatePosted',
+                'article_url.URL',
+                'category.Name',
+                'subcategory.Name',
+                'category.CategoryID',
+                'subcategory.SubCategoryID'
+            )
+            .orderBy('article.IsPremium', 'desc')
+            .orderBy('article.DatePosted', 'DESC')
+            .limit(limit)
+            .offset(offset);
+    } else {
+        response = await DBConfig('article_tag')
+            .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
+            .join('article', 'article.ArticleID', '=', 'article_tag.ArticleID')
+            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .join(
+                'article_subcategory',
+                'article_subcategory.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
+            .join(
+                'subcategory',
+                'subcategory.SubCategoryID',
+                '=',
+                'article_subcategory.SubCategoryID'
+            )
+            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+            .whereIn('article_tag.TagID', tagIDs)
+            .select(
+                'article.ArticleID',
+                'Title',
+                'DatePosted',
+                'Abstract',
+                'IsPremium',
+                'ViewCount',
+                'category.Name as category',
+                'subcategory.Name as subcategory',
+                'category.CategoryID as categoryId',
+                'subcategory.SubCategoryID as subcategoryId',
+                'url as URL'
+            )
+            .groupBy(
+                'article.ArticleID',
+                'article.Title',
+                'article.Abstract',
+                'IsPremium',
+                'ViewCount',
+                'article.DatePosted',
+                'article_url.URL',
+                'category.Name',
+                'subcategory.Name',
+                'category.CategoryID',
+                'subcategory.SubCategoryID'
+            )
+            .limit(limit)
+            .offset(offset);
+    }
 
     for (let i = 0; i < response.length; i++)
         response[i].tags = await GetTagsOfArticle(response[i].ArticleID);
@@ -501,7 +554,7 @@ export const SearchArticle = async (
                 'subcategory.Name as subcategory',
                 'category.CategoryID as categoryId',
                 'subcategory.SubCategoryID as subcategoryId',
-                'url'
+                'url as URL'
             )
             .offset(offset)
             .limit(limit);
@@ -656,7 +709,7 @@ export interface ArticleListItem {
     subcategory: string;
     categoryId: number;
     subcategoryId: number;
-    url: string;
+    URL: string;
     tags?: Array<Tag>;
 }
 
@@ -784,11 +837,11 @@ export const GetCategoryOfArticle = async (articleId: string) => {
     return category
         ? (category as Category)
         : {
-              categoryName: '',
-              subcategoryName: '',
-              categoryId: 0,
-              subcategoryId: 0,
-          };
+            categoryName: '',
+            subcategoryName: '',
+            categoryId: 0,
+            subcategoryId: 0,
+        };
 };
 
 export interface Comment {
@@ -1055,8 +1108,8 @@ export const getTopArticles = async (
     const startWeek = new Date();
     startWeek.setDate(
         startWeek.getDate() -
-            startWeek.getDay() +
-            (startWeek.getDay() === 0 ? -6 : 1)
+        startWeek.getDay() +
+        (startWeek.getDay() === 0 ? -6 : 1)
     );
     startWeek.setHours(0, 0, 0, 0);
     const endWeek = new Date(startWeek);
