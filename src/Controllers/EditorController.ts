@@ -40,7 +40,7 @@ export class EditorController {
                 'Component.css',
                 'DataTable.css',
             ],
-            customJs: ['AdminArticlesDataTable.js'],
+            customJs: ['EditorArticlesDataTable.js'],
             categories,
             articles,
             pages,

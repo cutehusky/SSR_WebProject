@@ -267,7 +267,7 @@ export class WriterController {
     console.log(req.body);
     const writerId = req.session.authUser?.id as number;
     const id = req.body.id;
-    if (!id || !writerId) {
+    if (!id ) {
       res.redirect("/404");
       return;
     }

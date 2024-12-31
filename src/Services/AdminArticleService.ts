@@ -1212,7 +1212,7 @@ export const countArticlesCategories = async (
         .join('article_subcategory as as', 'a.ArticleID', 'as.ArticleID')
         .join('subcategory as s', 'as.SubcategoryID', 's.SubcategoryID')
         .join('category as c', 's.CategoryID', 'c.CategoryID')
-        .join('writer as w', 'a.WriterID', 'w.WriterID')
+        .orderBy("a.DatePosted", "desc");
 
     if (categories === -1) {
         let count = await query.count('* as countTotal').first();
@@ -1234,6 +1234,7 @@ export const getArticlesCategories = (
         .join('article_subcategory as as', 'a.ArticleID', 'as.ArticleID')
         .join('subcategory as s', 'as.SubcategoryID', 's.SubcategoryID')
         .join('category as c', 's.CategoryID', 'c.CategoryID')
+        .orderBy("a.DatePosted", "desc")
         .select(
             'a.ArticleID as id',
             'a.Title as title',

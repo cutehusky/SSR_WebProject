@@ -159,7 +159,6 @@ export class AdminController {
 
         // Cấu hình phân trang
         let page = parseInt(req.query.page as string) || 1;
-        let itemPerPage = 3;
         const totalTags = tagData.length;
         const totalPages = Math.ceil(totalTags / itemPerPage);
 

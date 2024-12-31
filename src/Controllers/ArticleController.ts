@@ -380,7 +380,7 @@ export class ArticleController {
             }
             res.setHeader(
                 'Content-Disposition',
-                `attachment; filename=${data.Title}_id-${articleId}.pdf`
+                `attachment; filename=news_id-${articleId}.pdf`
             );
             res.setHeader('Content-Type', 'application/pdf');
             res.send(buffer);
