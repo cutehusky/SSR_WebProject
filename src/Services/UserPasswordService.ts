@@ -76,19 +76,21 @@ export const getUserByEmail = async (
 };
 
 export const updatePassword = async (
-    email: string,
+    userData: any,
     newPassword: string
 ): Promise<void> => {
     try {
         // Kiểm tra xem user có tồn tại không
-        const user = await db('user').where('Email', email).first();
+        const user = await db('user').where('Email', userData.email).first();
         if (!user) {
-            throw new Error(`User with email ${email} does not exist.`);
+            throw new Error(`User with email ${userData.email} does not exist.`);
         }
         const hashPassword = await bcrypt.hash(newPassword, 10);
 
+        userData.password = hashPassword;
+
         // Update password trong database
-        await db('user').where('Email', email).update({
+        await db('user').where('Email', userData.email).update({
             Password: hashPassword,
             otp: null, // Clear OTP and expiration time after password reset
             otpExpiration: null,

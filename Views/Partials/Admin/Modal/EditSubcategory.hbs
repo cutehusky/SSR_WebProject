@@ -9,7 +9,7 @@
                 <input name="id" type="text" value="{{id}}" style="display: none;">
                 <div class="modal-body">
                     <select name="category" class="form-select" style="height: 40px;" id="roleSelect">
-                        {{#each Categories}}
+                        {{#each allCategories}}
                         <option value="{{id}}" {{#if (eq ../parentId id ) }}selected{{/if }}>
                             {{name}}</option>
                         {{/each}}

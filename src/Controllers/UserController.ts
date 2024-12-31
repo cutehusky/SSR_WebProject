@@ -225,7 +225,9 @@ export class UserController {
     }
     // /user/forgot-password-email/
     async forgotPasswordEmail(req: Request, res: Response) {
-        const userId = req.params.id;
+        if(req.session.authUser){
+            req.session.authUser = null;
+        }
         res.render('User/ForgotPasswordEmailView', {
             customCss: ['User.css'],
         });
@@ -384,7 +386,7 @@ export class UserController {
             }
 
             // Update the password
-            await userService.updatePassword(user.email, newPassword);
+            await userService.updatePassword(user, newPassword);
             res.redirect('/user/profile');
             // return res
             //     .status(200)
