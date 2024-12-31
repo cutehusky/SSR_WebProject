@@ -5,21 +5,50 @@
     {{! Form submit for sign in with email }}
     <form action="/user/register" class="w-75" method="POST">
       <div class="mb-3">
-        <input type="email" class="form-control mb-4 sign-in-form-input" id="sign-in-form-email"
-          placeholder="Email của bạn" name="email" />
+        <input
+          type="email"
+          class="form-control mb-4 sign-in-form-input"
+          id="sign-in-form-email"
+          placeholder="Email của bạn"
+          name="email"
+          required
+        />
       </div>
       <div class="mb-3">
-        <input type="text" class="form-control mb-4 sign-in-form-input" id="sign-in-form-username"
-          placeholder="Họ và tên" name="fullname" />
+        <input
+          type="text"
+          class="form-control mb-4 sign-in-form-input"
+          id="sign-in-form-username"
+          placeholder="Họ và tên"
+          name="fullname"
+          required
+        />
       </div>
       <div class="mb-3">
-        <input type="password" class="form-control mb-4 sign-in-form-input" id="sign-in-form-password"
-          placeholder="Mật khẩu của bạn" name="password" />
+        <input
+          type="password"
+          class="form-control mb-4 sign-in-form-input"
+          id="sign-in-form-password"
+          placeholder="Mật khẩu của bạn"
+          name="password"
+          required
+        />
       </div>
       <div class="mb-3">
-        <input type="password" class="form-control mb-4 sign-in-form-input" id="sign-in-form-confirm-password"
-          placeholder="Nhập lại mật  khẩu" />
+        <input
+          type="password"
+          class="form-control mb-4 sign-in-form-input"
+          id="sign-in-form-confirm-password"
+          placeholder="Nhập lại mật  khẩu"
+          required
+        />
       </div>
+      <div 
+        class="g-recaptcha mb-3" 
+        data-sitekey="6LeHbaEqAAAAAPrW2icmbu9Kz2RNuufAAhexE9wi">
+        required
+      </div>
+
       <div class="d-flex flex-column align-items-center justify-content-center">
         <button type="submit" class="btn btn-secondary w-100">Tạo tài khoản</button>
         <p class="mt-4 is-registered">Bạn đã có tài khoản?</p>
@@ -44,3 +73,4 @@
     </div>
   </div>
 </div>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
