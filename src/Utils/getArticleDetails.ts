@@ -6,7 +6,7 @@ export const getArticleDetails = (articleID: number): Promise<any> => {
         .join('subcategory as s', 'as.SubcategoryID', 's.SubcategoryID')
         .join('category as c', 's.CategoryID', 'c.CategoryID')
         .join('writer as w', 'a.WriterID', 'w.WriterID')
-        .join('article_url as au', 'a.ArticleID', 'au.ArticleID')
+        .leftJoin('article_url as au', 'a.ArticleID', 'au.ArticleID')
         .where('a.ArticleID', articleID)
         .select(
             'a.*',

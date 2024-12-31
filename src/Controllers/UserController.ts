@@ -50,6 +50,7 @@ export class UserController {
 
             // Lưu thông tin người dùng vào session
             req.session.authUser = user;
+
             // Redirect về URL trước đó nếu có
             const retUrl = req.session.retUrl || '/';
             req.session.retUrl = undefined;
