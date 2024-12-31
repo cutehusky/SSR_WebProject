@@ -81,7 +81,12 @@ export const getArticlesByCategoryID = async (
                 '=',
                 'article_subcategory.ArticleID'
             )
-            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .join(
+                'article_url',
+                'article_url.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
             .orderBy('article.IsPremium', 'desc')
             .orderBy('article.DatePosted', 'DESC')
             .select(
@@ -89,6 +94,7 @@ export const getArticlesByCategoryID = async (
                 'article.Title as Title',
                 'article.Abstract as Abstract',
                 'article.DatePosted as DatePosted',
+                'article.IsPremium as isPremium',
                 'article_url.url as URL',
                 'subcategory.Name as subcategory',
                 'subcategory.SubcategoryID as subcategoryId',
@@ -117,13 +123,19 @@ export const getArticlesByCategoryID = async (
                 '=',
                 'article_subcategory.ArticleID'
             )
-            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .join(
+                'article_url',
+                'article_url.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
             .orderBy('article.DatePosted', 'DESC')
             .select(
                 'article.ArticleID as ArticleID',
                 'article.Title as Title',
                 'article.Abstract as Abstract',
                 'article.DatePosted as DatePosted',
+                'article.IsPremium as isPremium',
                 'article_url.url as URL',
                 'subcategory.Name as subcategory',
                 'subcategory.SubcategoryID as subcategoryId',
@@ -257,7 +269,12 @@ export const getArticlesBySubCatID = async (
     if (isPremium) {
         response = await db('subcategory')
             .where('subcategory.SubCategoryID', '=', subcategoryId)
-            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+            .join(
+                'category',
+                'category.CategoryID',
+                '=',
+                'subcategory.CategoryID'
+            )
             .join(
                 'article_subcategory',
                 'article_subcategory.SubCategoryID',
@@ -278,6 +295,7 @@ export const getArticlesBySubCatID = async (
                 'article.Title as Title',
                 'article.Abstract as Abstract',
                 'article.DatePosted as DatePosted',
+                'article.IsPremium as isPremium',
                 'article_url.url as URL',
                 'subcategory.Name as subcategory',
                 'subcategory.SubcategoryID as subcategoryId',
@@ -288,7 +306,12 @@ export const getArticlesBySubCatID = async (
     } else {
         response = await db('subcategory')
             .where('subcategory.SubCategoryID', '=', subcategoryId)
-            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+            .join(
+                'category',
+                'category.CategoryID',
+                '=',
+                'subcategory.CategoryID'
+            )
             .join(
                 'article_subcategory',
                 'article_subcategory.SubCategoryID',
@@ -308,6 +331,7 @@ export const getArticlesBySubCatID = async (
                 'article.Title as Title',
                 'article.Abstract as Abstract',
                 'article.DatePosted as DatePosted',
+                'article.IsPremium as isPremium',
                 'article_url.url as URL',
                 'subcategory.Name as subcategory',
                 'subcategory.SubcategoryID as subcategoryId',
@@ -346,54 +370,107 @@ export const getArticlesBySubCatID = async (
 export const findPageByTagID = async (
     tagIDs: string[],
     limit: number,
-    offset: number
+    offset: number,
+    isPremium: boolean
 ): Promise<any[]> => {
-    const response = await DBConfig('article_tag')
-        .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
-        .join('article', 'article.ArticleID', '=', 'article_tag.ArticleID')
-        .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
-        .join(
-            'article_subcategory',
-            'article_subcategory.ArticleID',
-            '=',
-            'article.ArticleID'
-        )
-        .join(
-            'subcategory',
-            'subcategory.SubCategoryID',
-            '=',
-            'article_subcategory.SubCategoryID'
-        )
-        .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
-        .whereIn('article_tag.TagID', tagIDs)
-        .select(
-            'article.ArticleID',
-            'Title',
-            'DatePosted',
-            'Abstract',
-            'IsPremium',
-            'ViewCount',
-            'category.Name as category',
-            'subcategory.Name as subcategory',
-            'category.CategoryID as categoryId',
-            'subcategory.SubCategoryID as subcategoryId',
-            'url as URL'
-        )
-        .groupBy(
-            'article.ArticleID',
-            'article.Title',
-            'article.Abstract',
-            'IsPremium',
-            'ViewCount',
-            'article.DatePosted',
-            'article_url.URL',
-            'category.Name',
-            'subcategory.Name',
-            'category.CategoryID',
-            'subcategory.SubCategoryID'
-        )
-        .limit(limit)
-        .offset(offset);
+    let response = []
+    if (isPremium) {
+        response = await DBConfig('article_tag')
+            .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
+            .join('article', 'article.ArticleID', '=', 'article_tag.ArticleID')
+            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .join(
+                'article_subcategory',
+                'article_subcategory.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
+            .join(
+                'subcategory',
+                'subcategory.SubCategoryID',
+                '=',
+                'article_subcategory.SubCategoryID'
+            )
+            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+            .whereIn('article_tag.TagID', tagIDs)
+            .select(
+                'article.ArticleID',
+                'Title',
+                'DatePosted',
+                'Abstract',
+                'IsPremium',
+                'ViewCount',
+                'category.Name as category',
+                'subcategory.Name as subcategory',
+                'category.CategoryID as categoryId',
+                'subcategory.SubCategoryID as subcategoryId',
+                'url as URL'
+            )
+            .groupBy(
+                'article.ArticleID',
+                'article.Title',
+                'article.Abstract',
+                'IsPremium',
+                'ViewCount',
+                'article.DatePosted',
+                'article_url.URL',
+                'category.Name',
+                'subcategory.Name',
+                'category.CategoryID',
+                'subcategory.SubCategoryID'
+            )
+            .orderBy('article.IsPremium', 'desc')
+            .orderBy('article.DatePosted', 'DESC')
+            .limit(limit)
+            .offset(offset);
+    } else {
+        response = await DBConfig('article_tag')
+            .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
+            .join('article', 'article.ArticleID', '=', 'article_tag.ArticleID')
+            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .join(
+                'article_subcategory',
+                'article_subcategory.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
+            .join(
+                'subcategory',
+                'subcategory.SubCategoryID',
+                '=',
+                'article_subcategory.SubCategoryID'
+            )
+            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+            .whereIn('article_tag.TagID', tagIDs)
+            .select(
+                'article.ArticleID',
+                'Title',
+                'DatePosted',
+                'Abstract',
+                'IsPremium',
+                'ViewCount',
+                'category.Name as category',
+                'subcategory.Name as subcategory',
+                'category.CategoryID as categoryId',
+                'subcategory.SubCategoryID as subcategoryId',
+                'url as URL'
+            )
+            .groupBy(
+                'article.ArticleID',
+                'article.Title',
+                'article.Abstract',
+                'IsPremium',
+                'ViewCount',
+                'article.DatePosted',
+                'article_url.URL',
+                'category.Name',
+                'subcategory.Name',
+                'category.CategoryID',
+                'subcategory.SubCategoryID'
+            )
+            .limit(limit)
+            .offset(offset);
+    }
 
     for (let i = 0; i < response.length; i++)
         response[i].tags = await GetTagsOfArticle(response[i].ArticleID);
@@ -451,8 +528,18 @@ export const SearchArticle = async (
                 '=',
                 'subcategory.SubCategoryID'
             )
-            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
-            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .join(
+                'category',
+                'category.CategoryID',
+                '=',
+                'subcategory.CategoryID'
+            )
+            .join(
+                'article_url',
+                'article_url.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
             .where('STT', '=', '0')
             .orderBy('article.IsPremium', 'desc')
             .orderBy('DatePosted', 'desc')
@@ -467,7 +554,7 @@ export const SearchArticle = async (
                 'subcategory.Name as subcategory',
                 'category.CategoryID as categoryId',
                 'subcategory.SubCategoryID as subcategoryId',
-                'url'
+                'url as URL'
             )
             .offset(offset)
             .limit(limit);
@@ -489,8 +576,18 @@ export const SearchArticle = async (
                 '=',
                 'subcategory.SubCategoryID'
             )
-            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
-            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .join(
+                'category',
+                'category.CategoryID',
+                '=',
+                'subcategory.CategoryID'
+            )
+            .join(
+                'article_url',
+                'article_url.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
             .where('STT', '=', '0')
             .orderBy('DatePosted', 'desc')
             .select(
@@ -612,7 +709,7 @@ export interface ArticleListItem {
     subcategory: string;
     categoryId: number;
     subcategoryId: number;
-    url: string;
+    URL: string;
     tags?: Array<Tag>;
 }
 
@@ -987,7 +1084,7 @@ export const getLatestArticles = async (
             return {
                 ...item,
                 commentCount: comments ? comments.count : 0,
-                author: await getWriterNameById(item.writerID)
+                author: await getWriterNameById(item.writerID),
             };
         })
     );
@@ -1212,7 +1309,7 @@ export const countArticlesCategories = async (
         .join('article_subcategory as as', 'a.ArticleID', 'as.ArticleID')
         .join('subcategory as s', 'as.SubcategoryID', 's.SubcategoryID')
         .join('category as c', 's.CategoryID', 'c.CategoryID')
-        .join('writer as w', 'a.WriterID', 'w.WriterID')
+        .orderBy('a.DatePosted', 'desc');
 
     if (categories === -1) {
         let count = await query.count('* as countTotal').first();
@@ -1234,6 +1331,7 @@ export const getArticlesCategories = (
         .join('article_subcategory as as', 'a.ArticleID', 'as.ArticleID')
         .join('subcategory as s', 'as.SubcategoryID', 's.SubcategoryID')
         .join('category as c', 's.CategoryID', 'c.CategoryID')
+        .orderBy('a.DatePosted', 'desc')
         .select(
             'a.ArticleID as id',
             'a.Title as title',

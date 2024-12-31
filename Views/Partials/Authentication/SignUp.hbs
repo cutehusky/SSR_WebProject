@@ -1,10 +1,9 @@
 <div class="modal-body d-flex align-items-start justify-content-between">
   <div
-    class="sign-in-email d-flex flex-column align-items-center justify-content-center w-50 border-end border-secondary-subtle"
-  >
+    class="sign-in-email d-flex flex-column align-items-center justify-content-center w-50 border-end border-secondary-subtle">
     <h6 class="mb-4">Tạo tài khoản mới</h6>
     {{! Form submit for sign in with email }}
-    <form action="http://localhost:3000/user/register" class="w-75" method="POST">
+    <form action="/user/register" class="w-75" method="POST">
       <div class="mb-3">
         <input
           type="email"
@@ -56,31 +55,18 @@
       </div>
     </form>
   </div>
-  <div
-    class="sign-in-social-media sign-in-email d-flex flex-column align-items-center justify-content-center w-50"
-  >
+  <div class="sign-in-social-media sign-in-email d-flex flex-column align-items-center justify-content-center w-50">
     <h6 class="mb-4">Tạo tài khoản với</h6>
-    <div
-      class="social-media d-flex align-items-center flex-column justify-content-center w-100"
-    >
-      <a
-        href="#"
-        class="social-media-item d-flex align-items-center mb-4 w-75 facebook"
-      >
+    <div class="social-media d-flex align-items-center flex-column justify-content-center w-100">
+      <a href="#" class="social-media-item d-flex align-items-center mb-4 w-75 facebook">
         <i class="bi bi-facebook social-medial-icon"></i>
         <p>Facebok</p>
       </a>
-      <a
-        href="#"
-        class="social-media-item d-flex align-items-center mb-4 w-75 google"
-      >
+      <a href="#" class="social-media-item d-flex align-items-center mb-4 w-75 google">
         <i class="bi bi-google social-medial-icon"></i>
         <p>Google</p>
       </a>
-      <a
-        href="#"
-        class="social-media-item d-flex align-items-center w-75 apple"
-      >
+      <a href="#" class="social-media-item d-flex align-items-center w-75 apple">
         <i class="bi bi-apple social-medial-icon"></i>
         <p>Apple</p>
       </a>

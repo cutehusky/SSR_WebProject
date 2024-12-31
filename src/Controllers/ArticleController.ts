@@ -73,7 +73,7 @@ export class ArticleController {
             latest_articles,
             category_articles,
         });
-    }
+    };
 
     // /category/:id?page=
     getArticleListByCategory = async (req: Request, res: Response) => {
@@ -123,7 +123,7 @@ export class ArticleController {
             nextLink,
             page_items,
         });
-    }
+    };
 
     // /category/subcategory/:id?page=
     getArticleListBySubCategory = async (req: Request, res: Response) => {
@@ -181,7 +181,7 @@ export class ArticleController {
             nextLink,
             page_items,
         });
-    }
+    };
 
     // /tags?tag=&page=
     getArticleListByTags = async (req: Request, res: Response) => {
@@ -235,7 +235,8 @@ export class ArticleController {
                     articlesFindByTags: await findPageByTagID(
                         tagIdsArray,
                         articlePerPage,
-                        (page - 1) * articlePerPage
+                        (page - 1) * articlePerPage,
+                        await this.isPremium(req)
                     ),
                     tags: tagsArray,
                     page_items,
@@ -288,8 +289,8 @@ export class ArticleController {
 
         let isPremiumUser = await this.isPremium(req);
         if (data.IsPremium && !isPremiumUser) {
-            // res.redirect('/404');
-            res.redirect('back'); // should be redirected back to the original page!
+            const previousUrl = req.headers['referer'];
+            res.render('403', { previousUrl });
             return;
         }
 
@@ -380,7 +381,7 @@ export class ArticleController {
             }
             res.setHeader(
                 'Content-Disposition',
-                `attachment; filename=${data.Title}_id-${articleId}.pdf`
+                `attachment; filename=news_id-${articleId}.pdf`
             );
             res.setHeader('Content-Type', 'application/pdf');
             res.send(buffer);
@@ -405,7 +406,7 @@ export class ArticleController {
             }
         });
         */
-    }
+    };
 
     // /comment
     async commentArticle(req: Request, res: Response) {

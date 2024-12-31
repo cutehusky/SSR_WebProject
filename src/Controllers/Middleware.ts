@@ -10,48 +10,59 @@ export class MiddlewareController {
         next();
     }
     async getCategory(req: Request, res: Response, next: NextFunction) {
-        let categories = await DBConfig("category").select("CategoryID as id", "Name as name");
+        try {
+            let categories = await DBConfig("category").select("CategoryID as id", "Name as name");
 
-        for (let i = 0; i < categories.length; i++) {
-            categories[i].SubCategories = await DBConfig("category")
-                .where("category.CategoryID", "=", categories[i].id)
-                .join("subcategory", "category.CategoryID", "=", "subcategory.CategoryID")
-                .select("SubCategoryID as id",
-                    "category.CategoryID as parentId",
-                    "subcategory.Name as name", "category.Name as parentName",
-                    DBConfig.raw("CONCAT(category.Name, ' / ', subcategory.Name) as fullname"));
+            for (let i = 0; i < categories.length; i++) {
+                categories[i].SubCategories = await DBConfig("category")
+                    .where("category.CategoryID", "=", categories[i].id)
+                    .join("subcategory", "category.CategoryID", "=", "subcategory.CategoryID")
+                    .select("SubCategoryID as id",
+                        "category.CategoryID as parentId",
+                        "subcategory.Name as name", "category.Name as parentName",
+                        DBConfig.raw("CONCAT(category.Name, ' / ', subcategory.Name) as fullname"));
+            }
+            res.locals.Categories = categories;
+            res.locals.Top10Categories = categories.slice(0, 10);
+            next();
+        } catch (e) {
+            next(e);
         }
-        res.locals.Categories = categories;
-        res.locals.Top10Categories = categories.slice(0, 10);
-        next();
     }
 
     async getTags(req: Request, res: Response, next: NextFunction) {
-        res.locals.tags = await DBConfig("tag").select("TagID as id", "Name as name");
-        next();
+        try {
+            res.locals.tags = await DBConfig("tag").select("TagID as id", "Name as name");
+            next();
+        } catch (e) {
+            next(e);
+        }
     }
 
     async getProfile(req: Request, res: Response, next: NextFunction) {
-        if (req.session.authUser) {
-            res.locals.profile = req.session.authUser;
-            res.locals.isLogin = true;
-            res.locals.isUser = req.session.authUser.role === UserRole.User;
-            res.locals.isWriter = req.session.authUser.role === UserRole.Writer;
-            if (req.session.authUser.role === UserRole.User) {
-                let userData = await DBConfig("subscriber")
-                    .where("SubscriberID", req.session.authUser.id).first();
-                const dateExpired = new Date(userData.DateExpired);
-                res.locals.isPremium = new Date(Date.now()) < dateExpired;
-                let sec = (dateExpired.getTime() - Date.now()) / 1000;
-                res.locals.premiumTime = Math.floor(sec / 60) + ":" + Math.round(sec % 60);
+        try {
+            if (req.session.authUser) {
+                res.locals.profile = req.session.authUser;
+                res.locals.isLogin = true;
+                res.locals.isUser = req.session.authUser.role === UserRole.User;
+                res.locals.isWriter = req.session.authUser.role === UserRole.Writer;
+                if (req.session.authUser.role === UserRole.User) {
+                    let userData = await DBConfig("subscriber")
+                        .where("SubscriberID", req.session.authUser.id).first();
+                    const dateExpired = new Date(userData.DateExpired);
+                    res.locals.isPremium = new Date(Date.now()) < dateExpired;
+                    let sec = (dateExpired.getTime() - Date.now()) / 1000;
+                    res.locals.premiumTime = Math.floor(sec / 60) + ":" + Math.round(sec % 60);
+                }
+            } else {
+                res.locals.isLogin = false;
+                res.locals.profile = null;
+                res.locals.isUser = true;
+                res.locals.isWriter = false;
             }
+            next();
+        } catch (e) {
+            next(e);
         }
-        else {
-            res.locals.isLogin = false;
-            res.locals.profile = null;
-            res.locals.isUser = true;
-            res.locals.isWriter = false;
-        }
-        next();
     }
 }

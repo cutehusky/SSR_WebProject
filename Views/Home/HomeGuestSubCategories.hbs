@@ -23,7 +23,13 @@
     <div class="col col-lg-9 col-md-12 col-sm-12">
         <section class="col col-lg-12 col-md-12 col-sm-12">
             <section class="w-65 me-3 col col-lg-12 col-md-12 col-sm-12">
-                <a href="/article/{{topNews.ArticleID}}" class="top-news">
+                <a
+                    href="/article/{{topNews.ArticleID}}"
+                    class="top-news position-relative"
+                >
+                    {{#if topNews.isPremium}}
+                    <p class="position-absolute premium_badge">Premium</p>
+                    {{/if}}
                     <div
                         class="top-news__img position-relative overflow-hidden"
                     >

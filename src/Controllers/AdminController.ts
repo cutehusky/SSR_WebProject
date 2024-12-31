@@ -9,7 +9,7 @@ import {
 import { getCategories } from '../Utils/getCategories';
 import { countUsers, getUsers } from '../Utils/getUsers';
 import { DBConfig } from '../Utils/DBConfig';
-import { getEditorCategories } from "../Utils/getEditorCategories";
+import { getEditorCategories } from '../Utils/getEditorCategories';
 
 import {
     deleteArticle,
@@ -35,11 +35,9 @@ import { get } from 'jquery';
 import { clamp, getPagingNumber } from '../Utils/MathUtils';
 import { isValidUrl } from '../Utils/isValidURL';
 import { getWriterNameById } from '../Services/UserPasswordService';
-import bcrypt from "bcryptjs";
+import bcrypt from 'bcryptjs';
 
 const itemPerPage = 5;
-
-
 
 export class AdminController {
     verifyAdmin(req: Request, res: Response, next: NextFunction) {
@@ -61,11 +59,11 @@ export class AdminController {
         let page = parseInt(req.query.page as string) || 1;
         let subCategoryPage =
             parseInt(req.query.subCategoryPage as string) || 1;
-        
+
         const categoryId = category;
 
         // Phân trang cho Chuyên Mục Cấp 1
-        
+
         let itemPerPage = 5;
         const categoryNum = await countCategories();
         const totalPages = Math.ceil(categoryNum / itemPerPage);
@@ -79,11 +77,15 @@ export class AdminController {
 
         const previousLink =
             page > 1
-                ? `/admin/categories?page=${page - 1}&category=${categoryId}&subCategoryPage=${subCategoryPage}`
+                ? `/admin/categories?page=${
+                      page - 1
+                  }&category=${categoryId}&subCategoryPage=${subCategoryPage}`
                 : '';
         const nextLink =
             page < totalPages
-                ? `/admin/categories?page=${page + 1}&category=${categoryId}&subCategoryPage=${subCategoryPage}`
+                ? `/admin/categories?page=${
+                      page + 1
+                  }&category=${categoryId}&subCategoryPage=${subCategoryPage}`
                 : '';
 
         // Lấy danh sách Chuyên Mục Cấp 1
@@ -95,9 +97,9 @@ export class AdminController {
         const allCategories = await getCategories();
 
         // Phân trang cho Chuyên Mục Cấp 2
-        
+
         const subCategoryNum = await countSubCategories(categoryId);
-        
+
         const totalSubCategoryPages = Math.ceil(
             subCategoryNum[0].count / itemPerPage
         );
@@ -136,7 +138,7 @@ export class AdminController {
         );
 
         res.render('Admin/AdminCategoriesView', {
-            customCss: ['Admin.css'],
+            customCss: ['Admin.css', 'Component.css'],
             customJs: ['AdminCategoryDataTable.js'],
             Categories: categoryList,
             Subcategories: subCategoryList,
@@ -155,11 +157,9 @@ export class AdminController {
     // /admin/tags
     async getTags(req: Request, res: Response) {
         const tagData = await getTags();
-    
 
         // Cấu hình phân trang
         let page = parseInt(req.query.page as string) || 1;
-        let itemPerPage = 3;
         const totalTags = tagData.length;
         const totalPages = Math.ceil(totalTags / itemPerPage);
 
@@ -181,7 +181,7 @@ export class AdminController {
         );
 
         res.render('Admin/AdminTagsView', {
-            customCss: ['Admin.css'],
+            customCss: ['Admin.css', 'Component.css'],
             customJs: ['AdminTagsDataTable.js'],
             data: currentTags,
             page_items,
@@ -229,7 +229,7 @@ export class AdminController {
             selectedCategory: categoryId,
             data: data,
             customJs: ['AdminArticlesDataTable.js'],
-            customCss: ['Admin.css'],
+            customCss: ['Admin.css', 'Component.css'],
             page_items,
             previousLink,
             nextLink,
@@ -262,39 +262,38 @@ export class AdminController {
             (page - 1) * itemPerPage,
             itemPerPage
         );
-        
-    // lấy các category của những editor quản lý
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].role === "Editor") {
-        data[i].categories = await getEditorCategories(data[i].id);
-        console.log(JSON.stringify(data[i].categories, null, 2));
-      } else
-      {
-        data[i].categories = [];
-      }
-      if (data[i].role === "User") {
-        data[i].upPremium = await DBConfig("subscriber")
-          .where("SubscriberID", data[i].id)
-          .first()
-          .then((subscriber) => {
-            const dateExpired = new Date(subscriber.DateExpired);
-            return new Date(Date.now()) > dateExpired;
-          });
-      }
-    }
 
-    req.session.retUrl = req.originalUrl;
-    console.log('Data: ', data);
+        // lấy các category của những editor quản lý
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].role === 'Editor') {
+                data[i].categories = await getEditorCategories(data[i].id);
+                console.log(JSON.stringify(data[i].categories, null, 2));
+            } else {
+                data[i].categories = [];
+            }
+            if (data[i].role === 'User') {
+                data[i].upPremium = await DBConfig('subscriber')
+                    .where('SubscriberID', data[i].id)
+                    .first()
+                    .then(subscriber => {
+                        const dateExpired = new Date(subscriber.DateExpired);
+                        return new Date(Date.now()) > dateExpired;
+                    });
+            }
+        }
+
+        req.session.retUrl = req.originalUrl;
+        console.log('Data: ', data);
         res.render('Admin/AdminUsersView', {
             selectedRole: role,
             customJs: ['AdminUsersDataTable.js', 'AdminEditUsers.js'],
-            customCss: ['Admin.css'],
+            customCss: ['Admin.css', 'Component.css'],
             data: data,
             page_items,
             previousLink,
             nextLink,
-          Categories: res.locals.Categories,
-    });
+            Categories: res.locals.Categories,
+        });
     }
 
     // /admin/tag/edit
@@ -347,17 +346,19 @@ export class AdminController {
         try {
             const userData: UserData = req.body;
             let category_add: number[] = req.body.category_add;
-      let category_remove: number[] = req.body.category_remove;
-      console.log('Request body:', req.body); 
-      
-      // Đảm bảo `category_add` và `category_remove` luôn là mảng
-    if (!Array.isArray(category_add)) {
-      category_add = category_add ? [Number(category_add)] : [];
-    }
-    if (!Array.isArray(category_remove)) {
-      category_remove = category_remove ? [Number(category_remove)] : [];
-    }
-      // Validation cơ bản
+            let category_remove: number[] = req.body.category_remove;
+            console.log('Request body:', req.body);
+
+            // Đảm bảo `category_add` và `category_remove` luôn là mảng
+            if (!Array.isArray(category_add)) {
+                category_add = category_add ? [Number(category_add)] : [];
+            }
+            if (!Array.isArray(category_remove)) {
+                category_remove = category_remove
+                    ? [Number(category_remove)]
+                    : [];
+            }
+            // Validation cơ bản
             if (userData.id == null || isNaN(userData.id)) {
                 res.status(400).json({
                     error: 'ID is required and must be a valid number.',
@@ -433,7 +434,7 @@ export class AdminController {
     //     "dob": "1990-01-01",
     //     "role": 0
     // }
-  async newUser(req: Request, res: Response) {
+    async newUser(req: Request, res: Response) {
         try {
             const userData: UserData = req.body;
             console.log('Request body:', req.body);
@@ -544,8 +545,7 @@ export class AdminController {
         const { id, category, name } = req.body;
         await DBConfig('subcategory')
             .where('SubCategoryID', id) // Điều kiện SubCategoryID = id
-            .andWhere('CategoryID', category) // Điều kiện CategoryID = category
-            .update({ Name: name }); // Cập nhật tên và CategoryID
+            .update({ Name: name, CategoryID: category }); // Cập nhật tên và CategoryID
 
         res.redirect('/admin/categories/?category=' + category);
     }
@@ -599,12 +599,14 @@ export class AdminController {
     }
 
     async addPremium(req: Request, res: Response) {
-        if(req.session.authUser && (req.session.authUser.role === UserRole.Admin)){
+        if (
+            req.session.authUser &&
+            req.session.authUser.role === UserRole.Admin
+        ) {
             await addPremium(req.body.id);
             const retUrl = req.session.retUrl || '/';
             res.redirect(retUrl);
-        }
-        else{
+        } else {
             res.redirect('/404');
         }
     }
