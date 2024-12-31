@@ -4,14 +4,10 @@
     >
         <h6 class="mb-4">Đăng nhập với email</h6>
         {{! Form submit for sign in with email }}
-        <form
-            action="http://localhost:3000/user/login"
-            class="w-75"
-            method="post"
-        >
+        <form action="/user/login" class="w-75 sign-in-form" method="post">
             <div class="mb-3">
                 <input
-                    type="email"
+                    type="text"
                     class="form-control mb-4 sign-in-form-input"
                     id="sign-in-form-email"
                     placeholder="Email của bạn"
