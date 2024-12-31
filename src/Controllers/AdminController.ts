@@ -545,8 +545,7 @@ export class AdminController {
         const { id, category, name } = req.body;
         await DBConfig('subcategory')
             .where('SubCategoryID', id) // Điều kiện SubCategoryID = id
-            .andWhere('CategoryID', category) // Điều kiện CategoryID = category
-            .update({ Name: name }); // Cập nhật tên và CategoryID
+            .update({ Name: name, CategoryID: category }); // Cập nhật tên và CategoryID
 
         res.redirect('/admin/categories/?category=' + category);
     }

@@ -235,7 +235,8 @@ export class ArticleController {
                     articlesFindByTags: await findPageByTagID(
                         tagIdsArray,
                         articlePerPage,
-                        (page - 1) * articlePerPage
+                        (page - 1) * articlePerPage,
+                        await this.isPremium(req)
                     ),
                     tags: tagsArray,
                     page_items,

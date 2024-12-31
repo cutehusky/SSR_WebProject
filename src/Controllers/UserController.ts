@@ -3,7 +3,6 @@ import { DBConfig } from '../Utils/DBConfig';
 import bcrypt from 'bcryptjs';
 import * as userService from '../Services/UserPasswordService';
 import { UserRole } from '../Models/UserData';
-import { UserData } from '../Models/UserData';
 import { addPremium, createUser } from '../Services/AdminUserService';
 import nodemailer from 'nodemailer';
 
