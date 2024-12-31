@@ -119,26 +119,47 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
 
         const email = $('#sign-in-form-email').val();
-        // const password = $('#sign-in-form-password').val();
+        const password = $('#sign-in-form-password').val();
 
-        if (!validEmail(email)) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Email không hợp lệ!',
-                text: 'Vui lòng nhập một địa chỉ email hợp lệ (ví dụ: user@example.com).',
-            });
-            return;
+        if (localStorage.getItem('errorSignIn')) {
+            localStorage.removeItem('errorSignIn');
         }
 
-        // if (password.length <= 5) {
-        //     Swal.fire({
-        //         icon: 'error',
-        //         title: 'Mật khẩu quá ngắn!',
-        //         text: 'Hãy đảm bảo mật khẩu có độ dài trên 5 ký tự.',
-        //     });
-        //     return;
-        // }
+        $.ajax({
+            url: '/user/login',
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify({ email, password }),
+            success: function (response) {
+                window.location.replace(response.successUrl);
+            },
+            error: function (jqXHR) {
+                const error = jqXHR.responseJSON.error;
+                const message = jqXHR.responseJSON.message;
+                const notification = { error, message };
 
-        signInForm.off('submit').trigger('submit');
+                if (!localStorage.getItem('errorSignIn'))
+                    localStorage.setItem(
+                        'errorSignIn',
+                        JSON.stringify(notification)
+                    );
+                window.location.replace('/');
+            },
+        });
+    });
+});
+
+// Check remove error
+
+document.addEventListener('DOMContentLoaded', () => {
+    const closeModalIcon = $('.close-modal-icon');
+
+    closeModalIcon.on('click', () => {
+        if (localStorage.getItem('errorSignIn')) {
+            localStorage.removeItem('errorSignIn');
+
+            $('.error-notification').addClass('d-none');
+        }
     });
 });

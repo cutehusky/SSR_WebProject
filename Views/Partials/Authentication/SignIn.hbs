@@ -5,6 +5,10 @@
         <h6 class="mb-4">Đăng nhập với email</h6>
         {{! Form submit for sign in with email }}
         <form action="/user/login" class="w-75 sign-in-form" method="post">
+            <div class="error-notification callout callout-danger">
+                <p class="mb-2"></p>
+                <p class="mb-0"></p>
+            </div>
             <div class="mb-3">
                 <input
                     type="text"
@@ -68,3 +72,31 @@
         </div>
     </div>
 </div>
+
+{{#section 'script'}}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const errorSignIn = JSON.parse(localStorage.getItem('errorSignIn'));
+
+        if (errorSignIn) {
+            const signInModal = $('#authenticationModal');
+            signInModal.modal('show');
+
+            const errorMessages = $('.error-notification p');
+            $(errorMessages[0]).text(errorSignIn.error);
+            $(errorMessages[1]).text(errorSignIn.message);
+        } else {
+            $('.error-notification').addClass('d-none');
+        }
+    });
+</script>
+<script>
+    const googleSignIn = $('.google');
+
+    googleSignIn.on('click', () => {
+        if (localStorage.getItem('errorSignIn')) {
+            localStorage.removeItem('errorSignIn');
+        }
+    });
+</script>
+{{/section}}

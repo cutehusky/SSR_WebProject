@@ -33,7 +33,10 @@ export class UserController {
             const user = await userService.getUserByEmail(email);
 
             if (!user || user.role === UserRole.Invalid) {
-                return res.status(404).json({ error: 'User not found' });
+                return res.status(404).json({
+                    error: 'User not found',
+                    message: 'Please check your email',
+                });
             }
 
             // Kiểm tra mật khẩu người dùng
@@ -50,7 +53,8 @@ export class UserController {
             // Redirect về URL trước đó nếu có
             const retUrl = req.session.retUrl || '/';
             req.session.retUrl = undefined;
-            return res.redirect(retUrl);
+            // return res.redirect(retUrl);
+            return res.status(200).json({ successUrl: retUrl });
         } catch (error) {
             console.error('Login Error:', error);
             return res.status(500).json({ error: 'Internal Server Error' });
