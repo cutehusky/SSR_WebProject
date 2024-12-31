@@ -5,9 +5,9 @@
             <a href="/editor/articles/approved" class="btn actionBtn scale me-3">Bài viết đã duyệt</a>
             <a href="/editor/articles/rejected" class="btn actionBtn scale me-3">Bài viết bị từ chối</a>
         </div>
-        <h1 class="editor-title">Bài viết cần duyệt</h1>
+        <h1 class="editor-title">Bài viết đã duyệt</h1>
         <div class="editor-container mt-4">
-            <form method="get" action="/editor/articles" class="mb-4">
+            <form method="get" action="/editor/articles/approved" class="mb-4">
                 <div class="categorySelection">
                     <label
                         for="roleSelect"
@@ -79,11 +79,11 @@
                     <tbody>
                         {{#each this.articles}}
                         <tr>
-                            <td><a href="/editor/articles/{{this.id}}" class="row-link">{{this.title}}</a></td>
-                            <td><a href="/editor/articles/{{this.id}}" class="row-link">{{this.author}}</a></td>
-                            <td><a href="/editor/articles/{{this.id}}" class="row-link">{{this.date}}</a></td>
-                            <td><a href="/editor/articles/{{this.id}}" class="row-link">{{this.category}}</a></td>
-                            <td><a href="/editor/articles/{{this.id}}" class="row-link">{{this.subcategory}}</a></td>
+                            <td>{{this.title}}</td>
+                            <td>{{this.author}}</td>
+                            <td>{{this.date}}</td>
+                            <td>{{this.category}}</td>
+                            <td>{{this.subcategory}}</td>
                         </tr>
                         {{/each}}
                     </tbody>
