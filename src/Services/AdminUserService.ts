@@ -77,7 +77,7 @@ export const updateUser = async (
                     .delete();
             }
         }
-        if (userExists.Role !== getRole(userData.role as string)) {
+        if (getRoleName(parseInt(userExists.Role)) !== userData.role) {
             // xóa role ở bảng khác
             if (userExists.Role === 1)
                 await db('writer').where('WriterID', userData.id).delete();

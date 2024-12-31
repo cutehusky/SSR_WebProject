@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import bcrypt from 'bcryptjs';
 import {UserData, UserRole} from '../Models/UserData';
-import { getRole } from '../Utils/getRole';
+import {getRoleName} from '../Utils/getRole';
 
 export const getUsernameById = async (id: number): Promise<string> => {
     const user = await db('user').where('UserID', id).first();
@@ -53,8 +53,7 @@ export const getUserByEmail = async (
 
     if (!user)
         return null;
-    let role = await GetRoleOfUserById(user.id);
-    if (role === UserRole.Writer) {
+    if (user.role === "Writer") {
         let writer = await db("writer").where({WriterID: user.id}).first();
         return {
             id: user.id,
@@ -62,7 +61,7 @@ export const getUserByEmail = async (
             email: user.email,
             password: user.password,
             dob: user.dateOfBirth,
-            role: role,
+            role: user.role,
             penName: writer.Alias
         };
     }
@@ -72,7 +71,7 @@ export const getUserByEmail = async (
         email: user.email,
         password: user.password,
         dob: user.dateOfBirth,
-        role: getRole(user.role),
+        role: user.role,
     };
 };
 
@@ -210,7 +209,7 @@ export const getProfile = async (id: number): Promise<{
             email: user.email,
             password: user.password,
             dateOfBirth: user.dateOfBirth,
-            penName: user.role === 'Writer'  ? (await getWriterNameById(user.UserID)) : undefined
+            penName: user.role === 'Writer' ? (await getWriterNameById(user.id)) : undefined
         };
         
 

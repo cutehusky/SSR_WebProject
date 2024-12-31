@@ -17,18 +17,18 @@ export const getRoleName = (role: number): string => {
             return "Invalid";
     }
 }
-export const getRole = (role: string): UserRole => {
+export const getRole = (role: string): number => {
 
     switch (role) {
         case "User":
-            return UserRole.User;
+            return 0;
         case "Writer":
-            return UserRole.Writer;
+            return 1;
         case "Editor":
-            return UserRole.Editor;
+            return 2;
         case "Admin":
-            return UserRole.Admin;
+            return 3;
         default:
-            return UserRole.Invalid;
+            return -1;
     }
 }

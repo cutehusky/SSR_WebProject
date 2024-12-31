@@ -1,5 +1,5 @@
 import { DBConfig } from './DBConfig';
-import { getRole } from "./getRole";
+import { getRole } from './getRole';
 
 export const getUsers = async (
     role: string,
