@@ -29,8 +29,10 @@
                 class="main-news-item__description w-50 sum-article d-flex justify-content-between flex-column pt-2 pb-2"
             >
                 <div>
-                    <h5>{{this.Title}}</h5>
-                    <p>{{this.Abstract}}</p>
+                    <h5 class="truncate">{{this.Title}}</h5>
+                    <p class="truncate_long" style="height: 72px">
+                        {{this.Abstract}}
+                    </p>
                 </div>
                 <div>
                     <span>Ngày đăng: {{this.DatePosted}}</span>

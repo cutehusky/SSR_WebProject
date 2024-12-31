@@ -1,6 +1,6 @@
 import { DBConfig, DBConfig as db } from '../Utils/DBConfig';
 import { writer } from 'repl';
-import {getUsernameById, getWriterNameById} from './UserPasswordService';
+import { getUsernameById, getWriterNameById } from './UserPasswordService';
 
 export const deleteArticle = async (articleID: number): Promise<void> => {
     try {
@@ -81,7 +81,12 @@ export const getArticlesByCategoryID = async (
                 '=',
                 'ARTICLE_SUBCATEGORY.ArticleID'
             )
-            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+            .join(
+                'ARTICLE_URL',
+                'ARTICLE_URL.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
             .orderBy('ARTICLE.IsPremium', 'desc')
             .orderBy('ARTICLE.DatePosted', 'DESC')
             .select(
@@ -89,6 +94,7 @@ export const getArticlesByCategoryID = async (
                 'ARTICLE.Title as Title',
                 'ARTICLE.Abstract as Abstract',
                 'ARTICLE.DatePosted as DatePosted',
+                'ARTICLE.IsPremium as isPremium',
                 'ARTICLE_URL.URL as URL',
                 'SUBCATEGORY.Name as subcategory',
                 'SUBCATEGORY.SubcategoryID as subcategoryId',
@@ -117,13 +123,19 @@ export const getArticlesByCategoryID = async (
                 '=',
                 'ARTICLE_SUBCATEGORY.ArticleID'
             )
-            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+            .join(
+                'ARTICLE_URL',
+                'ARTICLE_URL.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
             .orderBy('ARTICLE.DatePosted', 'DESC')
             .select(
                 'ARTICLE.ArticleID as ArticleID',
                 'ARTICLE.Title as Title',
                 'ARTICLE.Abstract as Abstract',
                 'ARTICLE.DatePosted as DatePosted',
+                'ARTICLE.IsPremium as isPremium',
                 'ARTICLE_URL.URL as URL',
                 'SUBCATEGORY.Name as subcategory',
                 'SUBCATEGORY.SubcategoryID as subcategoryId',
@@ -257,7 +269,12 @@ export const getArticlesBySubCatID = async (
     if (isPremium) {
         response = await db('SUBCATEGORY')
             .where('SUBCATEGORY.SubCategoryID', '=', subcategoryId)
-            .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+            .join(
+                'CATEGORY',
+                'CATEGORY.CategoryID',
+                '=',
+                'SUBCATEGORY.CategoryID'
+            )
             .join(
                 'ARTICLE_SUBCATEGORY',
                 'ARTICLE_SUBCATEGORY.SubCategoryID',
@@ -278,6 +295,7 @@ export const getArticlesBySubCatID = async (
                 'ARTICLE.Title as Title',
                 'ARTICLE.Abstract as Abstract',
                 'ARTICLE.DatePosted as DatePosted',
+                'ARTICLE.IsPremium as isPremium',
                 'ARTICLE_URL.URL as URL',
                 'SUBCATEGORY.Name as subcategory',
                 'SUBCATEGORY.SubcategoryID as subcategoryId',
@@ -288,7 +306,12 @@ export const getArticlesBySubCatID = async (
     } else {
         response = await db('SUBCATEGORY')
             .where('SUBCATEGORY.SubCategoryID', '=', subcategoryId)
-            .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
+            .join(
+                'CATEGORY',
+                'CATEGORY.CategoryID',
+                '=',
+                'SUBCATEGORY.CategoryID'
+            )
             .join(
                 'ARTICLE_SUBCATEGORY',
                 'ARTICLE_SUBCATEGORY.SubCategoryID',
@@ -308,6 +331,7 @@ export const getArticlesBySubCatID = async (
                 'ARTICLE.Title as Title',
                 'ARTICLE.Abstract as Abstract',
                 'ARTICLE.DatePosted as DatePosted',
+                'ARTICLE.IsPremium as isPremium',
                 'ARTICLE_URL.URL as URL',
                 'SUBCATEGORY.Name as subcategory',
                 'SUBCATEGORY.SubcategoryID as subcategoryId',
@@ -451,8 +475,18 @@ export const SearchArticle = async (
                 '=',
                 'SUBCATEGORY.SubCategoryID'
             )
-            .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
-            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+            .join(
+                'CATEGORY',
+                'CATEGORY.CategoryID',
+                '=',
+                'SUBCATEGORY.CategoryID'
+            )
+            .join(
+                'ARTICLE_URL',
+                'ARTICLE_URL.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
             .where('STT', '=', '0')
             .orderBy('ARTICLE.IsPremium', 'desc')
             .orderBy('DatePosted', 'desc')
@@ -489,8 +523,18 @@ export const SearchArticle = async (
                 '=',
                 'SUBCATEGORY.SubCategoryID'
             )
-            .join('CATEGORY', 'CATEGORY.CategoryID', '=', 'SUBCATEGORY.CategoryID')
-            .join('ARTICLE_URL', 'ARTICLE_URL.ArticleID', '=', 'ARTICLE.ArticleID')
+            .join(
+                'CATEGORY',
+                'CATEGORY.CategoryID',
+                '=',
+                'SUBCATEGORY.CategoryID'
+            )
+            .join(
+                'ARTICLE_URL',
+                'ARTICLE_URL.ArticleID',
+                '=',
+                'ARTICLE.ArticleID'
+            )
             .where('STT', '=', '0')
             .orderBy('DatePosted', 'desc')
             .select(
@@ -739,11 +783,11 @@ export const GetCategoryOfArticle = async (articleId: string) => {
     return category
         ? (category as Category)
         : {
-            categoryName: '',
-            subcategoryName: '',
-            categoryId: 0,
-            subcategoryId: 0,
-        };
+              categoryName: '',
+              subcategoryName: '',
+              categoryId: 0,
+              subcategoryId: 0,
+          };
 };
 
 export interface Comment {
@@ -986,7 +1030,7 @@ export const getLatestArticles = async (
             return {
                 ...item,
                 commentCount: comments ? comments.count : 0,
-                author: await getWriterNameById(item.writerID)
+                author: await getWriterNameById(item.writerID),
             };
         })
     );
@@ -1010,8 +1054,8 @@ export const getTopArticles = async (
     const startWeek = new Date();
     startWeek.setDate(
         startWeek.getDate() -
-        startWeek.getDay() +
-        (startWeek.getDay() === 0 ? -6 : 1)
+            startWeek.getDay() +
+            (startWeek.getDay() === 0 ? -6 : 1)
     );
     startWeek.setHours(0, 0, 0, 0);
     const endWeek = new Date(startWeek);

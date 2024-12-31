@@ -73,7 +73,7 @@ export class ArticleController {
             latest_articles,
             category_articles,
         });
-    }
+    };
 
     // /category/:id?page=
     getArticleListByCategory = async (req: Request, res: Response) => {
@@ -123,7 +123,7 @@ export class ArticleController {
             nextLink,
             page_items,
         });
-    }
+    };
 
     // /category/subcategory/:id?page=
     getArticleListBySubCategory = async (req: Request, res: Response) => {
@@ -181,7 +181,7 @@ export class ArticleController {
             nextLink,
             page_items,
         });
-    }
+    };
 
     // /tags?tag=&page=
     getArticleListByTags = async (req: Request, res: Response) => {
@@ -288,8 +288,8 @@ export class ArticleController {
 
         let isPremiumUser = await this.isPremium(req);
         if (data.IsPremium && !isPremiumUser) {
-            // res.redirect('/404');
-            res.redirect('back'); // should be redirected back to the original page!
+            const previousUrl = req.headers['referer'];
+            res.render('403', { previousUrl });
             return;
         }
 
@@ -405,7 +405,7 @@ export class ArticleController {
             }
         });
         */
-    }
+    };
 
     // /comment
     async commentArticle(req: Request, res: Response) {
