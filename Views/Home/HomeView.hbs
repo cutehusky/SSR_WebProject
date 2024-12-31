@@ -11,11 +11,19 @@
                     {{#if this.isPremium}}
                     <p class="position-absolute premium_badge">Premium</p>
                     {{/if}}
-                    <img
+                    {{#if (eq this.img 'null')}}
+                       <img
+                        class="img-fluid h-100"
+                        src="/null.jpg"
+                        style="object-fit: cover"
+                        />
+                    {{else}}
+                        <img
                         class="img-fluid h-100"
                         src="{{this.img}}"
                         style="object-fit: cover"
-                    />
+                        />
+                    {{/if}}
                     <div class="overlay">
                         <div class="mb-2 d-flex justify-content-between">
                             <a
@@ -46,11 +54,19 @@
                         {{#if this.isPremium}}
                         <p class="position-absolute premium_badge">Premium</p>
                         {{/if}}
-                        <img
+                        {{#if (eq this.img 'null')}}
+                            <img
+                                class="img-fluid w-100 h-100"
+                                src="/null.jpg"
+                                style="object-fit: cover"
+                            />
+                        {{else}}
+                             <img
                             class="img-fluid w-100 h-100"
                             src="{{this.img}}"
                             style="object-fit: cover"
-                        />
+                            />
+                        {{/if}}
                         <div class="overlay">
                             <div class="mb-2">
                                 <a
@@ -96,11 +112,19 @@
                 {{#if this.isPremium}}
                 <p class="position-absolute premium_badge">Premium</p>
                 {{/if}}
-                <img
+                {{#if (eq this.img 'null')}}
+                   <img
                     class="img-fluid h-100"
-                    src="{{this.img}}"
+                    src="/null.jpg"
                     style="object-fit: cover"
-                />
+                    />
+                {{else}}
+                    <img
+                        class="img-fluid h-100"
+                        src="{{this.img}}"
+                        style="object-fit: cover"
+                    />
+                {{/if}}
                 <div class="overlay">
                     <div
                         class="mb-2 d-flex flex-column justify-content-between"
@@ -150,11 +174,19 @@
                                     Premium
                                 </p>
                                 {{/if}}
-                                <img
+                                {{#if (eq this.img 'null')}}
+                                    <img
                                     class="img-fluid w-100 h-100"
-                                    src="{{this.img}}"
+                                    src="/null.jpg"
                                     style="object-fit: cover"
-                                />
+                                    />
+                                {{else}}
+                                    <img
+                                        class="img-fluid w-100 h-100"
+                                        src="{{this.img}}"
+                                        style="object-fit: cover"
+                                    />
+                                {{/if}}
                             </div>
                             <div
                                 class="col-md-6 d-flex flex-column border bg-white h-100 px-0"
@@ -214,11 +246,19 @@
                                 Premium
                             </p>
                             {{/if}}
-                            <img
+                            {{#if (eq this.img 'null')}}
+                                <img
+                                    class="img-fluid w-100"
+                                    src="/null.jpg"
+                                    style="height: 300px; object-fit: cover"
+                                />
+                            {{else}}
+                               <img
                                 class="img-fluid w-100"
                                 src="{{this.img}}"
                                 style="height: 300px; object-fit: cover"
-                            />
+                                />
+                            {{/if}}
                             <div class="bg-white border border-top-0 p-4">
                                 <div class="mb-2">
                                     <a
@@ -269,11 +309,19 @@
                                 Premium
                             </p>
                             {{/if}}
-                            <img
-                                class="img-fluid w-100"
-                                src="{{this.img}}"
-                                style="height: 300px; object-fit: cover"
-                            />
+                            {{#if (eq this.img 'null')}}
+                                <img
+                                    class="img-fluid w-100"
+                                    src="/null.jpg"
+                                    style="height: 300px; object-fit: cover"
+                                />
+                            {{else}}
+                                <img
+                                    class="img-fluid w-100"
+                                    src="{{this.img}}"
+                                    style="height: 300px; object-fit: cover"
+                                />
+                            {{/if}}
                             <div class="bg-white border border-top-0 p-4">
                                 <div class="mb-2">
                                     <a
@@ -328,12 +376,21 @@
                                 Premium
                             </p>
                             {{/if}}
-                            <img
-                                class="img-fluid w-50 h-100"
-                                src="{{this.img}}"
-                                alt=""
-                                style="object-fit: cover"
-                            />
+                            {{#if (eq this.img 'null')}}
+                                <img
+                                    class="img-fluid w-50 h-100"
+                                    src="/null.jpg"
+                                    alt=""
+                                    style="object-fit: cover"
+                                />
+                            {{else}}
+                                <img
+                                    class="img-fluid w-50 h-100"
+                                    src="{{this.img}}"
+                                    alt=""
+                                    style="object-fit: cover"
+                                />
+                            {{/if}}
                             <div
                                 class="w-100 h-100 px-3 d-flex flex-column justify-content-between border border-left-0"
                             >
@@ -378,12 +435,21 @@
                                 Premium
                             </p>
                             {{/if}}
-                            <img
-                                class="img-fluid w-50"
-                                src="{{this.img}}"
-                                alt=""
-                                style="object-fit: cover"
-                            />
+                            {{#if (eq this.img 'null')}}
+                                <img
+                                    class="img-fluid w-50"
+                                    src="/null.jpg"
+                                    alt=""
+                                    style="object-fit: cover"
+                                />
+                            {{else}}
+                                <img
+                                    class="img-fluid w-50"
+                                    src="{{this.img}}"
+                                    alt=""
+                                    style="object-fit: cover"
+                                />
+                            {{/if}}
                             <div
                                 class="w-100 h-100 px-2 d-flex flex-column justify-content-center border border-left-0 overflow-hidden"
                             >
