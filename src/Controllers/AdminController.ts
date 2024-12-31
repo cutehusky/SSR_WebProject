@@ -20,6 +20,7 @@ import {
     createUser,
     deleteUser,
     updateUser,
+    addPremium,
 } from '../Services/AdminUserService';
 import { UserData, UserRole } from '../Models/UserData';
 import {
@@ -271,7 +272,17 @@ export class AdminController {
       {
         data[i].categories = [];
       }
+      if (data[i].role === "User") {
+        data[i].upPremium = await DBConfig("subscriber")
+          .where("SubscriberID", data[i].id)
+          .first()
+          .then((subscriber) => {
+            const dateExpired = new Date(subscriber.DateExpired);
+            return new Date(Date.now()) > dateExpired;
+          });
+      }
     }
+
     req.session.retUrl = req.originalUrl;
     console.log('Data: ', data);
         res.render('Admin/AdminUsersView', {
@@ -585,5 +596,16 @@ export class AdminController {
             .where('ArticleID', articleId)
             .update({ Status: 'Published' });
         res.redirect('/admin/articles');
+    }
+
+    async addPremium(req: Request, res: Response) {
+        if(req.session.authUser && (req.session.authUser.role === UserRole.Admin)){
+            await addPremium(req.body.id);
+            const retUrl = req.session.retUrl || '/';
+            res.redirect(retUrl);
+        }
+        else{
+            res.redirect('/404');
+        }
     }
 }

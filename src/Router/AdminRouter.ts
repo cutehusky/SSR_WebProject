@@ -30,4 +30,6 @@ router.post('/user/delete',adminController.verifyAdmin, adminController.deleteUs
 router.post('/article/delete',adminController.verifyAdmin, adminController.deleteArticle);
 router.post('/article/publish/:id',adminController.verifyAdmin, adminController.publishArticle);
 
+router.post('/add-premium',adminController.verifyAdmin, adminController.addPremium);
+
 export { router as AdminRouter };
