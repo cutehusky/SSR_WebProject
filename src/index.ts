@@ -1,5 +1,5 @@
 import session from 'express-session';
-import express, { Express, Request, Response } from 'express';
+import express, {Express, NextFunction, Request, Response} from 'express';
 import { engine } from 'express-handlebars';
 
 import { ArticleRouter } from './Router/ArticleRouter';
@@ -184,6 +184,11 @@ const updateArticlePublished = async () => {
 updateArticlePublished();
 
 setInterval(updateArticlePublished, 60000);
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error(err.stack);
+    res.status(500).json({ error: err.message });
+});
 
 app.listen(port, function () {
     console.log(`running in http://localhost:${port}`);

@@ -1,5 +1,6 @@
 import { ArticleController } from '../Controllers/ArticleController';
 import express from 'express';
+import ErrorHandler from "../Utils/ErrorHandle";
 
 const router = express.Router();
 
@@ -9,38 +10,38 @@ router.get('/home', articleController.verifyUser, articleController.getHome);
 router.get(
     '/category/:id',
     articleController.verifyUser,
-    articleController.getArticleListByCategory
+    ErrorHandler(articleController.getArticleListByCategory)
 );
 router.get(
     '/category/subcategory/:id',
     articleController.verifyUser,
-    articleController.getArticleListBySubCategory
+    ErrorHandler(articleController.getArticleListBySubCategory)
 );
 router.get(
     '/tags',
     articleController.verifyUser,
-    articleController.getArticleListByTags
+    ErrorHandler(articleController.getArticleListByTags)
 );
 router.get(
     '/article/:id',
     articleController.verifyUser,
-    articleController.getArticle
+    ErrorHandler(articleController.getArticle)
 );
 router.get(
     '/search',
     articleController.verifyUser,
-    articleController.searchArticle
+    ErrorHandler(articleController.searchArticle)
 );
 router.get(
     '/download/:id',
     articleController.verifyUser,
-    articleController.downloadArticle
+    ErrorHandler(articleController.downloadArticle)
 );
 
 router.post(
     '/comment/',
     articleController.verifyUser,
-    articleController.commentArticle
+    ErrorHandler(articleController.commentArticle)
 );
 
 export { router as ArticleRouter };

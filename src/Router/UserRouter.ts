@@ -1,18 +1,19 @@
 import express from 'express';
 import { UserController } from '../Controllers/UserController';
+import ErrorHandler from "../Utils/ErrorHandle";
 
 const router = express.Router();
 
 const userController = new UserController();
 
-router.get('/forgot-password', userController.forgotPassword);
-router.post('/forgot-password', userController.forgotPasswordPost);
+router.get('/forgot-password', ErrorHandler(userController.forgotPassword));
+router.post('/forgot-password', ErrorHandler(userController.forgotPasswordPost));
 
-router.get('/forgot-password-email', userController.forgotPasswordEmail);
-router.post('/forgot-password-email', userController.forgotPasswordEmailPost);
-router.post('/resent-otp', userController.resentOTP);
+router.get('/forgot-password-email', ErrorHandler(userController.forgotPasswordEmail));
+router.post('/forgot-password-email', ErrorHandler(userController.forgotPasswordEmailPost));
+router.post('/resent-otp', ErrorHandler(userController.resentOTP));
 
-router.get('/profile',userController.isLoggedIn, userController.getUserProfile);
+router.get('/profile',userController.isLoggedIn, ErrorHandler(userController.getUserProfile));
 
 router.post('/login', async (req, res, next) => {
   try {
@@ -39,8 +40,8 @@ router.post('/send-otp', async(req, res, next) =>{
     next(error);
   }
 });
-router.post('/reset-password-by-otp', (req, res) => {
-  userController.resetPasswordByOTP(req, res);
+router.post('/reset-password-by-otp', async (req, res) => {
+  await userController.resetPasswordByOTP(req, res);
 });
 
 router.post('/reset-password', async (req, res, next)=> {
@@ -59,6 +60,6 @@ router.post('/update-profile', userController.isLoggedIn, async (req, res, next)
   }
 });
 
-router.post('/add-premium', userController.addPremium);
+router.post('/add-premium', ErrorHandler(userController.addPremium));
 
 export { router as UserRouter };
