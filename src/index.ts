@@ -13,7 +13,7 @@ import Handlebars from 'handlebars';
 import { MiddlewareController } from './Controllers/Middleware';
 
 import sections from 'express-handlebars-sections';
-import { UserRole } from '../src/Models/UserData';
+import { UserRole } from './Models/UserData';
 import { format, parse } from 'date-fns';
 import { DBConfig } from './Utils/DBConfig';
 
