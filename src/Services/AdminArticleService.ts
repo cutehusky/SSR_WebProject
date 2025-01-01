@@ -87,6 +87,7 @@ export const getArticlesByCategoryID = async (
                 '=',
                 'article.ArticleID'
             )
+            .where('article.Status', '=', 'Published')
             .orderBy('article.IsPremium', 'desc')
             .orderBy('article.DatePosted', 'DESC')
             .select(
@@ -129,6 +130,7 @@ export const getArticlesByCategoryID = async (
                 '=',
                 'article.ArticleID'
             )
+            .where('article.Status', '=', 'Published')
             .orderBy('article.DatePosted', 'DESC')
             .select(
                 'article.ArticleID as ArticleID',
@@ -194,6 +196,7 @@ export const countArticlesByCatID = async (
             '=',
             'article_subcategory.ArticleID'
         )
+        .where('article.Status', '=', 'Published')
         .groupBy('category.CategoryID')
         .count('* as total')
         .first();
@@ -212,6 +215,7 @@ export const countArticlesBySubCatID = async (
             '=',
             'article_subcategory.ArticleID'
         )
+        .where('article.Status', '=', 'Published')
         .groupBy('article_subcategory.SubCategoryID')
         .count('* as total')
         .first();
@@ -288,6 +292,7 @@ export const getArticlesBySubCatID = async (
                 'article_subcategory.ArticleID'
             )
             .join('article_url', 'article_url.ArticleID', 'article.ArticleID')
+            .where('article.Status', '=', 'Published')
             .orderBy('article.IsPremium', 'desc')
             .orderBy('article.DatePosted', 'DESC')
             .select(
@@ -325,6 +330,7 @@ export const getArticlesBySubCatID = async (
                 'article_subcategory.ArticleID'
             )
             .join('article_url', 'article_url.ArticleID', 'article.ArticleID')
+            .where('article.Status', '=', 'Published')
             .orderBy('article.DatePosted', 'DESC')
             .select(
                 'article.ArticleID as ArticleID',
@@ -373,12 +379,17 @@ export const findPageByTagID = async (
     offset: number,
     isPremium: boolean
 ): Promise<any[]> => {
-    let response = []
+    let response = [];
     if (isPremium) {
         response = await DBConfig('article_tag')
             .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
             .join('article', 'article.ArticleID', '=', 'article_tag.ArticleID')
-            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .join(
+                'article_url',
+                'article_url.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
             .join(
                 'article_subcategory',
                 'article_subcategory.ArticleID',
@@ -391,7 +402,13 @@ export const findPageByTagID = async (
                 '=',
                 'article_subcategory.SubCategoryID'
             )
-            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+            .join(
+                'category',
+                'category.CategoryID',
+                '=',
+                'subcategory.CategoryID'
+            )
+            .where('article.Status', '=', 'Published')
             .whereIn('article_tag.TagID', tagIDs)
             .select(
                 'article.ArticleID',
@@ -427,7 +444,12 @@ export const findPageByTagID = async (
         response = await DBConfig('article_tag')
             .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
             .join('article', 'article.ArticleID', '=', 'article_tag.ArticleID')
-            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .join(
+                'article_url',
+                'article_url.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
             .join(
                 'article_subcategory',
                 'article_subcategory.ArticleID',
@@ -440,7 +462,13 @@ export const findPageByTagID = async (
                 '=',
                 'article_subcategory.SubCategoryID'
             )
-            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+            .join(
+                'category',
+                'category.CategoryID',
+                '=',
+                'subcategory.CategoryID'
+            )
+            .where('article.Status', '=', 'Published')
             .whereIn('article_tag.TagID', tagIDs)
             .select(
                 'article.ArticleID',
@@ -482,6 +510,8 @@ export const countArticlesByTagID = async (
 ): Promise<number> => {
     let total = await DBConfig('article_tag')
         .whereIn('article_tag.TagID', tagIDs)
+        .join('article', 'article.ArticleID', '=', 'article_tag.ArticleID')
+        .where('article.Status', '=', 'Published')
         .count('* as total')
         .groupBy('article_tag.TagID')
         .first();
@@ -493,6 +523,7 @@ export const CountSearchResult = async (
     searchValue: string
 ): Promise<number> => {
     let count = await DBConfig('article')
+        .where('article.Status', '=', 'Published')
         .whereRaw(
             'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
             [searchValue]
@@ -512,6 +543,7 @@ export const SearchArticle = async (
     console.log(isPremium);
     if (isPremium) {
         result = await DBConfig('article')
+            .where('article.Status', '=', 'Published')
             .whereRaw(
                 'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
                 [searchValue]
@@ -560,6 +592,7 @@ export const SearchArticle = async (
             .limit(limit);
     } else {
         result = await DBConfig('article')
+            .where('article.Status', '=', 'Published')
             .whereRaw(
                 'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
                 [searchValue]
@@ -726,6 +759,7 @@ export const GetRelativeArticle = async (
             'article.ArticleID'
         )
         .where('article.ArticleID', '!=', articleId)
+        .where('article.Status', '=', 'Published')
         .where('category.CategoryID', '=', categoryId)
         .join(
             'subcategory',
@@ -837,11 +871,11 @@ export const GetCategoryOfArticle = async (articleId: string) => {
     return category
         ? (category as Category)
         : {
-            categoryName: '',
-            subcategoryName: '',
-            categoryId: 0,
-            subcategoryId: 0,
-        };
+              categoryName: '',
+              subcategoryName: '',
+              categoryId: 0,
+              subcategoryId: 0,
+          };
 };
 
 export interface Comment {
@@ -910,6 +944,7 @@ export const getMostViewedArticles = async (
 
     if (isUserPremium) {
         response = await db('article')
+            .where('article.Status', '=', 'Published')
             .join(
                 'article_url',
                 'article_url.ArticleID',
@@ -944,6 +979,7 @@ export const getMostViewedArticles = async (
             );
     } else {
         response = await db('article')
+            .where('article.Status', '=', 'Published')
             .join(
                 'article_url',
                 'article_url.ArticleID',
@@ -1001,6 +1037,7 @@ export const getLatestArticles = async (
 
     if (isUserPremium) {
         response = await db('article')
+            .where('article.Status', '=', 'Published')
             .join(
                 'article_url',
                 'article_url.ArticleID',
@@ -1038,6 +1075,7 @@ export const getLatestArticles = async (
             );
     } else {
         response = await db('article')
+            .where('article.Status', '=', 'Published')
             .join(
                 'article_url',
                 'article_url.ArticleID',
@@ -1108,8 +1146,8 @@ export const getTopArticles = async (
     const startWeek = new Date();
     startWeek.setDate(
         startWeek.getDate() -
-        startWeek.getDay() +
-        (startWeek.getDay() === 0 ? -6 : 1)
+            startWeek.getDay() +
+            (startWeek.getDay() === 0 ? -6 : 1)
     );
     startWeek.setHours(0, 0, 0, 0);
     const endWeek = new Date(startWeek);
@@ -1120,7 +1158,12 @@ export const getTopArticles = async (
 
     if (isUserPremium) {
         response = await db('article')
-            .whereBetween('article.DatePosted', [startWeek, endWeek])
+            .where(function () {
+                this.whereBetween('article.DatePosted', [
+                    startWeek,
+                    endWeek,
+                ]).where('article.Status', '=', 'Published');
+            })
             .join(
                 'article_url',
                 'article_url.ArticleID',
@@ -1155,7 +1198,12 @@ export const getTopArticles = async (
             );
     } else {
         response = await db('article')
-            .whereBetween('article.DatePosted', [startWeek, endWeek])
+            .where(function () {
+                this.whereBetween('article.DatePosted', [
+                    startWeek,
+                    endWeek,
+                ]).where('article.Status', '=', 'Published');
+            })
             .join(
                 'article_url',
                 'article_url.ArticleID',
@@ -1226,6 +1274,7 @@ export const getCategoryArticles = async (
                 '=',
                 'article_subcategory.ArticleID'
             )
+            .where('article.Status', '=', 'Published')
             .orderBy('article.IsPremium', 'desc')
             .orderBy('article.ViewCount', 'desc')
             .limit(limit)
@@ -1248,6 +1297,7 @@ export const getCategoryArticles = async (
                 '=',
                 'article_subcategory.ArticleID'
             )
+            .where('article.Status', '=', 'Published')
             .orderBy('article.ViewCount', 'desc')
             .limit(limit)
             .select('category.CategoryID as CatID');
