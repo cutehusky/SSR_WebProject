@@ -1,6 +1,4 @@
-<section
-    class="section top-header mt-5 mb-5 pb-4 border-bottom col col-lg-12 col-md-12 col-sm-12"
->
+<section class="section top-header mt-5 mb-5 pb-4 border-bottom col col-lg-12 col-md-12 col-sm-12">
     <nav class="d-flex align-items-center">
         {{#if isCategory}}
         <div class="d-flex">
@@ -16,9 +14,7 @@
         <ul class="nav w-100 d-flex flex-nowrap sub-category-wrapper">
             {{#each subcategoryInfo}}
             <li class="pt-3 me-3 sub-category text text-nowrap">
-                <a href="/category/subcategory/{{this.subcategoryId}}"
-                    >{{this.subcategoryName}}</a
-                >
+                <a href="/category/subcategory/{{this.subcategoryId}}">{{this.subcategoryName}}</a>
             </li>
             {{/each}}
         </ul>
@@ -26,19 +22,16 @@
 </section>
 
 <div class="d-flex align-items-start">
-    <div class="col col-lg-9 col-md-12 col-sm-12">
+    <div class="col col-lg-12 col-md-12 col-sm-12">
         <section class="col col-lg-12 col-md-12 col-sm-12">
             <section class="w-65 me-3 col col-lg-12 col-md-12 col-sm-12">
                 <a href="/article/{{topNews.ArticleID}}" class="top-news">
-                    <div
-                        class="top-news__img position-relative overflow-hidden"
-                    >
-                        <img
-                            src="{{topNews.URL}}"
-                            alt=""
-                            class="w-100 img-fluid"
-                            style="object-fit: cover; height: 500px"
-                        />
+                    {{#if topNews.isPremium}}
+                    <p class="position-absolute premium_badge">Premium</p>
+                    {{/if}}
+                    <div class="top-news__img position-relative overflow-hidden">
+                        <img src="{{topNews.URL}}" alt="" class="w-100 img-fluid"
+                            style="object-fit: cover; height: 500px" />
                         <div class="top-news__date">
                             <span>Ngày đăng: {{topNews.DatePosted}}</span>
                         </div>
@@ -49,19 +42,12 @@
                     <div class="top-news__description p-3">
                         <h6>{{topNews.Abstract}}</h6>
                     </div>
-                    <div
-                        class="d-flex align-items-center p-3 top-news__details"
-                    >
+                    <div class="d-flex align-items-center p-3 top-news__details">
                         <div class="me-4">
-                            <a href="/category/{{topNews.ArticleID}}"
-                                >{{topNews.category}}</a
-                            >
+                            <a href="/category/{{topNews.ArticleID}}">{{topNews.category}}</a>
                         </div>
                         <div class="me-4">
-                            <a
-                                href="/category/subcategory/{{topNews.subcategoryId}}"
-                                >{{topNews.subcategory}}</a
-                            >
+                            <a href="/category/subcategory/{{topNews.subcategoryId}}">{{topNews.subcategory}}</a>
                         </div>
                         <ul class="d-flex align-items-center">
                             {{#each topNews.tags}}
@@ -79,48 +65,10 @@
             </section>
         </section>
 
-        <section
-            class="col col-lg-12 col-md-12 col-sm-12 main-news"
-            style="margin-top: 100px"
-        >
+        <section class="col col-lg-12 col-md-12 col-sm-12 main-news" style="margin-top: 100px">
             {{> Component/News listOfNews=newsOfCategory}}
         </section>
     </div>
-    <!-- <div class="col col-lg-3 sub-news">
-        {{#each newsOfCategory}}
-        <div class="mb-4">
-            <div
-                class="d-flex align-items-start sub-news-item__header"
-                style="height: 110px"
-            >
-                <img
-                    src="{{this.img}}"
-                    alt="{{this.title}}"
-                    style="width: 50%"
-                />
-                <div
-                    class="d-flex flex-column justify-content-between ms-2 h-100"
-                >
-                    <span>{{this.title}}</span>
-                    <span>{{this.date}}</span>
-                </div>
-            </div>
-            <div class="w-100 sub-news-item__footer">
-                <div class="d-flex mb-1">
-                    <span>{{this.tagTitle}}</span>
-                    <span>{{this.tagDescription}}</span>
-                </div>
-                <div>
-                    {{#each this.tagList}}
-                    <a href="{{this.link}}">
-                        <button class="btn btn-sm tag">{{this.tag}}</button>
-                    </a>
-                    {{/each}}
-                </div>
-            </div>
-        </div>
-        {{/each}}
-    </div> -->
 </div>
 
 {{> Component/Paging page_items=this.page_items previousLink=this.previousLink

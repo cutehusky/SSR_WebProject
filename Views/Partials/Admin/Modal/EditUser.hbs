@@ -43,6 +43,10 @@
                             </option>
                         </select>
                     </div>
+                    <div class="form-group" id="penNameGroup_{{id}}">
+                        <label for="pen-name_{{id}}">Bút danh</label>
+                        <input type="text" class="form-control" name="penName" id="pen-name_{{id}}" placeholder="{{name}}">
+                    </div>
                 
                     <div class="form-group" id="categoryGroup_{{id}}">
                         <div id="hiddenCategory{{id}}">
@@ -75,7 +79,7 @@
                 </div>
                 <div class="modal-footer custom-modal-footer ">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="submit" class="btn actionBtn" formaction="/admin/user/edit">Lưu</button>
+                    <button type="submit" class="btn actionBtn" id="submitBtn_{{id}}" formaction="/admin/user/edit">Lưu</button>
                 </div>
             </form>
         </div>

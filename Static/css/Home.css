@@ -152,3 +152,13 @@
 .sub-news-item__footer > div:first-child > span:last-child {
     padding-left: 16px;
 }
+
+.premium_badge {
+    font-weight: bold;
+    background-color: var(--color-red-primary);
+    border-bottom-right-radius: 10px;
+    color: var(--color-white);
+    padding: 4px 16px;
+    box-shadow: 4px 4px 4px rgba(229, 228, 226, 0.25);
+    z-index: 99;
+}

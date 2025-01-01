@@ -1,10 +1,10 @@
 import { DBConfig as db } from '../Utils/DBConfig';
 import { UserData, UserRole } from '../Models/UserData';
 
-const datePremium = 10; //min
-import { getRole, getRoleName } from '../Utils/getRole';
+const datePremium = 60 * 24 * 7; //min
+import { getRole} from '../Utils/getRole';
 
-export const createUser = async (userData: any): Promise<void> => {
+export const createUser = async (userData: any, penName: string | null): Promise<void> => {
     // Kiểm tra xem user đã tồn tại chưa
     const userExists = await db('user').where('Email', userData.email).first();
     if (userExists) {
@@ -27,14 +27,14 @@ export const createUser = async (userData: any): Promise<void> => {
         if (userData.role === UserRole.Writer)
             await db('writer').insert({
                 WriterID: id,
-                Alias: userData.fullname,
+                Alias: penName,
             });
         else if (userData.role === UserRole.Editor)
             await db('editor').insert({ EditorID: id });
         else if (userData.role === UserRole.User)
             await db('subscriber').insert({
                 SubscriberID: id,
-                DateExpired: new Date(Date.now() + datePremium * 1000 * 60),
+                DateExpired: new Date(Date.now()),
             });
     } catch (error: any) {
         console.log(error);
@@ -45,7 +45,8 @@ export const createUser = async (userData: any): Promise<void> => {
 export const updateUser = async (
     userData: UserData,
     category_add: number[],
-    category_remove: number[]
+    category_remove: number[],
+    penName: string | null
 ): Promise<void> => {
     // Kiểm tra xem user đã tồn tại chưa
     const userExists = await db('user').where('UserID', userData.id).first();
@@ -55,6 +56,14 @@ export const updateUser = async (
 
     try {
         if (userExists.Role === 2) {
+            for (let i = 0; i < category_remove.length; i++) {
+                await db('editor_category')
+                    .where({
+                        EditorID: userData.id,
+                        CategoryID: category_remove[i],
+                    })
+                    .delete();
+            }
             for (let i = 0; i < category_add.length; i++) {
                 const exit = await db('editor_category')
                     .where({
@@ -68,16 +77,8 @@ export const updateUser = async (
                         CategoryID: category_add[i],
                     });
             }
-            for (let i = 0; i < category_remove.length; i++) {
-                await db('editor_category')
-                    .where({
-                        EditorID: userData.id,
-                        CategoryID: category_remove[i],
-                    })
-                    .delete();
-            }
         }
-        if (getRoleName(parseInt(userExists.Role)) !== userData.role) {
+        if (userExists.Role !== getRole(userData.role as string)) {
             // xóa role ở bảng khác
             if (userExists.Role === 1)
                 await db('writer').where('WriterID', userData.id).delete();

@@ -1,9 +1,23 @@
 <script>
     function validateForm(event) {
+        const content = document.getElementById("summernote");
+        if (content.value.length == 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Hãy nhập nội dung trước khi cập nhật.'
+            });
+            //alert("Hãy nhập nội dung trước khi cập nhật.");
+            event.preventDefault();
+            return;
+        }
         const tag = document.getElementById("tags-submission");
         console.log(tag.value);
         if (tag.value.length == 0) {
-            alert("Hãy gán ít nhất 1 tag trước khi cập nhật.");
+            //alert("Hãy gán ít nhất 1 tag trước khi cập nhật.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Hãy gán ít nhất 1 tag trước khi cập nhật.'
+            });
             event.preventDefault();
             return;
         }
@@ -17,7 +31,11 @@
         }
 
         if (!isChecked) {
-            alert("Hãy cho chuyên mục trước khi cập nhật.");
+            //alert("Hãy chọn chuyên mục trước khi cập nhật.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Hãy chọn chuyên mục trước khi cập nhật.'
+            });
             event.preventDefault();
         }
     }
@@ -55,7 +73,7 @@
         </div>
         <div class="mb-4">
             <p class="input-title">Nhập nội dung</p>
-            <textarea required id="summernote" name="content">{{{data.Content}}}</textarea>
+            <textarea id="summernote" name="content">{{{data.Content}}}</textarea>
         </div>
         <div class="mb-4">
             <label class="form-label input-title">Chọn chuyên mục</label>
@@ -127,6 +145,7 @@
     </form>
 </div>
 {{#section 'script'}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         function getAllTagIds() {

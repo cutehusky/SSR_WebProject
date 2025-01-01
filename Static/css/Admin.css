@@ -1,5 +1,34 @@
 @import 'Variable.css';
 
+/* Apply styling to the entire scrollbar */
+::-webkit-scrollbar {
+    width: 10px; /* Width of the scrollbar */
+    height: 10px; /* Height for horizontal scrollbar */
+}
+
+/* Style the scrollbar track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Background of the track */
+    border-radius: 10px; /* Rounded corners */
+}
+
+/* Style the scrollbar thumb */
+::-webkit-scrollbar-thumb {
+    background: #888; /* Color of the scrollbar thumb */
+    border-radius: 10px; /* Rounded corners */
+}
+
+/* Hover effect for the scrollbar thumb */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Darker color on hover */
+}
+
+/* Firefox scrollbar styling */
+* {
+    scrollbar-width: thin; /* Thin scrollbar for Firefox */
+    scrollbar-color: #888 #f1f1f1; /* Thumb and track colors */
+}
+
 .actionBtn {
     margin-top: 5px;
     margin-bottom: 5px;

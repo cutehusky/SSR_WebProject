@@ -1,13 +1,21 @@
+const modal = document.getElementById('modal');
+modal.addEventListener('show.bs.modal', () => {
+    document.getElementById('categorySelect').selectedIndex = -1; // Không chọn giá trị nào
+});
 //if role khác editor thì ẩn category
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".form-group").forEach((element) => {
         if (element.querySelector("select") && element.querySelector("select").id.includes("roleSelect")) {
             const categoryGroup = document.getElementById(`categoryGroup`);
-            const roleSelect = document.getElementById(`roleSelect}`);
+            const penNameGroup = document.getElementById(`penNameGroup`);
+            const roleSelect = document.getElementById(`roleSelect`);
+            const submitBtn = document.getElementById(`submitBtn`);
 
             // Kiểm tra giá trị ban đầu để ẩn/hiện categoryGroup
             if (roleSelect.value !== "Editor") {
                 categoryGroup.style.display = "none";
+            }else if (roleSelect.value !== "Writer") {
+                penNameGroup.style.display = "none";
             }
 
             // Gắn sự kiện change để xử lý thay đổi
@@ -17,7 +25,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     categoryGroup.style.display = "none";
                 }
+                if (roleSelect.value === "Writer") {
+                    penNameGroup.style.display = "block";
+                } else {
+                    penNameGroup.style.display = "none";
+                }
             });
+            submitBtn.addEventListener("click", (event) => {
+                if (roleSelect.value === "Editor") {
+                    const categoryResult = document.getElementById(`categoryResult`);
+                    if (categoryResult.children.length === 0) {
+                        event.preventDefault();
+                        alert("Chuyên mục không được rỗng!");
+                    }
+                }
+            })
         }
     });
 });

@@ -3,7 +3,6 @@ import { DBConfig } from '../Utils/DBConfig';
 import bcrypt from 'bcryptjs';
 import * as userService from '../Services/UserPasswordService';
 import { UserRole } from '../Models/UserData';
-import { UserData } from '../Models/UserData';
 import { addPremium, createUser } from '../Services/AdminUserService';
 import nodemailer from 'nodemailer';
 
@@ -34,7 +33,10 @@ export class UserController {
             const user = await userService.getUserByEmail(email);
 
             if (!user || user.role === UserRole.Invalid) {
-                return res.status(404).json({ error: 'User not found' });
+                return res.status(404).json({
+                    error: 'User not found',
+                    message: 'Please check your email',
+                });
             }
 
             // Kiểm tra mật khẩu người dùng
@@ -48,10 +50,12 @@ export class UserController {
 
             // Lưu thông tin người dùng vào session
             req.session.authUser = user;
+
             // Redirect về URL trước đó nếu có
             const retUrl = req.session.retUrl || '/';
             req.session.retUrl = undefined;
-            return res.redirect(retUrl);
+            // return res.redirect(retUrl);
+            return res.status(200).json({ successUrl: retUrl });
         } catch (error) {
             console.error('Login Error:', error);
             return res.status(500).json({ error: 'Internal Server Error' });
@@ -91,7 +95,7 @@ export class UserController {
             };
 
             // Tạo mới người dùng trong DB
-            await createUser(newUser);
+            await createUser(newUser, null);
             const userDb = await userService.getUserByEmail(email);
 
             // Lưu thông tin người dùng vào session sau khi đăng ký thành công
@@ -127,11 +131,11 @@ export class UserController {
                     email: email,
                     passowrd: null,
                     dob: null,
-                    role: 'Subcriber',
+                    role: 'User',
                 };
                 console.log(newUser);
 
-                await createUser(newUser);
+                await createUser(newUser, null);
 
                 const userDB = await userService.getUserByEmail(email);
                 console.log(userDB);
@@ -204,13 +208,11 @@ export class UserController {
         }
         try {
             const hashedPassword = await bcrypt.hash(newPassword, 10);
-            await DBConfig('user')
-                .where('Email', email)
-                .update({ 
-                    Password: hashedPassword,
-                    otp: null,
-                    otpExpiration: null 
-                });
+            await DBConfig('user').where('Email', email).update({
+                Password: hashedPassword,
+                otp: null,
+                otpExpiration: null,
+            });
             res.render('User/ForgotPasswordView', {
                 customCss: ['User.css'],
                 message: 'Mật khẩu đã được thay đổi thành công!',
@@ -225,7 +227,7 @@ export class UserController {
     }
     // /user/forgot-password-email/
     async forgotPasswordEmail(req: Request, res: Response) {
-        if(req.session.authUser){
+        if (req.session.authUser) {
             req.session.authUser = null;
         }
         res.render('User/ForgotPasswordEmailView', {
@@ -351,7 +353,7 @@ export class UserController {
             res.redirect('/404');
             return;
         }
-        const Profile =await userService.getProfile(req.session.authUser.id)
+        const Profile = await userService.getProfile(req.session.authUser.id);
         res.render('User/UserProfileView', {
             customCss: ['User.css'],
             Profile,

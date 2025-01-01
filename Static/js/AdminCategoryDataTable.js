@@ -4,11 +4,11 @@ $(document).ready(function () {
         searching: false,
         lengthChange: false,
         paging: false,
+        ordering: false,
         columnDefs: [
             {
                 width: '30%',
                 targets: 1,
-                orderable: false,
             }
         ]
     });
@@ -17,12 +17,6 @@ $(document).ready(function () {
         searching: false,
         lengthChange: false,
         paging: false,
-        columnDefs: [
-            {
-                width: '20%',
-                targets: 2,
-                orderable: false,
-            }
-        ]
+        ordering: false
     });
 });

@@ -96,7 +96,11 @@
                             <label for="editor-subcategory" class="form-label fw-bold">Chuyên mục con</label>
                             <select class="form-control" id="editor-subcategory" name="subcategory">
                                 {{#each subcategories}}
-                                <option value="{{this.id}}">{{this.name}}</option>
+                                {{#if (eq this.id ../article.subcategoryId)}}
+                                   <option value="{{this.id}}" selected>{{this.name}}</option>
+                                {{else}}
+                                      <option value="{{this.id}}">{{this.name}}</option>
+                                {{/if}}
                                 {{/each}}
                             </select>
                         </div>
