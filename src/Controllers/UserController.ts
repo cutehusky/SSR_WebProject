@@ -131,7 +131,7 @@ export class UserController {
                     email: email,
                     passowrd: null,
                     dob: null,
-                    role: 'Subcriber',
+                    role: 'User',
                 };
                 console.log(newUser);
 

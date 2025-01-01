@@ -1,83 +1,89 @@
 <div class="modal-body d-flex align-items-start justify-content-between">
+  <div
+    class="sign-in-email d-flex flex-column align-items-center justify-content-center w-50 border-end border-secondary-subtle"
+  >
+    <h6 class="mb-4">Tạo tài khoản mới</h6>
+    {{! Form submit for sign in with email }}
+    <form action="http://localhost:3000/user/register" class="w-75" method="POST">
+      <div class="mb-3">
+        <input
+          type="email"
+          class="form-control mb-4 sign-in-form-input"
+          id="sign-in-form-email"
+          placeholder="Email của bạn"
+          name="email"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <input
+          type="text"
+          class="form-control mb-4 sign-in-form-input"
+          id="sign-in-form-username"
+          placeholder="Họ và tên"
+          name="fullname"
+        />
+      </div>
+      <div class="mb-3">
+        <input
+          type="password"
+          class="form-control mb-4 sign-in-form-input"
+          id="sign-in-form-password"
+          placeholder="Mật khẩu của bạn"
+          name="password"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <input
+          type="password"
+          class="form-control mb-4 sign-in-form-input"
+          id="sign-in-form-confirm-password"
+          placeholder="Nhập lại mật  khẩu"
+          required
+        />
+      </div>
+      <div 
+        class="g-recaptcha mb-3" 
+        data-sitekey="6LeHbaEqAAAAAPrW2icmbu9Kz2RNuufAAhexE9wi">
+        required
+      </div>
+
+      <div class="d-flex flex-column align-items-center justify-content-center">
+        <button type="submit" class="btn btn-secondary w-100">Tạo tài khoản</button>
+        <p class="mt-4 is-registered">Bạn đã có tài khoản?</p>
+      </div>
+    </form>
+  </div>
+  <div
+    class="sign-in-social-media sign-in-email d-flex flex-column align-items-center justify-content-center w-50"
+  >
+    <h6 class="mb-4">Tạo tài khoản với</h6>
     <div
-        class="sign-in-email d-flex flex-column align-items-center justify-content-center w-50 border-end border-secondary-subtle"
+      class="social-media d-flex align-items-center flex-column justify-content-center w-100"
     >
-        <h6 class="mb-4">Tạo tài khoản mới</h6>
-        {{! Form submit for sign in with email }}
-        <form action="/user/register" class="w-75 sign-up-form" method="POST">
-            <div class="mb-3">
-                <input
-                    type="text"
-                    class="form-control mb-4 sign-in-form-input"
-                    id="sign-up-form-email"
-                    placeholder="Email của bạn"
-                    name="email"
-                />
-            </div>
-            <div class="mb-3">
-                <input
-                    type="text"
-                    class="form-control mb-4 sign-in-form-input"
-                    id="sign-up-form-username"
-                    placeholder="Họ và tên"
-                    name="fullname"
-                />
-            </div>
-            <div class="mb-3">
-                <input
-                    type="password"
-                    class="form-control mb-4 sign-in-form-input"
-                    id="sign-up-form-password"
-                    placeholder="Mật khẩu của bạn"
-                    name="password"
-                />
-            </div>
-            <div class="mb-3">
-                <input
-                    type="password"
-                    class="form-control mb-4 sign-in-form-input"
-                    id="sign-up-form-confirm-password"
-                    placeholder="Nhập lại mật  khẩu"
-                />
-            </div>
-            <div
-                class="d-flex flex-column align-items-center justify-content-center"
-            >
-                <button type="submit" class="btn btn-secondary w-100">
-                    Tạo tài khoản
-                </button>
-                <p class="mt-4 is-registered">Bạn đã có tài khoản?</p>
-            </div>
-        </form>
+      <a
+        href="#"
+        class="social-media-item d-flex align-items-center mb-4 w-75 facebook"
+      >
+        <i class="bi bi-facebook social-medial-icon"></i>
+        <p>Facebok</p>
+      </a>
+      <a
+        href="#"
+        class="social-media-item d-flex align-items-center mb-4 w-75 google"
+      >
+        <i class="bi bi-google social-medial-icon"></i>
+        <p>Google</p>
+      </a>
+      <a
+        href="#"
+        class="social-media-item d-flex align-items-center w-75 apple"
+      >
+        <i class="bi bi-apple social-medial-icon"></i>
+        <p>Apple</p>
+      </a>
     </div>
-    <div
-        class="sign-in-social-media sign-in-email d-flex flex-column align-items-center justify-content-center w-50"
-    >
-        <h6 class="mb-4">Tạo tài khoản với</h6>
-        <div
-            class="social-media d-flex align-items-center flex-column justify-content-center w-100"
-        >
-            <a
-                href="#"
-                class="social-media-item d-flex align-items-center mb-4 w-75 facebook"
-            >
-                <i class="bi bi-facebook social-medial-icon"></i>
-                <p>Facebok</p>
-            </a>
-            <a
-                href="/auth/google"
-                class="social-media-item d-flex align-items-center mb-4 w-75 google"
-            >
-                <i class="bi bi-google social-medial-icon"></i>
-                <p>Google</p>
-            </a>
-            <a
-                href="#"
-                class="social-media-item d-flex align-items-center w-75 apple"
-            >
-                <i class="bi bi-apple social-medial-icon"></i>
-                <p>Apple</p>
-            </a>
-        </div>
-    </div>
+  </div>
 </div>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>

@@ -1,4 +1,4 @@
-import { DBConfig, DBConfig as db } from '../Utils/DBConfig';
+import { DBConfig, DBConfig as db, TimeOptions } from '../Utils/DBConfig';
 import { writer } from 'repl';
 import { getUsernameById, getWriterNameById } from './UserPasswordService';
 
@@ -151,9 +151,7 @@ export const getArticlesByCategoryID = async (
         response.map(async item => {
             const date = new Date(item.DatePosted);
             const formattedDate = date
-                .toISOString()
-                .slice(0, 19)
-                .replace('T', ' ');
+                .toLocaleDateString("vi-VN", TimeOptions);
             const tags = await db('article_tag')
                 .where('article_tag.ArticleID', '=', item.ArticleID)
                 .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
@@ -351,9 +349,7 @@ export const getArticlesBySubCatID = async (
         response.map(async item => {
             const date = new Date(item.DatePosted);
             const formattedDate = date
-                .toISOString()
-                .slice(0, 19)
-                .replace('T', ' ');
+                .toLocaleDateString("vi-VN", TimeOptions);
             const tags = await db('article_tag')
                 .where('article_tag.ArticleID', '=', item.ArticleID)
                 .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
@@ -500,8 +496,10 @@ export const findPageByTagID = async (
             .offset(offset);
     }
 
-    for (let i = 0; i < response.length; i++)
+    for (let i = 0; i < response.length; i++) {
         response[i].tags = await GetTagsOfArticle(response[i].ArticleID);
+        response[i].DatePosted = response[i].DatePosted.toLocaleDateString("vi-VN", TimeOptions);
+    }
     return response as Array<ArticleListItem>;
 };
 
@@ -639,8 +637,10 @@ export const SearchArticle = async (
             .offset(offset)
             .limit(limit);
     }
-    for (let i = 0; i < result.length; i++)
+    for (let i = 0; i < result.length; i++) {
         result[i].tags = await GetTagsOfArticle(result[i].ArticleID);
+        result[i].DatePosted = result[i].DatePosted.toLocaleDateString('vi-VN', TimeOptions);
+    }
     return result as Array<ArticleListItem>;
 };
 
@@ -785,8 +785,10 @@ export const GetRelativeArticle = async (
             'url as URL'
         )
         .limit(limit);
-    for (let i = 0; i < result.length; i++)
+    for (let i = 0; i < result.length; i++) {
         result[i].tags = await GetTagsOfArticle(result[i].ArticleID);
+        result[i].DatePosted = result[i].DatePosted.toLocaleDateString("vi-VN", TimeOptions);
+    }
     return result as Array<ArticleListItem>;
 };
 
@@ -871,11 +873,11 @@ export const GetCategoryOfArticle = async (articleId: string) => {
     return category
         ? (category as Category)
         : {
-              categoryName: '',
-              subcategoryName: '',
-              categoryId: 0,
-              subcategoryId: 0,
-          };
+            categoryName: '',
+            subcategoryName: '',
+            categoryId: 0,
+            subcategoryId: 0,
+        };
 };
 
 export interface Comment {
@@ -899,6 +901,7 @@ export const GetCommentOfArticle = async (
             comment[i].Name = await getUsernameById(
                 comment[i].SubscriberID as number
             );
+        comment[i].DatePosted = comment[i].DatePosted.toLocaleDateString("vi-VN", TimeOptions);
     }
     return comment ? comment : [];
 };
@@ -1146,8 +1149,8 @@ export const getTopArticles = async (
     const startWeek = new Date();
     startWeek.setDate(
         startWeek.getDate() -
-            startWeek.getDay() +
-            (startWeek.getDay() === 0 ? -6 : 1)
+        startWeek.getDay() +
+        (startWeek.getDay() === 0 ? -6 : 1)
     );
     startWeek.setHours(0, 0, 0, 0);
     const endWeek = new Date(startWeek);

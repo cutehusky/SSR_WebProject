@@ -1,7 +1,7 @@
 import { DBConfig as db } from '../Utils/DBConfig';
 import { UserData, UserRole } from '../Models/UserData';
 
-const datePremium = 10; //min
+const datePremium = 60 * 24 * 7; //min
 import { getRole} from '../Utils/getRole';
 
 export const createUser = async (userData: any, penName: string | null): Promise<void> => {
@@ -34,7 +34,7 @@ export const createUser = async (userData: any, penName: string | null): Promise
         else if (userData.role === UserRole.User)
             await db('subscriber').insert({
                 SubscriberID: id,
-                DateExpired: new Date(Date.now() + datePremium * 1000 * 60),
+                DateExpired: new Date(Date.now()),
             });
     } catch (error: any) {
         console.log(error);

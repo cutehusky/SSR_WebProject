@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Kiểm tra giá trị ban đầu để ẩn/hiện categoryGroup
             if (roleSelect.value !== 'Editor') {
                 categoryGroup.style.display = 'none';
-            } 
+            }
             if (roleSelect.value !== "Writer") { // Kiểm tra giá trị ban đầu để ẩn/hiện penNameGroup
                 penNameGroup.style.display = "none";
             }
@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     penNameGroup.style.display = "none";
                 }
             });
+            /*
             submitBtn.addEventListener("click", (event) => {
                 if (roleSelect.value === "Editor") {
                     const categoryResult = document.getElementById(`categoryResult_${id}`);
@@ -44,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         alert("Chuyên mục không được rỗng!");
                     }
                 }
-            });
+            });*/
         }
     });
 });

@@ -39,15 +39,10 @@
     <div class="row g-4">
         {{#each articles}}
         <div class="col-12 col-md-6">
-            <a
-                style="text-decoration: none; color: unset"
-                href="/writer/edit/{{id}}"
-                class="article d-flex align-items-start position-relative"
-            >
-                <button
-                    class="btn btn-dark rounded-circle position-absolute top-0 start-0 m-2 writer-edit-icon"
-                    style="width: 40px; height: 40px"
-                >
+            <a style="text-decoration: none; color: unset" href="/writer/edit/{{id}}"
+                class="article d-flex align-items-start position-relative">
+                <button class="btn btn-dark rounded-circle position-absolute top-0 start-0 m-2 writer-edit-icon"
+                    style="width: 40px; height: 40px">
                     {{#if (eq state "Draft")}}
                     <i class="bi bi-pencil-square"></i>
                     {{/if}} {{#if (eq state "Rejected")}}
@@ -59,13 +54,9 @@
                     {{/if}}
                 </button>
                 {{#if (eq state "Rejected")}}
-                <button
-                    class="btn btn-dark rounded-circle position-absolute start-0 m-2 writer-edit-icon"
-                    style="width: 40px; height: 40px; top: 60px"
-                    data-bs-toggle="modal"
-                    data-bs-target="#writer-decline-modal-{{id}}"
-                    onclick="return false;"
-                >
+                <button class="btn btn-dark rounded-circle position-absolute start-0 m-2 writer-edit-icon"
+                    style="width: 40px; height: 40px; top: 60px" data-bs-toggle="modal"
+                    data-bs-target="#writer-decline-modal-{{id}}" onclick="return false;">
                     <i class="bi bi-eye-fill"></i>
                 </button>
                 {{/if}}
@@ -81,53 +72,37 @@
                         {{this.title}}
                     </h2>
                     <hr style="margin: 0px" />
-                    <p
-                        style="height: 145px; padding-top: 5px"
-                        class="multiline-ellipsis-abstract"
-                    >
+                    <p style="height: 145px; padding-top: 5px" class="multiline-ellipsis-abstract">
                         {{this.abstract}}
                     </p>
                 </div>
             </a>
             {{#if (eq state "Rejected")}}
-            <div
-                class="modal fade writer-decline-modal"
-                id="writer-decline-modal-{{id}}"
-                tabindex="-1"
-                aria-hidden="true"
-            >
+            <div class="modal fade writer-decline-modal" id="writer-decline-modal-{{id}}" tabindex="-1"
+                aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5 text-center w-100">
                                 <span>Lý do từ chối bài viết</span>
                             </h1>
-                            <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"
-                            ></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div
-                            style="margin-top: 20px"
-                            class="modal-body pt-1 reasons mx-5 mb-5 d-flex justify-content-center flex-column"
-                        >
-                            <pre style="margin-bottom: 0px; margin-top: 10px">
-{{reason}}</pre
-                            >
+                        <div style="margin-top: 20px"
+                            class="modal-body pt-1 reasons mx-5 mb-5 d-flex justify-content-center flex-column">
+                            <pre style="margin-bottom: 0px; margin-top: 10px">{{reason}}</pre>
                         </div>
                     </div>
                 </div>
             </div>
             {{/if}}
-            <div
-                class="publish-time d-flex align-items-center justify-content-between p-2"
-            >
-                <p
-                    class="mb-1 text-center text-muted multiline-ellipsis-category"
-                >
-                    Ngày Đăng: {{this.datePosted}}
+            <div class="publish-time d-flex align-items-center justify-content-between p-2">
+                <p class="mb-1 text-center text-muted accepted-publish-date">
+                    Thời gian xuất bản: {{this.datePublished}}
+                </p>
+                <p class="mb-1 text-center text-muted">
+                <p class="mb-1 text-center text-muted">
+                    Thời gian Đăng: {{this.datePosted}}
                 </p>
                 <div class="vertical-line mx-3"></div>
                 <p class="mb-0 category multiline-ellipsis-category">

@@ -1,7 +1,7 @@
 import { Response, Request, NextFunction } from 'express';
 import path from 'path';
 import * as fs from 'fs';
-import { DBConfig } from '../Utils/DBConfig';
+import { DBConfig, TimeOptions } from '../Utils/DBConfig';
 import {
     AddBackgroundImageOfArticle,
     CountArticleOfWriterByStates,
@@ -113,7 +113,7 @@ export class WriterController {
                 data: {
                     ID: articleId,
                     Title: data.Title,
-                    DatePosted: data.DatePosted,
+                    DatePosted: data.DatePosted.toLocaleTimeString('vi-VN', TimeOptions),
                     Content: data.Content,
                     Abstract: data.Abstract,
                     IsPremium: data.IsPremium,
@@ -176,6 +176,32 @@ export class WriterController {
             (page - 1) * articlePerPage,
             articlePerPage
         );
+
+        for (let i = 0; i < articles.length; i++) {
+            if (articles[i].datePosted) {
+                const time = articles[i].datePosted.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const date = articles[i].datePosted.toLocaleDateString([], {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+                articles[i].datePosted = `${time} ${date}`;
+            } else {
+                articles[i].datePosted = `xx:xx xx/xx/xxxx`;
+            }
+
+            if (articles[i].datePublished) {
+                const time = articles[i].datePublished.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const date = articles[i].datePublished.toLocaleDateString([], {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+                articles[i].datePublished = `${time} ${date}`;
+            } else {
+                articles[i].datePublished = `xx:xx xx/xx/xxxx`;
+            }
+        }
 
         res.render('Writer/WriterViewArticles', {
             customCss: ['Writer.css'],

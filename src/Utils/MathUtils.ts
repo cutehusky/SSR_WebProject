@@ -26,3 +26,15 @@ export const getPagingNumber = (
     }
     return pageNumbers;
 };
+
+export function formatDateDifference(date1: Date, date2: Date): string {
+    const diff = date2.getTime() - date1.getTime(); // Difference in milliseconds
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24)); // Days
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); // Hours
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); // Minutes
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000); // Seconds
+
+    // Format as dd hh:mm:ss
+    return `${days.toString().padStart(2, '0')} ngày ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
