@@ -37,7 +37,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     const categoryResult = document.getElementById(`categoryResult`);
                     if (categoryResult.children.length === 0) {
                         event.preventDefault();
-                        alert("Chuyên mục không được rỗng!");
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Chuyên mục không được rỗng!'
+                        });
+                        //alert("Chuyên mục không được rỗng!");
                     }
                 }
             })

@@ -179,7 +179,7 @@ export class WriterController {
 
         for (let i = 0; i < articles.length; i++) {
             if (articles[i].datePosted) {
-                const time = articles[i].datePosted.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const time = articles[i].datePosted.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
                 const date = articles[i].datePosted.toLocaleDateString([], {
                     day: '2-digit',
                     month: '2-digit',
@@ -191,7 +191,7 @@ export class WriterController {
             }
 
             if (articles[i].datePublished) {
-                const time = articles[i].datePublished.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const time = articles[i].datePublished.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
                 const date = articles[i].datePublished.toLocaleDateString([], {
                     day: '2-digit',
                     month: '2-digit',

@@ -159,13 +159,20 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 const updateArticlePublished = async () => {
-    await DBConfig('article')
+    let news = await DBConfig('article')
         .where('Status', 'Approved')
-        .where('DatePublished', '<', new Date())
-        .update('Status', 'Published');
+        .select("ArticleID", "DatePublished");
+    console.log("updating news status");
+    for (let i = 0; i < news.length; i++) {
+        if (news[i].DatePublished.getTime() < Date.now()) {
+            console.log("updated: " + news[i]);
+            await DBConfig('article')
+                .where("ArticleID", news[i].ArticleID)
+                .update('Status', 'Published');
+        }
+    }
 };
 
-updateArticlePublished();
 
 setInterval(updateArticlePublished, 60000);
 

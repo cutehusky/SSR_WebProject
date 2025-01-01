@@ -1,5 +1,5 @@
 <html lang="en">
-    
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -67,10 +67,12 @@
                 {{#if isUser}}
                 {{#if isPremium}}
                 {{!-- <div style="padding: 10px 10px 10px 10px">
-                    <div class="overflow-hidden rounded-pill btn1 sheen"><i class="bi bi-check2-circle"></i>Premium</div>
+                    <div class="overflow-hidden rounded-pill btn1 sheen"><i class="bi bi-check2-circle"></i>Premium
+                    </div>
                 </div> --}}
                 <div style="padding: 10px 10px 10px 10px">
-                    <div class="overflow-hidden btn rounded-pill btn1 scale sheen"><i class="bi bi-check2-circle"></i>Premium</div>
+                    <div class="overflow-hidden btn rounded-pill btn1 scale sheen"><i
+                            class="bi bi-check2-circle"></i>Premium</div>
                 </div>
                 {{else}}
                 <div style="padding: 10px 10px 10px 10px" data-bs-toggle="modal" data-bs-target="#premiumModal">
@@ -269,6 +271,7 @@
     {{! owl carousel }}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     {{! custom JS }} {{#each this.customJs}}
     <script src="/js/{{this}}"></script>
@@ -340,14 +343,12 @@
     <script>
         // Click category icon
         const categoryIcon = document.querySelector(".navbarBtn");
-        if (!categoryIcon)
-            return;
 
         categoryIcon.addEventListener('click', () => {
             const categoryMenu = document.querySelector(".navbarBtn .navbar");
 
-            categoryMenu.classList.contains('active') ? 
-                categoryMenu.classList.remove('active') : 
+            categoryMenu.classList.contains('active') ?
+                categoryMenu.classList.remove('active') :
                 categoryMenu.classList.add('active')
         })
     </script>

@@ -36,16 +36,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     penNameGroup.style.display = "none";
                 }
             });
-            /*
             submitBtn.addEventListener("click", (event) => {
                 if (roleSelect.value === "Editor") {
                     const categoryResult = document.getElementById(`categoryResult_${id}`);
                     if (categoryResult.children.length === 0) {
                         event.preventDefault();
-                        alert("Chuyên mục không được rỗng!");
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Chuyên mục không được rỗng!'
+                        });
+                        //alert("Chuyên mục không được rỗng!");
                     }
                 }
-            });*/
+            });
         }
     });
 });
