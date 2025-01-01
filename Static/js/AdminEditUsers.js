@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Kiểm tra giá trị ban đầu để ẩn/hiện categoryGroup
             if (roleSelect.value !== 'Editor') {
                 categoryGroup.style.display = 'none';
-            } else if (roleSelect.value !== "Writer") { // Kiểm tra giá trị ban đầu để ẩn/hiện penNameGroup
+            } 
+            if (roleSelect.value !== "Writer") { // Kiểm tra giá trị ban đầu để ẩn/hiện penNameGroup
                 penNameGroup.style.display = "none";
             }
 

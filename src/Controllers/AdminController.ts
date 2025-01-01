@@ -282,6 +282,16 @@ export class AdminController {
             }
         }
 
+        // lấy các penName của những writer
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].role === 'Writer') {
+                data[i].penName = await DBConfig('writer')
+                    .where('WriterID', data[i].id)
+                    .first()
+                    .then(writer => writer.Alias);
+            }
+        }
+
         req.session.retUrl = req.originalUrl;
         console.log('Data: ', data);
         res.render('Admin/AdminUsersView', {

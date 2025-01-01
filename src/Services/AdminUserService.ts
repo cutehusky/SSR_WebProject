@@ -55,33 +55,11 @@ export const updateUser = async (
     }
 
     try {
-        if (userExists.Role === 2) {
-            for (let i = 0; i < category_remove.length; i++) {
-                await db('editor_category')
-                    .where({
-                        EditorID: userData.id,
-                        CategoryID: category_remove[i],
-                    })
-                    .delete();
-            }
-            for (let i = 0; i < category_add.length; i++) {
-                const exit = await db('editor_category')
-                    .where({
-                        EditorID: userData.id,
-                        CategoryID: category_add[i],
-                    })
-                    .first();
-                if (!exit)
-                    await db('editor_category').insert({
-                        EditorID: userData.id,
-                        CategoryID: category_add[i],
-                    });
-            }
-        }
         if (userExists.Role !== getRole(userData.role as string)) {
             // xóa role ở bảng khác
-            if (userExists.Role === 1)
+            if (userExists.Role === 1){
                 await db('writer').where('WriterID', userData.id).delete();
+            }
             else if (userExists.Role === 2) {
                 await db('editor_category')
                     .where('EditorID', userData.id)
@@ -95,49 +73,74 @@ export const updateUser = async (
                 await db('user')
                     .where('UserID', userData.id)
                     .update('isAdministator', 0);
+        }
 
-            // nếu update role thì phải update bảng khác
-            if (userData.role === 'Writer')
-                await db('writer').insert({
-                    WriterID: userData.id,
-                    Alias: userData.fullname,
-                });
-            else if (userData.role === 'Editor') {
+        // nếu update role thì phải update bảng khác
+        if (userData.role === 'Writer'){
+            const exist = await db('writer').where('WriterID', userData.id).first();
+            if (exist)
+                await db('writer')
+                    .where('WriterID', userData.id)
+                    .update({ Alias: penName });
+            else
+                await db('writer').insert({ WriterID: userData.id, Alias: penName });
+        }
+        else if (userData.role === 'Editor') {
+            const exit = await db('editor').where('EditorID', userData.id).first();
+            if (!exit){
                 await db('editor').insert({ EditorID: userData.id });
-                for (let i = 0; i < category_add.length; i++) {
-                    const exit = await db('editor_category')
-                        .where({
-                            EditorID: userData.id,
-                            CategoryID: category_add[i],
-                        })
-                        .first();
-                    if (!exit)
-                        await db('editor_category').insert({
-                            EditorID: userData.id,
-                            CategoryID: category_add[i],
-                        });
-                }
-            } else if (userData.role === 'User')
+            }
+            for (let i = 0; i < category_remove.length; i++) {
+                await db('editor_category')
+                    .where({
+                        EditorID: userData.id,
+                        CategoryID: category_remove[i],
+                    })
+                    .delete();}
+                
+            for (let i = 0; i < category_add.length; i++) {
+                const exit = await db('editor_category')
+                .where({
+                    EditorID: userData.id,
+                    CategoryID: category_add[i],
+                })
+                .first();
+                if (!exit)
+                    await db('editor_category').insert({
+                EditorID: userData.id,
+                CategoryID: category_add[i],
+                });
+            }
+        } else if (userData.role === 'User'){
+            const exit = await db('subscriber').where('SubscriberID', userData.id).first();
+            if (exit)
+                await db('subscriber')
+                    .where('SubscriberID', userData.id)
+                    .update({
+                        DateExpired: new Date(
+                            exit.DateExpired.getTime() + datePremium * 1000 * 60
+                        ),
+                    });
+            else
                 await db('subscriber').insert({
                     SubscriberID: userData.id,
                     DateExpired: new Date(Date.now() + datePremium * 1000 * 60),
                 });
-            else if (userData.role === 'Admin')
-                await db('user')
-                    .where('UserID', userData.id)
-                    .update('isAdministator', 1);
-        }
-
-        // Update user trong database
-        await db('user')
-            .where('UserID', userData.id)
-            .update({
-                FullName: userData.fullname,
-                Email: userData.email,
-                Password: userData.password,
-                DOB: userData.dob || null,
-                Role: getRole(userData.role as string),
-            });
+        } else if (userData.role === 'Admin')
+            await db('user')
+                .where('UserID', userData.id)
+                .update('isAdministator', 1);
+    
+    // Update user trong database
+    await db('user')
+        .where('UserID', userData.id)
+        .update({
+            FullName: userData.fullname,
+            Email: userData.email,
+            Password: userData.password,
+            DOB: userData.dob || null,
+            Role: getRole(userData.role as string),
+        });
     } catch (error: any) {
         console.log(error);
         throw new Error('Failed to update user.');

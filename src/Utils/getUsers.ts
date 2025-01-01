@@ -13,6 +13,7 @@ export const getUsers = async (
         role: string;
         categories: any,
         upPremium: boolean;
+        penName: string;
 }[]> => {
     try {
         const query = DBConfig('user').select(
