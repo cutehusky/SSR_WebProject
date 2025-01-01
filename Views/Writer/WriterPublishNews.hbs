@@ -1,9 +1,23 @@
 <script>
     function validateForm(event) {
+        const content = document.getElementById("summernote");
+        if (content.value.length == 0) {
+            //alert("Hãy nhập nội dung trước khi đăng.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Hãy nhập nội dung trước khi đăng.'
+            });
+            event.preventDefault();
+            return;
+        }
         const tag = document.getElementById("tags-submission");
         console.log(tag.value);
         if (tag.value.length == 0) {
-            alert("Hãy gán ít nhất 1 tag trước khi đăng.");
+            //alert("Hãy gán ít nhất 1 tag trước khi đăng.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Hãy gán ít nhất 1 tag trước khi đăng.'
+            });
             event.preventDefault();
             return;
         }
@@ -17,7 +31,11 @@
         }
 
         if (!isChecked) {
-            alert("Hãy cho chuyên mục trước khi đăng.");
+            //alert("Hãy cho chuyên mục trước khi đăng.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Hãy chọn chuyên mục trước khi đăng.'
+            });
             event.preventDefault();
         }
     }
@@ -46,7 +64,7 @@
 
         <div class="mb-4">
             <p class="input-title">Nhập nội dung</p>
-            <textarea id="summernote" name="content" required></textarea>
+            <textarea id="summernote" name="content"></textarea>
         </div>
         <div class="mb-4">
             <label class="form-label input-title">Chọn chuyên mục</label>
@@ -77,7 +95,7 @@
         <div class="mb-4">
             <label for="editor-tags" class="form-label fw-bold">Tags</label>
             <div class="d-flex mt-2">
-                <input type="text" class="d-none" id="tags-submission" name="tags"/>
+                <input type="text" class="d-none" id="tags-submission" name="tags" />
                 <select id="editor-tags" class="form-control">
                     {{#each tags}}
                     <option value="{{id}}">{{name}}</option>
@@ -117,6 +135,7 @@
     </form>
 </div>
 {{#section 'script'}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         function getAllTagIds() {

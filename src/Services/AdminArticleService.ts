@@ -81,7 +81,13 @@ export const getArticlesByCategoryID = async (
                 '=',
                 'article_subcategory.ArticleID'
             )
-            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .join(
+                'article_url',
+                'article_url.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
+            .where('article.Status', '=', 'Published')
             .orderBy('article.IsPremium', 'desc')
             .orderBy('article.DatePosted', 'DESC')
             .select(
@@ -89,6 +95,7 @@ export const getArticlesByCategoryID = async (
                 'article.Title as Title',
                 'article.Abstract as Abstract',
                 'article.DatePosted as DatePosted',
+                'article.IsPremium as isPremium',
                 'article_url.url as URL',
                 'subcategory.Name as subcategory',
                 'subcategory.SubcategoryID as subcategoryId',
@@ -117,13 +124,20 @@ export const getArticlesByCategoryID = async (
                 '=',
                 'article_subcategory.ArticleID'
             )
-            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .join(
+                'article_url',
+                'article_url.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
+            .where('article.Status', '=', 'Published')
             .orderBy('article.DatePosted', 'DESC')
             .select(
                 'article.ArticleID as ArticleID',
                 'article.Title as Title',
                 'article.Abstract as Abstract',
                 'article.DatePosted as DatePosted',
+                'article.IsPremium as isPremium',
                 'article_url.url as URL',
                 'subcategory.Name as subcategory',
                 'subcategory.SubcategoryID as subcategoryId',
@@ -182,6 +196,7 @@ export const countArticlesByCatID = async (
             '=',
             'article_subcategory.ArticleID'
         )
+        .where('article.Status', '=', 'Published')
         .groupBy('category.CategoryID')
         .count('* as total')
         .first();
@@ -200,6 +215,7 @@ export const countArticlesBySubCatID = async (
             '=',
             'article_subcategory.ArticleID'
         )
+        .where('article.Status', '=', 'Published')
         .groupBy('article_subcategory.SubCategoryID')
         .count('* as total')
         .first();
@@ -257,7 +273,12 @@ export const getArticlesBySubCatID = async (
     if (isPremium) {
         response = await db('subcategory')
             .where('subcategory.SubCategoryID', '=', subcategoryId)
-            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+            .join(
+                'category',
+                'category.CategoryID',
+                '=',
+                'subcategory.CategoryID'
+            )
             .join(
                 'article_subcategory',
                 'article_subcategory.SubCategoryID',
@@ -271,6 +292,7 @@ export const getArticlesBySubCatID = async (
                 'article_subcategory.ArticleID'
             )
             .join('article_url', 'article_url.ArticleID', 'article.ArticleID')
+            .where('article.Status', '=', 'Published')
             .orderBy('article.IsPremium', 'desc')
             .orderBy('article.DatePosted', 'DESC')
             .select(
@@ -278,6 +300,7 @@ export const getArticlesBySubCatID = async (
                 'article.Title as Title',
                 'article.Abstract as Abstract',
                 'article.DatePosted as DatePosted',
+                'article.IsPremium as isPremium',
                 'article_url.url as URL',
                 'subcategory.Name as subcategory',
                 'subcategory.SubcategoryID as subcategoryId',
@@ -288,7 +311,12 @@ export const getArticlesBySubCatID = async (
     } else {
         response = await db('subcategory')
             .where('subcategory.SubCategoryID', '=', subcategoryId)
-            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
+            .join(
+                'category',
+                'category.CategoryID',
+                '=',
+                'subcategory.CategoryID'
+            )
             .join(
                 'article_subcategory',
                 'article_subcategory.SubCategoryID',
@@ -302,12 +330,14 @@ export const getArticlesBySubCatID = async (
                 'article_subcategory.ArticleID'
             )
             .join('article_url', 'article_url.ArticleID', 'article.ArticleID')
+            .where('article.Status', '=', 'Published')
             .orderBy('article.DatePosted', 'DESC')
             .select(
                 'article.ArticleID as ArticleID',
                 'article.Title as Title',
                 'article.Abstract as Abstract',
                 'article.DatePosted as DatePosted',
+                'article.IsPremium as isPremium',
                 'article_url.url as URL',
                 'subcategory.Name as subcategory',
                 'subcategory.SubcategoryID as subcategoryId',
@@ -346,54 +376,129 @@ export const getArticlesBySubCatID = async (
 export const findPageByTagID = async (
     tagIDs: string[],
     limit: number,
-    offset: number
+    offset: number,
+    isPremium: boolean
 ): Promise<any[]> => {
-    const response = await DBConfig('article_tag')
-        .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
-        .join('article', 'article.ArticleID', '=', 'article_tag.ArticleID')
-        .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
-        .join(
-            'article_subcategory',
-            'article_subcategory.ArticleID',
-            '=',
-            'article.ArticleID'
-        )
-        .join(
-            'subcategory',
-            'subcategory.SubCategoryID',
-            '=',
-            'article_subcategory.SubCategoryID'
-        )
-        .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
-        .whereIn('article_tag.TagID', tagIDs)
-        .select(
-            'article.ArticleID',
-            'Title',
-            'DatePosted',
-            'Abstract',
-            'IsPremium',
-            'ViewCount',
-            'category.Name as category',
-            'subcategory.Name as subcategory',
-            'category.CategoryID as categoryId',
-            'subcategory.SubCategoryID as subcategoryId',
-            'url as URL'
-        )
-        .groupBy(
-            'article.ArticleID',
-            'article.Title',
-            'article.Abstract',
-            'IsPremium',
-            'ViewCount',
-            'article.DatePosted',
-            'article_url.URL',
-            'category.Name',
-            'subcategory.Name',
-            'category.CategoryID',
-            'subcategory.SubCategoryID'
-        )
-        .limit(limit)
-        .offset(offset);
+    let response = [];
+    if (isPremium) {
+        response = await DBConfig('article_tag')
+            .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
+            .join('article', 'article.ArticleID', '=', 'article_tag.ArticleID')
+            .join(
+                'article_url',
+                'article_url.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
+            .join(
+                'article_subcategory',
+                'article_subcategory.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
+            .join(
+                'subcategory',
+                'subcategory.SubCategoryID',
+                '=',
+                'article_subcategory.SubCategoryID'
+            )
+            .join(
+                'category',
+                'category.CategoryID',
+                '=',
+                'subcategory.CategoryID'
+            )
+            .where('article.Status', '=', 'Published')
+            .whereIn('article_tag.TagID', tagIDs)
+            .select(
+                'article.ArticleID',
+                'Title',
+                'DatePosted',
+                'Abstract',
+                'IsPremium',
+                'ViewCount',
+                'category.Name as category',
+                'subcategory.Name as subcategory',
+                'category.CategoryID as categoryId',
+                'subcategory.SubCategoryID as subcategoryId',
+                'url as URL'
+            )
+            .groupBy(
+                'article.ArticleID',
+                'article.Title',
+                'article.Abstract',
+                'IsPremium',
+                'ViewCount',
+                'article.DatePosted',
+                'article_url.URL',
+                'category.Name',
+                'subcategory.Name',
+                'category.CategoryID',
+                'subcategory.SubCategoryID'
+            )
+            .orderBy('article.IsPremium', 'desc')
+            .orderBy('article.DatePosted', 'DESC')
+            .limit(limit)
+            .offset(offset);
+    } else {
+        response = await DBConfig('article_tag')
+            .join('tag', 'tag.TagID', '=', 'article_tag.TagID')
+            .join('article', 'article.ArticleID', '=', 'article_tag.ArticleID')
+            .join(
+                'article_url',
+                'article_url.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
+            .join(
+                'article_subcategory',
+                'article_subcategory.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
+            .join(
+                'subcategory',
+                'subcategory.SubCategoryID',
+                '=',
+                'article_subcategory.SubCategoryID'
+            )
+            .join(
+                'category',
+                'category.CategoryID',
+                '=',
+                'subcategory.CategoryID'
+            )
+            .where('article.Status', '=', 'Published')
+            .whereIn('article_tag.TagID', tagIDs)
+            .select(
+                'article.ArticleID',
+                'Title',
+                'DatePosted',
+                'Abstract',
+                'IsPremium',
+                'ViewCount',
+                'category.Name as category',
+                'subcategory.Name as subcategory',
+                'category.CategoryID as categoryId',
+                'subcategory.SubCategoryID as subcategoryId',
+                'url as URL'
+            )
+            .groupBy(
+                'article.ArticleID',
+                'article.Title',
+                'article.Abstract',
+                'IsPremium',
+                'ViewCount',
+                'article.DatePosted',
+                'article_url.URL',
+                'category.Name',
+                'subcategory.Name',
+                'category.CategoryID',
+                'subcategory.SubCategoryID'
+            )
+            .limit(limit)
+            .offset(offset);
+    }
 
     for (let i = 0; i < response.length; i++)
         response[i].tags = await GetTagsOfArticle(response[i].ArticleID);
@@ -405,6 +510,8 @@ export const countArticlesByTagID = async (
 ): Promise<number> => {
     let total = await DBConfig('article_tag')
         .whereIn('article_tag.TagID', tagIDs)
+        .join('article', 'article.ArticleID', '=', 'article_tag.ArticleID')
+        .where('article.Status', '=', 'Published')
         .count('* as total')
         .groupBy('article_tag.TagID')
         .first();
@@ -416,6 +523,7 @@ export const CountSearchResult = async (
     searchValue: string
 ): Promise<number> => {
     let count = await DBConfig('article')
+        .where('article.Status', '=', 'Published')
         .whereRaw(
             'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
             [searchValue]
@@ -435,6 +543,7 @@ export const SearchArticle = async (
     console.log(isPremium);
     if (isPremium) {
         result = await DBConfig('article')
+            .where('article.Status', '=', 'Published')
             .whereRaw(
                 'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
                 [searchValue]
@@ -451,8 +560,18 @@ export const SearchArticle = async (
                 '=',
                 'subcategory.SubCategoryID'
             )
-            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
-            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .join(
+                'category',
+                'category.CategoryID',
+                '=',
+                'subcategory.CategoryID'
+            )
+            .join(
+                'article_url',
+                'article_url.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
             .where('STT', '=', '0')
             .orderBy('article.IsPremium', 'desc')
             .orderBy('DatePosted', 'desc')
@@ -467,12 +586,13 @@ export const SearchArticle = async (
                 'subcategory.Name as subcategory',
                 'category.CategoryID as categoryId',
                 'subcategory.SubCategoryID as subcategoryId',
-                'url'
+                'url as URL'
             )
             .offset(offset)
             .limit(limit);
     } else {
         result = await DBConfig('article')
+            .where('article.Status', '=', 'Published')
             .whereRaw(
                 'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE)',
                 [searchValue]
@@ -489,8 +609,18 @@ export const SearchArticle = async (
                 '=',
                 'subcategory.SubCategoryID'
             )
-            .join('category', 'category.CategoryID', '=', 'subcategory.CategoryID')
-            .join('article_url', 'article_url.ArticleID', '=', 'article.ArticleID')
+            .join(
+                'category',
+                'category.CategoryID',
+                '=',
+                'subcategory.CategoryID'
+            )
+            .join(
+                'article_url',
+                'article_url.ArticleID',
+                '=',
+                'article.ArticleID'
+            )
             .where('STT', '=', '0')
             .orderBy('DatePosted', 'desc')
             .select(
@@ -612,7 +742,7 @@ export interface ArticleListItem {
     subcategory: string;
     categoryId: number;
     subcategoryId: number;
-    url: string;
+    URL: string;
     tags?: Array<Tag>;
 }
 
@@ -629,6 +759,7 @@ export const GetRelativeArticle = async (
             'article.ArticleID'
         )
         .where('article.ArticleID', '!=', articleId)
+        .where('article.Status', '=', 'Published')
         .where('category.CategoryID', '=', categoryId)
         .join(
             'subcategory',
@@ -740,11 +871,11 @@ export const GetCategoryOfArticle = async (articleId: string) => {
     return category
         ? (category as Category)
         : {
-            categoryName: '',
-            subcategoryName: '',
-            categoryId: 0,
-            subcategoryId: 0,
-        };
+              categoryName: '',
+              subcategoryName: '',
+              categoryId: 0,
+              subcategoryId: 0,
+          };
 };
 
 export interface Comment {
@@ -813,6 +944,7 @@ export const getMostViewedArticles = async (
 
     if (isUserPremium) {
         response = await db('article')
+            .where('article.Status', '=', 'Published')
             .join(
                 'article_url',
                 'article_url.ArticleID',
@@ -847,6 +979,7 @@ export const getMostViewedArticles = async (
             );
     } else {
         response = await db('article')
+            .where('article.Status', '=', 'Published')
             .join(
                 'article_url',
                 'article_url.ArticleID',
@@ -904,6 +1037,7 @@ export const getLatestArticles = async (
 
     if (isUserPremium) {
         response = await db('article')
+            .where('article.Status', '=', 'Published')
             .join(
                 'article_url',
                 'article_url.ArticleID',
@@ -941,6 +1075,7 @@ export const getLatestArticles = async (
             );
     } else {
         response = await db('article')
+            .where('article.Status', '=', 'Published')
             .join(
                 'article_url',
                 'article_url.ArticleID',
@@ -987,7 +1122,7 @@ export const getLatestArticles = async (
             return {
                 ...item,
                 commentCount: comments ? comments.count : 0,
-                author: await getWriterNameById(item.writerID)
+                author: await getWriterNameById(item.writerID),
             };
         })
     );
@@ -1011,8 +1146,8 @@ export const getTopArticles = async (
     const startWeek = new Date();
     startWeek.setDate(
         startWeek.getDate() -
-        startWeek.getDay() +
-        (startWeek.getDay() === 0 ? -6 : 1)
+            startWeek.getDay() +
+            (startWeek.getDay() === 0 ? -6 : 1)
     );
     startWeek.setHours(0, 0, 0, 0);
     const endWeek = new Date(startWeek);
@@ -1023,7 +1158,12 @@ export const getTopArticles = async (
 
     if (isUserPremium) {
         response = await db('article')
-            .whereBetween('article.DatePosted', [startWeek, endWeek])
+            .where(function () {
+                this.whereBetween('article.DatePosted', [
+                    startWeek,
+                    endWeek,
+                ]).where('article.Status', '=', 'Published');
+            })
             .join(
                 'article_url',
                 'article_url.ArticleID',
@@ -1058,7 +1198,12 @@ export const getTopArticles = async (
             );
     } else {
         response = await db('article')
-            .whereBetween('article.DatePosted', [startWeek, endWeek])
+            .where(function () {
+                this.whereBetween('article.DatePosted', [
+                    startWeek,
+                    endWeek,
+                ]).where('article.Status', '=', 'Published');
+            })
             .join(
                 'article_url',
                 'article_url.ArticleID',
@@ -1129,6 +1274,7 @@ export const getCategoryArticles = async (
                 '=',
                 'article_subcategory.ArticleID'
             )
+            .where('article.Status', '=', 'Published')
             .orderBy('article.IsPremium', 'desc')
             .orderBy('article.ViewCount', 'desc')
             .limit(limit)
@@ -1151,6 +1297,7 @@ export const getCategoryArticles = async (
                 '=',
                 'article_subcategory.ArticleID'
             )
+            .where('article.Status', '=', 'Published')
             .orderBy('article.ViewCount', 'desc')
             .limit(limit)
             .select('category.CategoryID as CatID');
@@ -1212,7 +1359,7 @@ export const countArticlesCategories = async (
         .join('article_subcategory as as', 'a.ArticleID', 'as.ArticleID')
         .join('subcategory as s', 'as.SubcategoryID', 's.SubcategoryID')
         .join('category as c', 's.CategoryID', 'c.CategoryID')
-        .join('writer as w', 'a.WriterID', 'w.WriterID')
+        .orderBy('a.DatePosted', 'desc');
 
     if (categories === -1) {
         let count = await query.count('* as countTotal').first();
@@ -1234,6 +1381,7 @@ export const getArticlesCategories = (
         .join('article_subcategory as as', 'a.ArticleID', 'as.ArticleID')
         .join('subcategory as s', 'as.SubcategoryID', 's.SubcategoryID')
         .join('category as c', 's.CategoryID', 'c.CategoryID')
+        .orderBy('a.DatePosted', 'desc')
         .select(
             'a.ArticleID as id',
             'a.Title as title',

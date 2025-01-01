@@ -1,3 +1,28 @@
+<style>
+    .multiline-ellipsis-title {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .multiline-ellipsis-abstract {
+        display: -webkit-box;
+        -webkit-line-clamp: 6;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .multiline-ellipsis-category {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
 <a name="" id="" class="btn btn1" href="/writer/" role="button">Quay về</a>
 <div class="container my-5 writer-view-articles">
     {{#if (eq state "Published")}}
@@ -14,21 +39,33 @@
     <div class="row g-4">
         {{#each articles}}
         <div class="col-12 col-md-6">
-            <a style="text-decoration: none; color: unset" href="/writer/edit/{{id}}"
-                class="article d-flex align-items-start position-relative">
-                {{#if (eq state "Draft")}}
-                <button class="btn btn-dark rounded-circle position-absolute top-0 start-0 m-2 writer-edit-icon"
-                    style="width: 40px; height: 40px">
+            <a
+                style="text-decoration: none; color: unset"
+                href="/writer/edit/{{id}}"
+                class="article d-flex align-items-start position-relative"
+            >
+                <button
+                    class="btn btn-dark rounded-circle position-absolute top-0 start-0 m-2 writer-edit-icon"
+                    style="width: 40px; height: 40px"
+                >
+                    {{#if (eq state "Draft")}}
                     <i class="bi bi-pencil-square"></i>
+                    {{/if}} {{#if (eq state "Rejected")}}
+                    <i class="bi bi-ban"></i>
+                    {{/if}} {{#if (eq state "Approved")}}
+                    <i class="bi bi-hourglass-split"></i>
+                    {{/if}} {{#if (eq state "Published")}}
+                    <i class="bi bi-check2-circle"></i>
+                    {{/if}}
                 </button>
-                {{/if}} {{#if (eq state "Rejected")}}
-                <button class="btn btn-dark rounded-circle position-absolute top-0 start-0 m-2 writer-edit-icon"
-                    style="width: 40px; height: 40px">
-                    <i class="bi bi-pencil-square"></i>
-                </button>
-                <button class="btn btn-dark rounded-circle position-absolute start-0 m-2 writer-edit-icon"
-                    style="width: 40px; height: 40px; top: 60px" data-bs-toggle="modal"
-                    data-bs-target="#writer-decline-modal-{{id}}" onclick="return false;">
+                {{#if (eq state "Rejected")}}
+                <button
+                    class="btn btn-dark rounded-circle position-absolute start-0 m-2 writer-edit-icon"
+                    style="width: 40px; height: 40px; top: 60px"
+                    data-bs-toggle="modal"
+                    data-bs-target="#writer-decline-modal-{{id}}"
+                    onclick="return false;"
+                >
                     <i class="bi bi-eye-fill"></i>
                 </button>
                 {{/if}}
@@ -40,46 +77,66 @@
                     {{/if}}
                 </div>
                 <div class="sum-article p-3 w-50 h-100">
-                    <h2>{{this.title}}</h2>
-                    <p>{{this.abstract}}</p>
+                    <h2 style="height: 80px" class="multiline-ellipsis-title">
+                        {{this.title}}
+                    </h2>
+                    <hr style="margin: 0px" />
+                    <p
+                        style="height: 145px; padding-top: 5px"
+                        class="multiline-ellipsis-abstract"
+                    >
+                        {{this.abstract}}
+                    </p>
                 </div>
             </a>
             {{#if (eq state "Rejected")}}
-            <div class="modal fade writer-decline-modal" id="writer-decline-modal-{{id}}" tabindex="-1"
-                aria-hidden="true">
+            <div
+                class="modal fade writer-decline-modal"
+                id="writer-decline-modal-{{id}}"
+                tabindex="-1"
+                aria-hidden="true"
+            >
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5 text-center w-100">
                                 <span>Lý do từ chối bài viết</span>
                             </h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                            ></button>
                         </div>
-                        <div style="margin-top: 20px"
-                            class="modal-body pt-1 reasons mx-5 mb-5 d-flex justify-content-center flex-column ">
-                            <pre style="margin-bottom: 0px; margin-top: 10px">{{reason}}</pre>
+                        <div
+                            style="margin-top: 20px"
+                            class="modal-body pt-1 reasons mx-5 mb-5 d-flex justify-content-center flex-column"
+                        >
+                            <pre style="margin-bottom: 0px; margin-top: 10px">
+{{reason}}</pre
+                            >
                         </div>
                     </div>
                 </div>
             </div>
             {{/if}}
-            <div class="publish-time d-flex align-items-center justify-content-between p-2">
-                {{#if (eq state "Published")}}
-                <p class="mb-1 text-center text-muted accepted-publish-date">
-                    Ngày xuất bản: {{this.datePublished}}
-                </p>
-                {{/if}} {{#if (eq state "Approved")}}
-                <p class="mb-1 text-center text-muted accepted-publish-date">
-                    Ngày xuất bản: {{this.datePublished}}
-                </p>
-                {{/if}}
-                <p class="mb-1 text-center text-muted">
+            <div
+                class="publish-time d-flex align-items-center justify-content-between p-2"
+            >
+                <p
+                    class="mb-1 text-center text-muted multiline-ellipsis-category"
+                >
                     Ngày Đăng: {{this.datePosted}}
                 </p>
                 <div class="vertical-line mx-3"></div>
-                <p class="mb-0 category">{{this.category}}</p>
+                <p class="mb-0 category multiline-ellipsis-category">
+                    {{this.category}}
+                </p>
                 <div class="vertical-line mx-3"></div>
-                <p class="mb-0 subcategory">{{this.subcategory}}</p>
+                <p class="mb-0 subcategory multiline-ellipsis-category">
+                    {{this.subcategory}}
+                </p>
             </div>
         </div>
         {{/each}}

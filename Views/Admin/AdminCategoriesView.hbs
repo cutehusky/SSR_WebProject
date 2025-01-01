@@ -66,7 +66,7 @@
         <label for="roleSelect" class="form-label" style="padding-top: 8px; width: 200px;">
             Chuyên Mục
         </label>
-        <select name="category" class="form-select" style="height: 40px;" id="roleSelect">
+        <select name="category" class="form-select" style="height: 40px;" id="roleSelect" >
             <option value="-1" {{#if (eq ../selectedCategory -1 ) }}selected{{/if }}>Tất Cả</option>
             {{#each allCategories}}
             <option value="{{id}}" {{#if (eq ../selectedCategory id ) }}selected{{/if }}>{{name}}</option>
@@ -105,7 +105,7 @@
                         <i class="bi bi-bookmark-x-fill"></i>
                     </button>
                 </form>
-                {{> Admin/Modal/EditSubcategory Categories=../Categories name=name id=id}}
+                {{> Admin/Modal/EditSubcategory allCategories=../allCategories name=name id=id}}
             </td>
         </tr>
         {{/each}}

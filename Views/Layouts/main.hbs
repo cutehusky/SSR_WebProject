@@ -95,10 +95,12 @@
                     <i class="bi bi-person-circle"></i>
                 </button>
                 <div class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton2" style="width: 300px">
-                    <li><a class="dropdown-item" href="/user/profile">Profile</a></li>
-                    <form method="post">
-                        <li><button type="submit" class="dropdown-item" formaction="/user/logout">Log out</a></li>
-                    </form>
+                    <li class="p-0"><a class="dropdown-item p-2 ps-3" href="/user/profile">Profile</a></li>
+                    <li class="p-0">
+                        <form method="post" class="mb-0">
+                            <button type="submit" class="dropdown-item p-2 ps-3" formaction="/user/logout">Log out
+                        </form>
+                    </li>
                 </div>
             </div>
             {{/if}}
@@ -163,17 +165,17 @@
     <footer class="footer footer-color2 text-black py-1">
         <div class="container">
             <div class="row" style="padding-top: 24px">
-                <div class="col-md-6">
+                {{#if isUser}}
+                <div class="col-md-5">
                     <div class="footer-menu">
                         <a class="scale" href="#">Trang Chủ</a>
                         {{#each Top10Categories}}
                         <a class="scale" href="/category/{{id}}">{{name}}</a>
                         {{/each}}
-                        <a class="scale" href="/user/profile">Info</a>
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-5">
                     <h5>Thành viên nhóm</h5>
                     <ul class="list-unstyled">
                         <li>22127132, Lý Nghị Hoằng</li>
@@ -184,13 +186,33 @@
                     </ul>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
+                    <h5>PTUDW-22KTPM2</h5>
+                    <ul class="list-unstyled">
+                        <li>Final Project</li>
+                        <li>Newspaper</li>
+                    </ul>
+                </div>
+                {{else}}
+                <div class="col-md-6">
+                    <h5>Thành viên nhóm</h5>
+                    <ul class="list-unstyled">
+                        <li>22127132, Lý Nghị Hoằng</li>
+                        <li>21127087, Nguyễn Gia Kiệt</li>
+                        <li>22127441, Thái Huyễn Tùng</li>
+                        <li>22127131, Trần Nguyễn Minh Hoàng</li>
+                        <li>22127123, Lê Hồ Phi Hoàng</li>
+                    </ul>
+                </div>
+
+                <div class="col-md-6">
                     <h5>PTUDW- 22KTPM2</h5>
                     <ul class="list-unstyled">
                         <li>Final Project</li>
                         <li>Newspaper</li>
                     </ul>
                 </div>
+                {{/if}}
             </div>
         </div>
     </footer>
@@ -311,6 +333,18 @@
         // Initial setup: Hide the top bar after 3 seconds if there's no scroll or mouse movement
         scrollTimeout = setTimeout(hideTopBar, 3000);
         mouseMoveTimeout = setTimeout(hideTopBar, 3000);
+    </script>
+    <script>
+        // Click category icon
+        const categoryIcon = document.querySelector(".navbarBtn");
+
+        categoryIcon.addEventListener('click', () => {
+            const categoryMenu = document.querySelector(".navbarBtn .navbar");
+
+            categoryMenu.classList.contains('active') ? 
+                categoryMenu.classList.remove('active') : 
+                categoryMenu.classList.add('active')
+        })
     </script>
     {{{_sections.script}}}
 </body>
