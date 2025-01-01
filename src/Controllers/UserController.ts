@@ -91,7 +91,7 @@ export class UserController {
             };
 
             // Tạo mới người dùng trong DB
-            await createUser(newUser);
+            await createUser(newUser, null);
             const userDb = await userService.getUserByEmail(email);
 
             // Lưu thông tin người dùng vào session sau khi đăng ký thành công
@@ -131,7 +131,7 @@ export class UserController {
                 };
                 console.log(newUser);
 
-                await createUser(newUser);
+                await createUser(newUser, null);
 
                 const userDB = await userService.getUserByEmail(email);
                 console.log(userDB);

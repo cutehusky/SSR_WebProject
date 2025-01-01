@@ -287,7 +287,7 @@ export class AdminController {
     console.log('Data: ', data);
         res.render('Admin/AdminUsersView', {
             selectedRole: role,
-            customJs: ['AdminUsersDataTable.js', 'AdminEditUsers.js'],
+            customJs: ['AdminUsersDataTable.js', 'AdminEditUsers.js', 'AdminAddUsers.js'],
             customCss: ['Admin.css'],
             data: data,
             page_items,
@@ -347,17 +347,18 @@ export class AdminController {
         try {
             const userData: UserData = req.body;
             let category_add: number[] = req.body.category_add;
-      let category_remove: number[] = req.body.category_remove;
-      console.log('Request body:', req.body); 
-      
-      // Đảm bảo `category_add` và `category_remove` luôn là mảng
-    if (!Array.isArray(category_add)) {
-      category_add = category_add ? [Number(category_add)] : [];
-    }
-    if (!Array.isArray(category_remove)) {
-      category_remove = category_remove ? [Number(category_remove)] : [];
-    }
-      // Validation cơ bản
+            let category_remove: number[] = req.body.category_remove;
+            const penName = req.body.penName as string;
+            console.log('Request body:', req.body); 
+            
+            // Đảm bảo `category_add` và `category_remove` luôn là mảng
+            if (!Array.isArray(category_add)) {
+            category_add = category_add ? [Number(category_add)] : [];
+            }
+            if (!Array.isArray(category_remove)) {
+            category_remove = category_remove ? [Number(category_remove)] : [];
+            }
+            // Validation cơ bản
             if (userData.id == null || isNaN(userData.id)) {
                 res.status(400).json({
                     error: 'ID is required and must be a valid number.',
@@ -366,7 +367,7 @@ export class AdminController {
             }
 
             // Gọi Service để tạo user
-            await updateUser(userData, category_add, category_remove);
+            await updateUser(userData, category_add, category_remove, penName);
             const redirectUrl = req.session.retUrl || '/admin/users';
             res.redirect(redirectUrl);
         } catch (error) {
@@ -436,10 +437,12 @@ export class AdminController {
   async newUser(req: Request, res: Response) {
         try {
             const userData: UserData = req.body;
+            const penName = req.body.penName as string;
             console.log('Request body:', req.body);
             // Gọi Service để tạo user
             userData.password = await bcrypt.hash(userData.password, 10);
-            await createUser(userData);
+            
+            await createUser(userData, penName);
 
             const redirectUrl = req.session.retUrl || '/admin/users';
             res.redirect(redirectUrl);

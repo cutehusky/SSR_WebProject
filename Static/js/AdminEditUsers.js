@@ -4,11 +4,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (element.querySelector("select") && element.querySelector("select").id.includes("roleSelect_")) {
             const id = element.querySelector("select").id.replace("roleSelect_", "");
             const categoryGroup = document.getElementById(`categoryGroup_${id}`);
+            const penNameGroup = document.getElementById(`penNameGroup_${id}`);
             const roleSelect = document.getElementById(`roleSelect_${id}`);
+            const submitBtn = document.getElementById(`submitBtn_${id}`);
 
             // Kiểm tra giá trị ban đầu để ẩn/hiện categoryGroup
             if (roleSelect.value !== "Editor") {
                 categoryGroup.style.display = "none";
+            } else if (roleSelect.value !== "Writer") { // Kiểm tra giá trị ban đầu để ẩn/hiện penNameGroup
+                penNameGroup.style.display = "none";
             }
 
             // Gắn sự kiện change để xử lý thay đổi
@@ -16,7 +20,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (roleSelect.value === "Editor") {
                     categoryGroup.style.display = "block";
                 } else {
-                    categoryGroup.style.display = "none";
+                    categoryGroup.style.display = "none";        
+                }
+                if (roleSelect.value === "Writer") {
+                    penNameGroup.style.display = "block";
+                } else {
+                    penNameGroup.style.display = "none";
+                }
+            });
+            submitBtn.addEventListener("click", (event) => {
+                if (roleSelect.value === "Editor") {
+                    const categoryResult = document.getElementById(`categoryResult_${id}`);
+                    if (categoryResult.children.length === 0) {
+                        event.preventDefault();
+                        alert("Chuyên mục không được rỗng!");
+                    }
                 }
             });
         }
