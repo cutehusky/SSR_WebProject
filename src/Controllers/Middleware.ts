@@ -3,6 +3,7 @@ import {NextFunction, Request, Response} from "express";
 
 import {DBConfig} from "../Utils/DBConfig";
 import {UserRole} from "../Models/UserData";
+import {formatDateDifference} from "../Utils/MathUtils";
 
 export class MiddlewareController {
     getToDay(req:Request, res: Response, next: NextFunction) {
@@ -51,8 +52,7 @@ export class MiddlewareController {
                         .where("SubscriberID", req.session.authUser.id).first();
                     const dateExpired = new Date(userData.DateExpired);
                     res.locals.isPremium = new Date(Date.now()) < dateExpired;
-                    let sec = (dateExpired.getTime() - Date.now()) / 1000;
-                    res.locals.premiumTime = Math.floor(sec / 60) + ":" + Math.round(sec % 60);
+                    res.locals.premiumTime = formatDateDifference(new Date(), dateExpired);
                 }
             } else {
                 res.locals.isLogin = false;

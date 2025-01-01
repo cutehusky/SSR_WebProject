@@ -1,5 +1,5 @@
 import { Response, Request, NextFunction } from 'express';
-import { DBConfig } from '../Utils/DBConfig';
+import { DBConfig, TimeOptions } from '../Utils/DBConfig';
 import path from 'path';
 import * as pdf from 'html-pdf';
 import {
@@ -307,7 +307,7 @@ export class ArticleController {
             data: {
                 ID: articleId,
                 Title: data.Title,
-                DatePosted: data.DatePosted,
+                DatePosted: data.DatePosted.toLocaleTimeString('vi-VN', TimeOptions),
                 Content: data.Content,
                 Abstract: data.Abstract,
                 IsPremium: data.IsPremium,
@@ -425,7 +425,9 @@ export class ArticleController {
             Content: req.body.content,
             DatePosted: date
         });*/
-        const referer = req.get('Referer') || '/';
+        let referer = req.get('Referer') || '/';
+        if (referer !== '/' && !referer.endsWith("#commentTitle"))
+            referer += "#commentTitle";
         res.redirect(referer);
     }
 }

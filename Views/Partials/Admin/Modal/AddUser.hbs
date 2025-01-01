@@ -13,13 +13,8 @@
                     </div>
                     <div class="form-group">
                         <label for="passwordInput">Mật khẩu</label>
-                        <input
-                        type="text"
-                        class="form-control" 
-                        name="password" 
-                        id="passwordInput"
-                        placeholder="Măc định: 123"
-                        />
+                        <input type="text" class="form-control" name="password" id="passwordInput"
+                            placeholder="Măc định: 123" />
                     </div>
                     <div class="form-group">
                         <label for="nameInput">Họ tên</label>
@@ -40,43 +35,12 @@
                             <option value="Editor">Editor</option>
                         </select>
                     </div>
-                    <div class="form-group" id="penNameGroup" style="display: none;">
-                        <label for="pen-name">Bút danh</label>
-                        <input type="text" class="form-control" name="penName" id="pen-name" placeholder="">
-                    </div>
-                    <div class="form-group" id="categoryGroup">
-                        <div id="hiddenCategory">
-                            <label for="hiddenInput" class="form-label" style="padding-top: 8px; width: 200px;">
-                            Chuyên mục phụ trách
-                            </label>
-                            {{#each editorCat}}
-                                <input type="hidden" class="form-control editorCat" id="hiddenInput{{id}}"
-                                value="{{id}}" name="" readonly>
-                                </input>
-                            {{/each}}
-
-                        </div>
-
-                        <div class="categoryInputResult" id="categoryResult">
-                            {{#each editorCat}}
-                            <div class="categoryInputItem" data-value="{{id}}">
-                                {{name}}
-                                <span class="categoryInputItemRemove" onclick="removeCategoryItem(this)">×</span>
-                            </div>
-                            {{/each}}
-                        </div>
-                        <select class="form-select" style="height: 40px;" id="categorySelect">
-                            {{#each Categories}}
-                            <option value="{{id}}"> {{name}}</option>
-                            {{/each}}
-                        </select>
-                        <button type="button" id="addBtn_{{id}}" class="btn actionBtn">Add</button>
-                    </div>
                 </div>
 
                 <div class="modal-footer custom-modal-footer ">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="sumbit" class="btn actionBtn" id="submitBtn" formaction="/admin/user/new">Thêm</button>
+                    <button type="sumbit" class="btn actionBtn" id="submitBtn"
+                        formaction="/admin/user/new">Thêm</button>
                 </div>
             </form>
         </div>

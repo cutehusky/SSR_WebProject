@@ -275,7 +275,10 @@
     {{/each}}
 
     <script>
-        $('#tagsSearch').tagsinput({
+        let tagSeachUI = $('#tagsSearch');
+        if (!tagSeachUI)
+            return;
+        tagSeachUI.tagsinput({
             onTagExists: function (item, $tag) {
                 console.log('test');
             },
@@ -337,6 +340,8 @@
     <script>
         // Click category icon
         const categoryIcon = document.querySelector(".navbarBtn");
+        if (!categoryIcon)
+            return;
 
         categoryIcon.addEventListener('click', () => {
             const categoryMenu = document.querySelector(".navbarBtn .navbar");

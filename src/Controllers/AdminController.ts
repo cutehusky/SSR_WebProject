@@ -597,7 +597,7 @@ export class AdminController {
         }
         await DBConfig('article')
             .where('ArticleID', articleId)
-            .update({ Status: 'Published' });
+            .update({ Status: 'Published', DatePublished: new Date() });
         res.redirect('/admin/articles');
     }
 

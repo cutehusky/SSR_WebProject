@@ -159,35 +159,9 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 const updateArticlePublished = async () => {
-    // const curr_datetime = new Date();
-
-    // let formatted_datetime = curr_datetime.toLocaleString('vi-VN', {
-    //     year: 'numeric',
-    //     month: '2-digit',
-    //     day: '2-digit',
-    //     hour: '2-digit',
-    //     minute: '2-digit',
-    //     second: '2-digit',
-    //     hour12: false,
-    // });
-
-    // const separator = formatted_datetime.includes(', ') ? ', ' : ' ';
-    // const [time, date] = formatted_datetime.split(separator);
-    // const [day, month, year] = date.split('/');
-    // const final_datetime = `${year}-${month}-${day} ${time}`;
-
-    const curr_datetime = new Date();
-    const year = curr_datetime.getUTCFullYear();
-    const month = String(curr_datetime.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(curr_datetime.getUTCDate()).padStart(2, '0');
-    const hours = String(curr_datetime.getUTCHours()).padStart(2, '0');
-    const minutes = String(curr_datetime.getUTCMinutes()).padStart(2, '0');
-    const seconds = String(curr_datetime.getUTCSeconds()).padStart(2, '0');
-
-    const final_datetime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     await DBConfig('article')
         .where('Status', 'Approved')
-        .where('DatePublished', '>', final_datetime)
+        .where('DatePublished', '<', new Date())
         .update('Status', 'Published');
 };
 
