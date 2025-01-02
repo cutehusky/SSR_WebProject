@@ -95,6 +95,27 @@
             const errorMessages = $('.error-signup-notification p');
             $(errorMessages[0]).text(errorSignUp.error);
             $(errorMessages[1]).text(errorSignUp.message);
+
+            const signin = document.getElementById('sign-in-section');
+            const signup = document.getElementById('sign-up-section');
+
+            if (signup.classList.contains('d-none')) {
+                signup.classList.remove('d-none');
+                signin.classList.add('d-none');
+
+                const headers = document.querySelectorAll(
+                    '.modal-header-config-title'
+                );
+                headers.forEach(header => {
+                    header.classList.remove('is-active');
+
+                    if (
+                        header.getAttribute('data-target') === 'sign-up-section'
+                    ) {
+                        header.classList.add('is-active');
+                    }
+                });
+            }
         } else {
             $('.error-signup-notification').addClass('d-none');
         }

@@ -54,7 +54,8 @@ function validEmail(e) {
 // Fullname Regex
 function validateFullname(fullname) {
     // Regex: Tên chỉ bao gồm chữ cái, dấu cách, và độ dài từ 3-50 ký tự
-    const fullnameRegex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỵỷỹ ]{3,50}$/u;
+    const fullnameRegex =
+        /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỵỷỹ ]{3,50}$/u;
 
     if (fullnameRegex.test(fullname)) {
         return true; // Hợp lệ
@@ -71,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
 
         const email = $('#sign-up-form-email').val();
-        const fullName = $('#sign-up-form-username').val();
+        const fullname = $('#sign-up-form-username').val();
         const password = $('#sign-up-form-password').val();
         const confirmPassword = $('#sign-up-form-confirm-password').val();
         const gRecaptchaResponse = grecaptcha.getResponse();
@@ -85,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (!validateFullname(fullName)) {
+        if (!validateFullname(fullname)) {
             Swal.fire({
                 icon: 'error',
                 title: 'Fullname không hợp lệ!',
@@ -124,10 +125,12 @@ document.addEventListener('DOMContentLoaded', () => {
             data: JSON.stringify({
                 email,
                 password,
-                fullname: username,
+                fullname,
                 'g-recaptcha-response': gRecaptchaResponse,
             }),
-            success: function () {},
+            success: function (response) {
+                window.location.replace(response.successUrl);
+            },
             error: function (jqXHR) {
                 const error = jqXHR.responseJSON.error;
                 const message = jqXHR.responseJSON.message;
@@ -144,8 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.replace('/');
             },
         });
-
-        // signUpForm.off('submit').trigger('submit');
     });
 });
 

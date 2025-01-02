@@ -7,8 +7,6 @@ export const recaptcha = async (
     next: NextFunction
 ) => {
     const response_key = req.body['g-recaptcha-response'];
-    console.log(response_key);
-
     const secret_key = process.env.RECAPTCHA_SECRET_KEY || 'your-secret-key';
 
     if (!response_key) {
