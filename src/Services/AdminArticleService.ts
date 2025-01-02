@@ -1,6 +1,7 @@
 import { DBConfig, DBConfig as db, TimeOptions } from '../Utils/DBConfig';
 import { writer } from 'repl';
 import { getUsernameById, getWriterNameById } from './UserPasswordService';
+import {Knex} from "knex";
 
 export const deleteArticle = async (articleID: number): Promise<void> => {
     try {
@@ -1257,60 +1258,35 @@ export const getCategoryArticles = async (
     }[]
 > => {
     // Get top 10 Ids which have most views
-    let mostViewedCatIDs = [];
-
-    if (isUserPremium) {
-        mostViewedCatIDs = await db('category')
-            .join(
-                'subcategory',
-                'subcategory.CategoryID',
-                'category.CategoryID'
-            )
-            .join(
-                'article_subcategory',
-                'article_subcategory.SubCategoryID',
-                'subcategory.SubCategoryID'
-            )
-            .join(
-                'article',
-                'article.ArticleID',
-                '=',
-                'article_subcategory.ArticleID'
-            )
-            .where('article.Status', '=', 'Published')
-            .orderBy('article.IsPremium', 'desc')
-            .orderBy('article.ViewCount', 'desc')
-            .limit(limit)
-            .select('category.CategoryID as CatID');
-    } else {
-        mostViewedCatIDs = await db('category')
-            .join(
-                'subcategory',
-                'subcategory.CategoryID',
-                'category.CategoryID'
-            )
-            .join(
-                'article_subcategory',
-                'article_subcategory.SubCategoryID',
-                'subcategory.SubCategoryID'
-            )
-            .join(
-                'article',
-                'article.ArticleID',
-                '=',
-                'article_subcategory.ArticleID'
-            )
-            .where('article.Status', '=', 'Published')
-            .orderBy('article.ViewCount', 'desc')
-            .limit(limit)
-            .select('category.CategoryID as CatID');
-    }
-
-    const CatIDs = [...new Set(mostViewedCatIDs.map(item => item.CatID))];
+    let mostViewedCatIDs = await db.from(
+        function (this: Knex.QueryBuilder) {
+            this.from('category')
+                .join(
+                    'subcategory',
+                    'subcategory.CategoryID',
+                    'category.CategoryID'
+                )
+                .join(
+                    'article_subcategory',
+                    'article_subcategory.SubCategoryID',
+                    'subcategory.SubCategoryID'
+                )
+                .join(
+                    'article',
+                    'article.ArticleID',
+                    '=',
+                    'article_subcategory.ArticleID'
+                )
+                .where('article.Status', '=', 'Published')
+                .orderBy('article.ViewCount', 'desc')
+                .select("category.CategoryID as CatID").as("category")
+        }).limit(limit).select(DBConfig.raw('DISTINCT category.CatID as CatID')) as any[];
+    
+    const catIDs: number[] = mostViewedCatIDs.map(item => item.CatID);
 
     // Each subcategory, pick the latest one
     const response = await Promise.all(
-        CatIDs.map(async catID => {
+        catIDs.map(async catID => {
             return await db('category')
                 .where('category.CategoryID', '=', catID)
                 .join(

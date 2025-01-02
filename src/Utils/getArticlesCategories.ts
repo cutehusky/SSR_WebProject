@@ -1,12 +1,12 @@
 import { DBConfig } from "./DBConfig";
 
-export const getArticlesCategories = (categories: any[], editorID: number | null): Promise<any[]> => {
+export const getArticlesCategories = (subCategories: any[], editorID: number | null): Promise<any[]> => {
     return DBConfig('article as a')
         .join('article_subcategory as asc', 'a.ArticleID', 'asc.ArticleID')
         .join('subcategory as s', 'asc.SubcategoryID', 's.SubcategoryID')
         .join('category as c', 's.CategoryID', 'c.CategoryID')
         .join('writer as w', 'a.WriterID', 'w.WriterID')
-        .whereIn('c.CategoryID', categories.map((category) => category.id))
+        .whereIn('s.SubCategoryID', subCategories.map((subCategory) => subCategory.id))
         .where('a.Status', 'Draft')
         .where(function () {
             this.whereNull('a.EditorID').orWhere('a.EditorID', editorID);
@@ -21,13 +21,13 @@ export const getArticlesCategories = (categories: any[], editorID: number | null
         );
 };
 
-export const getArticlesCategoriesRejected = (categories: any[], editorID: number | null): Promise<any[]> => {
+export const getArticlesCategoriesRejected = (subCategories: any[], editorID: number | null): Promise<any[]> => {
     return DBConfig('article as a')
         .join('article_subcategory as asc', 'a.ArticleID', 'asc.ArticleID')
         .join('subcategory as s', 'asc.SubcategoryID', 's.SubcategoryID')
         .join('category as c', 's.CategoryID', 'c.CategoryID')
         .join('writer as w', 'a.WriterID', 'w.WriterID')
-        .whereIn('c.CategoryID', categories.map((category) => category.id))
+        .whereIn('s.SubCategoryID', subCategories.map((subCategory) => subCategory.id))
         .where('a.Status', 'Rejected')
         .where(function () {
             this.whereNull('a.EditorID').orWhere('a.EditorID', editorID);
@@ -42,13 +42,13 @@ export const getArticlesCategoriesRejected = (categories: any[], editorID: numbe
         );
 };
 
-export const getArticlesCategoriesApproved = (categories: any[], editorID: number | null): Promise<any[]> => {
+export const getArticlesCategoriesApproved = (subCategories: any[], editorID: number | null): Promise<any[]> => {
     return DBConfig('article as a')
         .join('article_subcategory as asc', 'a.ArticleID', 'asc.ArticleID')
         .join('subcategory as s', 'asc.SubcategoryID', 's.SubcategoryID')
         .join('category as c', 's.CategoryID', 'c.CategoryID')
         .join('writer as w', 'a.WriterID', 'w.WriterID')
-        .whereIn('c.CategoryID', categories.map((category) => category.id))
+        .whereIn('c.CategoryID', subCategories.map((subCategory) => subCategory.id))
         .where(function () {
             this.where('a.Status', 'Approved').orWhere('a.Status', 'Published');
         })
