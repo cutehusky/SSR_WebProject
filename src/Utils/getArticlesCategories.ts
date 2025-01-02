@@ -21,17 +21,14 @@ export const getArticlesCategories = (subCategories: any[], editorID: number | n
         );
 };
 
-export const getArticlesCategoriesRejected = (subCategories: any[], editorID: number | null): Promise<any[]> => {
+export const getArticlesCategoriesRejected = (editorID: number | null): Promise<any[]> => {
     return DBConfig('article as a')
         .join('article_subcategory as asc', 'a.ArticleID', 'asc.ArticleID')
         .join('subcategory as s', 'asc.SubcategoryID', 's.SubcategoryID')
         .join('category as c', 's.CategoryID', 'c.CategoryID')
         .join('writer as w', 'a.WriterID', 'w.WriterID')
-        .whereIn('s.SubCategoryID', subCategories.map((subCategory) => subCategory.id))
         .where('a.Status', 'Rejected')
-        .where(function () {
-            this.whereNull('a.EditorID').orWhere('a.EditorID', editorID);
-        })
+        .where('a.EditorID', editorID)
         .select(
             'a.ArticleID as id',
             'a.Title as title',
@@ -42,19 +39,16 @@ export const getArticlesCategoriesRejected = (subCategories: any[], editorID: nu
         );
 };
 
-export const getArticlesCategoriesApproved = (subCategories: any[], editorID: number | null): Promise<any[]> => {
+export const getArticlesCategoriesApproved = (editorID: number | null): Promise<any[]> => {
     return DBConfig('article as a')
         .join('article_subcategory as asc', 'a.ArticleID', 'asc.ArticleID')
         .join('subcategory as s', 'asc.SubcategoryID', 's.SubcategoryID')
         .join('category as c', 's.CategoryID', 'c.CategoryID')
         .join('writer as w', 'a.WriterID', 'w.WriterID')
-        .whereIn('c.CategoryID', subCategories.map((subCategory) => subCategory.id))
         .where(function () {
             this.where('a.Status', 'Approved').orWhere('a.Status', 'Published');
         })
-        .where(function () {
-            this.whereNull('a.EditorID').orWhere('a.EditorID', editorID);
-        })
+        .where('a.EditorID', editorID)
         .select(
             'a.ArticleID as id',
             'a.Title as title',

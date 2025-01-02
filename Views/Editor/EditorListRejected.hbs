@@ -7,65 +7,6 @@
         </div>
         <h1 class="editor-title">Bài viết bị từ chối</h1>
         <div class="editor-container mt-4">
-            <form method="get" action="/editor/articles/rejected" class="mb-4">
-                <div class="categorySelection">
-                    <label
-                        for="roleSelect"
-                        class="form-label"
-                        style="padding-top: 8px; width: 200px"
-                    >
-                        Chuyên Mục
-                    </label>
-                    <select
-                        name="category"
-                        class="form-select"
-                        style="height: 40px"
-                        id="roleSelect"
-                    >
-                        <option value="-1" {{#if (eq selectedCategory -1)}}selected{{/if}}>Tất Cả</option>
-                        {{#each categories}}
-                            <option value="{{this.id}}" {{#if (eq ../selectedCategory this.id)}}selected{{/if}}>{{this.name}}</option>
-                        {{/each}}
-                    </select>
-                    <button
-                        type="submit"
-                        class="btn actionBtn scale"
-                        style="margin-left: 30px; width: 120px"
-                    >
-                        <i
-                            class="bi bi-funnel-fill"
-                            style="margin-right: 10px"
-                        ></i
-                        >Lọc
-                    </button>
-                </div>
-            </form>
-            {{!--
-            <div class="editor-container-body pt-2">
-                <div
-                    class="editor-container-body-heading d-flex align-items-center justify-content-between"
-                >
-                    <p class="col col-4">Tiêu đề</p>
-                    <p class="col col-2">Tác giả</p>
-                    <p class="col col-2">Ngày viết</p>
-                    <p class="col col-2">Nhãn</p>
-                    <p class="col col-2">Chuyên mục</p>
-                </div>
-                <div class="editor-container-body-content">
-                    {{#each this.articles}}
-                    <div
-                        class="editor-container-body-content-item d-flex align-items-center justify-content-between"
-                    >
-                        <p class="col col-4">{{this.title}}</p>
-                        <p class="col col-2">{{this.author}}</p>
-                        <p class="col col-2">{{this.date}}</p>
-                        <p class="col col-2">{{this.tag}}</p>
-                        <p class="col col-2">{{this.category}}</p>
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
-            --}}
             <table id="editorPendingTable" class="display w-100">
                 <thead>
                     <tr>
@@ -76,17 +17,17 @@
                         <th>Chuyên Mục Con</th>
                     </tr>
                 </thead>
-                    <tbody>
-                        {{#each this.articles}}
-                        <tr>
-                            <td>{{this.title}}</td>
-                            <td>{{this.author}}</td>
-                            <td>{{this.date}}</td>
-                            <td>{{this.category}}</td>
-                            <td>{{this.subcategory}}</td>
-                        </tr>
-                        {{/each}}
-                    </tbody>
+                <tbody>
+                    {{#each this.articles}}
+                    <tr>
+                        <td>{{this.title}}</td>
+                        <td>{{this.author}}</td>
+                        <td>{{this.date}}</td>
+                        <td>{{this.category}}</td>
+                        <td>{{this.subcategory}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
             </table>
         </div>
     </div>
