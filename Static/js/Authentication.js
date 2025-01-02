@@ -51,12 +51,17 @@ function validEmail(e) {
     return patt.test(e);
 }
 
-// Username Regex
-function validateUsername(username) {
-    const pattern = /^[a-zA-Z][a-zA-Z0-9_]{2,15}$/;
-    return pattern.test(username);
-}
+// Fullname Regex
+function validateFullname(fullname) {
+    // Regex: Tên chỉ bao gồm chữ cái, dấu cách, và độ dài từ 3-50 ký tự
+    const fullnameRegex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỵỷỹ ]{3,50}$/u;
 
+    if (fullnameRegex.test(fullname)) {
+        return true; // Hợp lệ
+    } else {
+        return false; // Không hợp lệ
+    }
+}
 // Submit Sign Up form
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -66,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
 
         const email = $('#sign-up-form-email').val();
-        const username = $('#sign-up-form-username').val();
+        const fullName = $('#sign-up-form-username').val();
         const password = $('#sign-up-form-password').val();
         const confirmPassword = $('#sign-up-form-confirm-password').val();
         const gRecaptchaResponse = grecaptcha.getResponse();
@@ -80,11 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (!validateUsername(username)) {
+        if (!validateFullname(fullName)) {
             Swal.fire({
                 icon: 'error',
-                title: 'Username không hợp lệ!',
-                text: 'Username phải bắt đầu với một chữ cái và có độ dài từ 3 đến 16 ký tự.',
+                title: 'Fullname không hợp lệ!',
+                text: 'Fullname chỉ bao gồm chữ cái, dấu cách, và độ dài từ 3-50 ký tự',
             });
             return;
         }

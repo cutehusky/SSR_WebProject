@@ -73,6 +73,7 @@ export class UserController {
             password,
             fullname,
         }: { email: string; password: string; fullname: string } = req.body;
+        console.log(email, password, fullname);
 
         const dob = new Date().toISOString().slice(0, 10);
 

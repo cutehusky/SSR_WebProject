@@ -1,3 +1,4 @@
+import { recaptcha } from './../Utils/recaptcha';
 import { Response, Request, NextFunction } from 'express';
 import { DBConfig, TimeOptions } from '../Utils/DBConfig';
 import path from 'path';
@@ -65,6 +66,8 @@ export class ArticleController {
         const category_articles = await getCategoryArticles(isUserPremium);
         const latest_articles = await getLatestArticles(isUserPremium);
 
+        const recaptcha_site_key = process.env.RECAPTCHA_SITE_KEY || '';
+
         res.render('Home/HomeView', {
             customCss: ['HomePage.css'],
             customJs: ['HomeView.js'],
@@ -72,6 +75,7 @@ export class ArticleController {
             view_articles,
             latest_articles,
             category_articles,
+            recaptcha_site_key,
         });
     };
 
