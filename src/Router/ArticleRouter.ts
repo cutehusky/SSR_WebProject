@@ -6,7 +6,7 @@ const router = express.Router();
 
 const articleController = new ArticleController();
 
-router.get('/home', articleController.verifyUser, articleController.getHome);
+router.get('/home', articleController.verifyUser, ErrorHandler(articleController.getHome));
 router.get(
     '/category/:id',
     articleController.verifyUser,
