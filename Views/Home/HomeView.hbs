@@ -4,24 +4,40 @@
         <div class="col-lg-7 px-0">
             <div class="owl-carousel main-carousel position-relative">
                 {{#each (slice top_articles 0 3)}}
-                <div class="position-relative overflow-hidden" style="height: 500px">
+                <div
+                    class="position-relative overflow-hidden"
+                    style="height: 500px"
+                >
                     {{#if this.isPremium}}
                     <p class="position-absolute premium_badge">Premium</p>
-                    {{/if}}
-                    {{#if (eq this.img 'null')}}
-                    <img class="img-fluid h-100" src="/null.jpg" style="object-fit: cover" />
+                    {{/if}} {{#if (eq this.img 'null')}}
+                    <img
+                        class="img-fluid h-100"
+                        src="/null.jpg"
+                        style="object-fit: cover"
+                    />
                     {{else}}
-                    <img class="img-fluid h-100" src="{{this.img}}" onerror="this.onerror=null; this.src='/null.jpg';"
-                        style="object-fit: cover" />
+                    <img
+                        class="img-fluid h-100"
+                        src="{{this.img}}"
+                        onerror="this.onerror=null; this.src='/null.jpg';"
+                        style="object-fit: cover"
+                    />
                     {{/if}}
                     <div class="overlay">
                         <div class="mb-2 d-flex justify-content-between">
-                            <a class="badge bg-primary text-uppercase text-truncate font-weight-semi-bold p-2 me-2"
-                                href="/category/subcategory/{{categoryID}}">{{this.category}}</a>
+                            <a
+                                class="badge bg-primary text-uppercase text-truncate font-weight-semi-bold p-2 me-2"
+                                href="/category/subcategory/{{categoryID}}"
+                                >{{this.category}}</a
+                            >
                             <span class="text-white">{{this.date}}</span>
                         </div>
-                        <a class="h2 m-0 text-white text-uppercase text-truncate font-weight-bold truncate_one"
-                            href="/article/{{this.articleID}}">{{this.title}}</a>
+                        <a
+                            class="h2 m-0 text-white text-uppercase text-truncate font-weight-bold truncate_one"
+                            href="/article/{{this.articleID}}"
+                            >{{this.title}}</a
+                        >
                     </div>
                 </div>
                 {{/each}}
@@ -31,24 +47,42 @@
             <div class="row mx-0">
                 {{#each (slice top_articles 3 top_articles.length)}}
                 <div class="col-md-6 px-0">
-                    <div class="position-relative overflow-hidden" style="height: 250px">
+                    <div
+                        class="position-relative overflow-hidden"
+                        style="height: 250px"
+                    >
                         {{#if this.isPremium}}
                         <p class="position-absolute premium_badge">Premium</p>
-                        {{/if}}
-                        {{#if (eq this.img 'null')}}
-                        <img class="img-fluid w-100 h-100" src="/null.jpg" style="object-fit: cover" />
+                        {{/if}} {{#if (eq this.img 'null')}}
+                        <img
+                            class="img-fluid w-100 h-100"
+                            src="/null.jpg"
+                            style="object-fit: cover"
+                        />
                         {{else}}
-                        <img class="img-fluid w-100 h-100" src="{{this.img}}"
-                            onerror="this.onerror=null; this.src='/null.jpg';" style="object-fit: cover" />
+                        <img
+                            class="img-fluid w-100 h-100"
+                            src="{{this.img}}"
+                            onerror="this.onerror=null; this.src='/null.jpg';"
+                            style="object-fit: cover"
+                        />
                         {{/if}}
                         <div class="overlay">
                             <div class="mb-2">
-                                <a class="badge bg-primary text-uppercase font-weight-semi-bold p-2 me-2"
-                                    href="/category/subcategory/{{categoryID}}">{{this.category}}</a>
-                                <span class="text-white"><small>{{this.date}}</small></span>
+                                <a
+                                    class="badge bg-primary text-uppercase font-weight-semi-bold p-2 me-2"
+                                    href="/category/subcategory/{{categoryID}}"
+                                    >{{this.category}}</a
+                                >
+                                <span class="text-white"
+                                    ><small>{{this.date}}</small></span
+                                >
                             </div>
-                            <a class="h6 m-0 text-white text-uppercase font-weight-semi-bold truncate"
-                                href="/article/{{this.articleID}}">{{this.title}}</a>
+                            <a
+                                class="h6 m-0 text-white text-uppercase font-weight-semi-bold truncate"
+                                href="/article/{{this.articleID}}"
+                                >{{this.title}}</a
+                            >
                         </div>
                     </div>
                 </div>
@@ -67,26 +101,46 @@
                 bài viết được xem nhiều nhất
             </h4>
         </div>
-        <div class="owl-carousel news-carousel carousel-item-4 position-relative">
+        <div
+            class="owl-carousel news-carousel carousel-item-4 position-relative"
+        >
             {{#each view_articles}}
-            <div class="position-relative overflow-hidden" style="height: 300px">
+            <div
+                class="position-relative overflow-hidden"
+                style="height: 300px"
+            >
                 {{#if this.isPremium}}
                 <p class="position-absolute premium_badge">Premium</p>
-                {{/if}}
-                {{#if (eq this.img 'null')}}
-                <img class="img-fluid h-100" src="/null.jpg" style="object-fit: cover" />
+                {{/if}} {{#if (eq this.img 'null')}}
+                <img
+                    class="img-fluid h-100"
+                    src="/null.jpg"
+                    style="object-fit: cover"
+                />
                 {{else}}
-                <img class="img-fluid h-100" src="{{this.img}}" onerror="this.onerror=null; this.src='/null.jpg';"
-                    style="object-fit: cover" />
+                <img
+                    class="img-fluid h-100"
+                    src="{{this.img}}"
+                    onerror="this.onerror=null; this.src='/null.jpg';"
+                    style="object-fit: cover"
+                />
                 {{/if}}
                 <div class="overlay">
-                    <div class="mb-2 d-flex flex-column justify-content-between">
-                        <a class="badge bg-primary text-uppercase text-truncate font-weight-semi-bold p-2 me-2"
-                            href="/category/subcategory/{{categoryID}}">{{this.category}}</a>
+                    <div
+                        class="mb-2 d-flex flex-column justify-content-between"
+                    >
+                        <a
+                            class="badge bg-primary text-uppercase text-truncate font-weight-semi-bold p-2 me-2"
+                            href="/category/subcategory/{{categoryID}}"
+                            >{{this.category}}</a
+                        >
                         <span class="text-white">{{this.date}}</span>
                     </div>
-                    <a class="h6 m-0 text-white text-uppercase text-truncate font-weight-semi-bold truncate_one"
-                        href="/article/{{articleID}}">{{this.title}}</a>
+                    <a
+                        class="h6 m-0 text-white text-uppercase text-truncate font-weight-semi-bold truncate_one"
+                        href="/article/{{articleID}}"
+                        >{{this.title}}</a
+                    >
                 </div>
             </div>
             {{/each}}
@@ -111,44 +165,73 @@
                     {{#each (slice latest_articles 0 2)}}
                     <div class="col-lg-12">
                         <div class="row news-lg mx-0 mb-3">
-                            <div class="col-md-6 h-100 px-0 position-relative" style="height: 300px">
+                            <div
+                                class="col-md-6 h-100 px-0 position-relative"
+                                style="height: 300px"
+                            >
                                 {{#if this.isPremium}}
                                 <p class="position-absolute premium_badge">
                                     Premium
                                 </p>
-                                {{/if}}
-                                {{#if (eq this.img 'null')}}
-                                <img class="img-fluid w-100 h-100" src="/null.jpg" style="object-fit: cover" />
+                                {{/if}} {{#if (eq this.img 'null')}}
+                                <img
+                                    class="img-fluid w-100 h-100"
+                                    src="/null.jpg"
+                                    style="object-fit: cover"
+                                />
                                 {{else}}
-                                <img class="img-fluid w-100 h-100" src="{{this.img}}"
-                                    onerror="this.onerror=null; this.src='/null.jpg';" style="object-fit: cover" />
+                                <img
+                                    class="img-fluid w-100 h-100"
+                                    src="{{this.img}}"
+                                    onerror="this.onerror=null; this.src='/null.jpg';"
+                                    style="object-fit: cover"
+                                />
                                 {{/if}}
                             </div>
-                            <div class="col-md-6 d-flex flex-column border bg-white h-100 px-0">
-                                <div class="h-100 p-4 d-flex flex-column justify-content-between">
+                            <div
+                                class="col-md-6 d-flex flex-column border bg-white h-100 px-0"
+                            >
+                                <div
+                                    class="h-100 p-4 d-flex flex-column justify-content-between"
+                                >
                                     <div class="mb-2">
-                                        <a class="badge bg-primary text-uppercase font-weight-semi-bold p-2 me-2"
-                                            href="/category/subcategory/{{categoryID}}">{{this.category}}</a>
-                                        <span class="text-body"><small>{{this.date}}</small></span>
+                                        <a
+                                            class="badge bg-primary text-uppercase font-weight-semi-bold p-2 me-2"
+                                            href="/category/subcategory/{{categoryID}}"
+                                            >{{this.category}}</a
+                                        >
+                                        <span class="text-body"
+                                            ><small>{{this.date}}</small></span
+                                        >
                                     </div>
-                                    <a class="h4 d-block mb-3 text-secondary text-uppercase font-weight-bold"
-                                        href="/article/{{articleID}}">
-                                        <p class="truncate">
-                                            {{this.title}}
-                                        </p>
+                                    <a
+                                        class="h4 d-block mb-3 text-secondary text-uppercase font-weight-bold"
+                                        href="/article/{{articleID}}"
+                                    >
+                                        <p class="truncate">{{this.title}}</p>
                                     </a>
-                                    <p class="m-0 overflow-hidden truncate_long" style="height: 72px">
+                                    <p
+                                        class="m-0 overflow-hidden truncate_long"
+                                        style="height: 72px"
+                                    >
                                         {{this.abstract}}
                                     </p>
                                 </div>
-                                <div class="d-flex justify-content-between bg-white border-top mt-auto p-4">
+                                <div
+                                    class="d-flex justify-content-between bg-white border-top mt-auto p-4"
+                                >
                                     <div class="d-flex align-items-center">
                                         <small>{{this.author}}</small>
                                     </div>
                                     <div class="d-flex align-items-center">
-                                        <small class="ms-3"><i class="far fa-eye me-2"></i>{{this.viewCount}}</small>
-                                        <small class="ms-3"><i
-                                                class="far fa-comment me-2"></i>{{this.commentCount}}</small>
+                                        <small class="ms-3"
+                                            ><i class="far fa-eye me-2"></i
+                                            >{{this.viewCount}}</small
+                                        >
+                                        <small class="ms-3"
+                                            ><i class="far fa-comment me-2"></i
+                                            >{{this.commentCount}}</small
+                                        >
                                     </div>
                                 </div>
                             </div>
@@ -161,35 +244,59 @@
                             <p class="position-absolute premium_badge">
                                 Premium
                             </p>
-                            {{/if}}
-                            {{#if (eq this.img 'null')}}
-                            <img class="img-fluid w-100" src="/null.jpg" style="height: 300px; object-fit: cover" />
+                            {{/if}} {{#if (eq this.img 'null')}}
+                            <img
+                                class="img-fluid w-100"
+                                src="/null.jpg"
+                                style="height: 300px; object-fit: cover"
+                            />
                             {{else}}
-                            <img class="img-fluid w-100" src="{{this.img}}"
+                            <img
+                                class="img-fluid w-100"
+                                src="{{this.img}}"
                                 onerror="this.onerror=null; this.src='/null.jpg';"
-                                style="height: 300px; object-fit: cover" />
+                                style="height: 300px; object-fit: cover"
+                            />
                             {{/if}}
                             <div class="bg-white border border-top-0 p-4">
                                 <div class="mb-2">
-                                    <a class="badge bg-primary text-uppercase font-weight-semi-bold p-2 me-2"
-                                        href="/category/subcategory/{{categoryID}}">{{this.category}}</a>
-                                    <span class="text-body"><small>{{this.date}}</small></span>
+                                    <a
+                                        class="badge bg-primary text-uppercase font-weight-semi-bold p-2 me-2"
+                                        href="/category/subcategory/{{categoryID}}"
+                                        >{{this.category}}</a
+                                    >
+                                    <span class="text-body"
+                                        ><small>{{this.date}}</small></span
+                                    >
                                 </div>
-                                <a class="h4 d-block mb-3 text-secondary text-uppercase font-weight-bold"
-                                    href="/article/{{articleID}}">
+                                <a
+                                    class="h4 d-block mb-3 text-secondary text-uppercase font-weight-bold"
+                                    href="/article/{{articleID}}"
+                                >
                                     <p class="truncate">{{this.title}}</p>
                                 </a>
-                                <p class="m-0 overflow-hidden truncate_long" style="height: 72px">
+                                <p
+                                    class="m-0 overflow-hidden truncate_long"
+                                    style="height: 72px"
+                                >
                                     {{this.abstract}}
                                 </p>
                             </div>
-                            <div class="d-flex justify-content-between bg-white border border-top-0 p-4">
+                            <div
+                                class="d-flex justify-content-between bg-white border border-top-0 p-4"
+                            >
                                 <div class="d-flex align-items-center">
                                     <small>{{this.author}}</small>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    <small class="ms-3"><i class="far fa-eye me-2"></i>{{this.viewCount}}</small>
-                                    <small class="ms-3"><i class="far fa-comment me-2"></i>{{this.commentCount}}</small>
+                                    <small class="ms-3"
+                                        ><i class="far fa-eye me-2"></i
+                                        >{{this.viewCount}}</small
+                                    >
+                                    <small class="ms-3"
+                                        ><i class="far fa-comment me-2"></i
+                                        >{{this.commentCount}}</small
+                                    >
                                 </div>
                             </div>
                         </div>
@@ -201,35 +308,59 @@
                             <p class="position-absolute premium_badge">
                                 Premium
                             </p>
-                            {{/if}}
-                            {{#if (eq this.img 'null')}}
-                            <img class="img-fluid w-100" src="/null.jpg" style="height: 300px; object-fit: cover" />
+                            {{/if}} {{#if (eq this.img 'null')}}
+                            <img
+                                class="img-fluid w-100"
+                                src="/null.jpg"
+                                style="height: 300px; object-fit: cover"
+                            />
                             {{else}}
-                            <img class="img-fluid w-100" src="{{this.img}}"
+                            <img
+                                class="img-fluid w-100"
+                                src="{{this.img}}"
                                 onerror="this.onerror=null; this.src='/null.jpg';"
-                                style="height: 300px; object-fit: cover" />
+                                style="height: 300px; object-fit: cover"
+                            />
                             {{/if}}
                             <div class="bg-white border border-top-0 p-4">
                                 <div class="mb-2">
-                                    <a class="badge bg-primary text-uppercase font-weight-semi-bold p-2 me-2"
-                                        href="/category/subcategory/{{categoryID}}">{{this.category}}</a>
-                                    <span class="text-body"><small>{{this.date}}</small></span>
+                                    <a
+                                        class="badge bg-primary text-uppercase font-weight-semi-bold p-2 me-2"
+                                        href="/category/subcategory/{{categoryID}}"
+                                        >{{this.category}}</a
+                                    >
+                                    <span class="text-body"
+                                        ><small>{{this.date}}</small></span
+                                    >
                                 </div>
-                                <a class="h4 d-block mb-0 text-secondary text-uppercase font-weight-bold"
-                                    href="/article/{{articleID}}">
+                                <a
+                                    class="h4 d-block mb-0 text-secondary text-uppercase font-weight-bold"
+                                    href="/article/{{articleID}}"
+                                >
                                     <p class="truncate">{{this.title}}</p>
                                 </a>
-                                <p class="m-0 overflow-hidden truncate_long" style="height: 72px">
+                                <p
+                                    class="m-0 overflow-hidden truncate_long"
+                                    style="height: 72px"
+                                >
                                     {{this.abstract}}
                                 </p>
                             </div>
-                            <div class="d-flex justify-content-between bg-white border border-top-0 p-4">
+                            <div
+                                class="d-flex justify-content-between bg-white border border-top-0 p-4"
+                            >
                                 <div class="d-flex align-items-center">
                                     <small>{{this.author}}</small>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    <small class="ms-3"><i class="far fa-eye me-2"></i>{{this.viewCount}}</small>
-                                    <small class="ms-3"><i class="far fa-comment me-2"></i>{{this.commentCount}}</small>
+                                    <small class="ms-3"
+                                        ><i class="far fa-eye me-2"></i
+                                        >{{this.viewCount}}</small
+                                    >
+                                    <small class="ms-3"
+                                        ><i class="far fa-comment me-2"></i
+                                        >{{this.commentCount}}</small
+                                    >
                                 </div>
                             </div>
                         </div>
@@ -237,28 +368,49 @@
                     {{/each}} {{#each (slice latest_articles 6
                     latest_articles.length)}}
                     <div class="col-lg-6">
-                        <div class="d-flex align-items-center bg-white mb-3 overflow-hidden position-relative"
-                            style="height: 110px">
+                        <div
+                            class="d-flex align-items-center bg-white mb-3 overflow-hidden position-relative"
+                            style="height: 110px"
+                        >
                             {{#if this.isPremium}}
                             <p class="position-absolute premium_badge">
                                 Premium
                             </p>
-                            {{/if}}
-                            {{#if (eq this.img 'null')}}
-                            <img class="img-fluid w-50 h-100" src="/null.jpg" alt="" style="object-fit: cover" />
+                            {{/if}} {{#if (eq this.img 'null')}}
+                            <img
+                                class="img-fluid w-50 h-100"
+                                src="/null.jpg"
+                                alt=""
+                                style="object-fit: cover"
+                            />
                             {{else}}
-                            <img class="img-fluid w-50 h-100" src="{{this.img}}"
-                                onerror="this.onerror=null; this.src='/null.jpg';" alt="" style="object-fit: cover" />
+                            <img
+                                class="img-fluid w-50 h-100"
+                                src="{{this.img}}"
+                                onerror="this.onerror=null; this.src='/null.jpg';"
+                                alt=""
+                                style="object-fit: cover"
+                            />
                             {{/if}}
                             <div
-                                class="w-100 h-100 px-3 d-flex flex-column justify-content-between border border-left-0">
+                                class="w-50 h-100 px-3 d-flex flex-column justify-content-between border border-left-0"
+                            >
                                 <div class="mb-2 mt-2">
-                                    <a class="badge bg-primary text-uppercase font-weight-semi-bold p-1 me-2"
-                                        href="/category/subcategory/{{categoryID}}">{{this.category}}</a>
-                                    <span class="text-body"><small>{{this.date}}</small></span>
+                                    <a
+                                        class="badge bg-primary text-uppercase font-weight-semi-bold p-1 me-2"
+                                        href="/category/subcategory/{{categoryID}}"
+                                        >{{this.category}}</a
+                                    >
+                                    <span class="text-body"
+                                        ><small>{{this.date}}</small></span
+                                    >
                                 </div>
-                                <a class="h6 mb-2 text-secondary text-uppercase font-weight-bold truncate"
-                                    href="/article/{{articleID}}">{{this.title}} ></a>
+                                <a
+                                    class="h6 mb-2 text-secondary text-uppercase font-weight-bold truncate"
+                                    style="height: 37px"
+                                    href="/article/{{articleID}}"
+                                    >{{this.title}} ></a
+                                >
                             </div>
                         </div>
                     </div>
@@ -276,28 +428,48 @@
                     </div>
                     <div class="bg-white border border-top-0 p-3">
                         {{#each category_articles}}
-                        <div class="d-flex align-items-center bg-white mb-3 overflow-hidden position-relative"
-                            style="height: 110px">
+                        <div
+                            class="d-flex align-items-center bg-white mb-3 overflow-hidden position-relative"
+                            style="height: 110px"
+                        >
                             {{#if this.isPremium}}
                             <p class="position-absolute premium_badge">
                                 Premium
                             </p>
-                            {{/if}}
-                            {{#if (eq this.img 'null')}}
-                            <img class="img-fluid w-50 h-100" src="/null.jpg" alt="" style="object-fit: cover" />
+                            {{/if}} {{#if (eq this.img 'null')}}
+                            <img
+                                class="img-fluid w-50 h-100"
+                                src="/null.jpg"
+                                alt=""
+                                style="object-fit: cover"
+                            />
                             {{else}}
-                            <img class="img-fluid w-50 h-100" src="{{this.img}}"
-                                onerror="this.onerror=null; this.src='/null.jpg';" alt="" style="object-fit: cover" />
+                            <img
+                                class="img-fluid w-50 h-100"
+                                src="{{this.img}}"
+                                onerror="this.onerror=null; this.src='/null.jpg';"
+                                alt=""
+                                style="object-fit: cover"
+                            />
                             {{/if}}
                             <div
-                                class="w-100 h-100 px-2 d-flex flex-column justify-content-center border border-left-0 overflow-hidden">
+                                class="w-50 h-100 px-2 d-flex flex-column justify-content-center border border-left-0 overflow-hidden"
+                            >
                                 <div class="mb-2">
-                                    <a class="badge bg-primary text-uppercase font-weight-semi-bold p-1 me-2 truncate_one"
-                                        href="/category/subcategory/{{categoryID}}">{{this.category}}</a>
-                                    <span class="text-body"><small>{{this.date}}</small></span>
+                                    <a
+                                        class="badge bg-primary text-uppercase font-weight-semi-bold p-1 me-2 truncate_one"
+                                        href="/category/subcategory/{{categoryID}}"
+                                        >{{this.category}}</a
+                                    >
+                                    <span class="text-body"
+                                        ><small>{{this.date}}</small></span
+                                    >
                                 </div>
-                                <a class="h6 m-0 text-secondary text-uppercase font-weight-bold truncate"
-                                    href="/article/{{articleID}}">{{this.title}}</a>
+                                <a
+                                    class="h6 m-0 text-secondary text-uppercase font-weight-bold truncate"
+                                    href="/article/{{articleID}}"
+                                    >{{this.title}}</a
+                                >
                             </div>
                         </div>
                         {{/each}}
@@ -315,7 +487,11 @@
                     <div class="bg-white border border-top-0 p-3">
                         <div class="d-flex flex-wrap m-n1 tag">
                             {{#each tags}}
-                            <a href="/tags?tag={{name}}" class="btn btn-sm btn-outline-secondary m-1">{{name}}</a>
+                            <a
+                                href="/tags?tag={{name}}"
+                                class="btn btn-sm btn-outline-secondary m-1"
+                                >{{name}}</a
+                            >
                             {{/each}}
                         </div>
                     </div>
