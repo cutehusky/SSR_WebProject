@@ -7,7 +7,7 @@ export const getEditorSubCategories = async (editorID: number): Promise<any[]> =
         .where('ec.EditorID', editorID)
         .select(
             'sc.SubCategoryID as id',
-            DBConfig.raw('Concat(c.Name, " - ", sc.Name) as name')
+            DBConfig.raw('Concat(c.Name, \' - \', sc.Name) as name')
         )
 };
 

@@ -187,6 +187,6 @@ export const getCategorySubCategories = async (): Promise<any[]> => {
         .join('subcategory', 'category.CategoryID', 'subcategory.CategoryID')
         .select(
             'SubcategoryID as id',
-            db.raw('Concat(category.Name, " - ", subcategory.Name) as name'),
+            db.raw('Concat(category.Name, \' - \', subcategory.Name) as name'),
         );
 }
