@@ -1335,6 +1335,7 @@ export const getCategoryArticles = async (
                     '=',
                     'article.ArticleID'
                 )
+                .where('article.Status', '=', 'Published')
                 .orderBy('article.DatePosted', 'desc')
                 .limit(1)
                 .first()

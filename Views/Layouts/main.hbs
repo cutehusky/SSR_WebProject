@@ -280,10 +280,9 @@
     <script src="/js/{{this}}"></script>
     {{/each}}
 
+    {{#if isUser}}
     <script>
         let tagSeachUI = $('#tagsSearch');
-        if (!tagSeachUI)
-            return;
         tagSeachUI.tagsinput({
             onTagExists: function (item, $tag) {
                 console.log('test');
@@ -295,6 +294,7 @@
             }
         });
     </script>
+    {{/if}}
     <script>
         // JavaScript to handle the top bar's visibility
         const topbar = document.querySelector('.topbar');
@@ -343,6 +343,7 @@
         scrollTimeout = setTimeout(hideTopBar, 3000);
         mouseMoveTimeout = setTimeout(hideTopBar, 3000);
     </script>
+    {{#if isUser}}
     <script>
         // Click category icon
         const categoryIcon = document.querySelector(".navbarBtn");
@@ -355,6 +356,7 @@
                 categoryMenu.classList.add('active')
         })
     </script>
+    {{/if}}
     {{{_sections.script}}}
 </body>
 
