@@ -21,3 +21,20 @@
 <script>
   console.log("data: ", this.statistics)
 </script>
+{{#section 'script'}}
+<script>
+    $('.stat-value').each(function () {
+        $(this).prop('Counter',0).animate({
+            Counter: $(this).text()
+        }, {
+          
+          //chnage count up speed here
+            duration: 1500,
+            easing: 'swing',
+            step: function (now) {
+                $(this).text(Math.ceil(now));
+            }
+        });
+    });
+</script>
+{{/section}}
