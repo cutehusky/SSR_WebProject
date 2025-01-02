@@ -29,6 +29,12 @@
     border-color: var(--color-red-link);
 }
 
+.sign-in-form-input,
+.sign-up-form-input {
+    border: var(--bs-border-width) solid var(--bs-border-color) !important;
+    border-radius: var(--bs-border-radius);
+}
+
 .sign-in-form-input {
     height: 48px;
 }
