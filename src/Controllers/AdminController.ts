@@ -9,8 +9,7 @@ import {
 import { getCategories } from '../Utils/getCategories';
 import { countUsers, getUsers } from '../Utils/getUsers';
 import { DBConfig } from '../Utils/DBConfig';
-import { getEditorCategories } from '../Utils/getEditorCategories';
-
+import { getEditorSubCategories } from '../Utils/getEditorCategories';
 import {
     deleteArticle,
     getArticlesCategories,
@@ -21,6 +20,7 @@ import {
     deleteUser,
     updateUser,
     addPremium,
+    getCategorySubCategories,
 } from '../Services/AdminUserService';
 import { UserData, UserRole } from '../Models/UserData';
 import {
@@ -262,7 +262,7 @@ export class AdminController {
         // lấy các category của những editor quản lý
         for (let i = 0; i < data.length; i++) {
             if (data[i].role === 'Editor') {
-                data[i].categories = await getEditorCategories(data[i].id);
+                data[i].categories = await getEditorSubCategories(data[i].id);
                 console.log(JSON.stringify(data[i].categories, null, 2));
             } else {
                 data[i].categories = [];
@@ -287,6 +287,7 @@ export class AdminController {
                     .then(writer => writer.Alias);
             }
         }
+        const selectedSubCategory = await getCategorySubCategories();
 
         req.session.retUrl = req.originalUrl;
         console.log('Data: ', data);
@@ -298,7 +299,7 @@ export class AdminController {
             page_items,
             previousLink,
             nextLink,
-            Categories: res.locals.Categories,
+            Categories: selectedSubCategory,
         });
     }
 

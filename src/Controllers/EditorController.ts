@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { getEditorCategories } from '../Utils/getEditorCategories';
+import { getEditorSubCategories } from '../Utils/getEditorCategories';
 import { getArticlesCategories } from '../Utils/getArticlesCategories';
 import { getArticleDetails } from '../Utils/getArticleDetails';
 import { getArticleTags } from '../Utils/getArticleTags';
@@ -23,19 +23,21 @@ export class EditorController {
 
     async getArticles(req: Request, res: Response) {
         const editorID = req.session.authUser?.id as number;
-        const categories = await getEditorCategories(editorID);
-        let selectedCategory = undefined;
-        if (!isNaN(Number(req.query.category)) && Number(req.query.category) !== -1)
-            selectedCategory = categories.filter(
-                (category) => category.id === Number(req.query.category)
+        const subCategories = await getEditorSubCategories(editorID);
+        let selectedSubCategory = undefined;
+        if (!isNaN(Number(req.query.category)) && Number(req.query.category) !== -1) 
+            selectedSubCategory = subCategories.filter(
+                (subCategory) => subCategory.id === Number(req.query.category)
             );
         let articles;
-        if (selectedCategory === undefined)
-            articles = await getArticlesCategories(categories, editorID);
-        else
-            articles = await getArticlesCategories(selectedCategory, editorID);
+        if (selectedSubCategory === undefined) {
+            articles = await getArticlesCategories(subCategories, editorID);
+        } else {
+            articles = await getArticlesCategories(selectedSubCategory, editorID);
+        }
+    
         let selectedId = -1;
-        if (Number(req.query.category) !== -1)
+        if (Number(req.query.category) !== -1) 
             selectedId = Number(req.query.category);
         res.render('Editor/EditorListPendingApproveView', {
             customCss: [
@@ -45,7 +47,7 @@ export class EditorController {
                 'DataTable.css',
             ],
             customJs: ['EditorArticlesDataTable.js'],
-            categories,
+            categories: subCategories,
             articles,
             editorID,
             selectedCategory: selectedId,
@@ -54,20 +56,21 @@ export class EditorController {
 
     async getRejectedArticles(req: Request, res: Response) {
         const editorID = req.session.authUser?.id as number;
-        const categories = await getEditorCategories(editorID);
-        let selectedCategory = undefined;
-        if (!isNaN(Number(req.query.category)) && Number(req.query.category) !== -1)
-            selectedCategory = categories.filter(
-                (category) => category.id === Number(req.query.category)
+        const subCategories = await getEditorSubCategories(editorID);
+        let selectedSubCategory = undefined;
+        if (!isNaN(Number(req.query.category)) && Number(req.query.category) !== -1) 
+            selectedSubCategory = subCategories.filter(
+                (subCategory) => subCategory.id === Number(req.query.category)
             );
         let articles;
-        if (selectedCategory === undefined)
-            articles = await getArticlesCategoriesRejected(categories, editorID);
-        else
-            articles = await getArticlesCategoriesRejected(selectedCategory, editorID);
-
+        if (selectedSubCategory === undefined) {
+            articles = await getArticlesCategoriesRejected(subCategories, editorID);
+        } else {
+            articles = await getArticlesCategoriesRejected(selectedSubCategory, editorID);
+        }
+    
         let selectedId = -1;
-        if (Number(req.query.category) !== -1)
+        if (Number(req.query.category) !== -1) 
             selectedId = Number(req.query.category);
         res.render('Editor/EditorListRejected', {
             customCss: [
@@ -77,7 +80,7 @@ export class EditorController {
                 'DataTable.css',
             ],
             customJs: ['EditorArticlesDataTable.js'],
-            categories,
+            categories: subCategories,
             articles,
             editorID,
             selectedCategory: selectedId,
@@ -86,17 +89,17 @@ export class EditorController {
 
     async getApprovedArticles(req: Request, res: Response) {
         const editorID = req.session.authUser?.id as number;
-        const categories = await getEditorCategories(editorID);
-        let selectedCategory = undefined;
-        if (!isNaN(Number(req.query.category)) && Number(req.query.category) !== -1)
-            selectedCategory = categories.filter(
-                (category) => category.id === Number(req.query.category)
+        const subCategories = await getEditorSubCategories(editorID);
+        let selectedSubCategory = undefined;
+        if (!isNaN(Number(req.query.category)) && Number(req.query.category) !== -1) 
+            selectedSubCategory = subCategories.filter(
+                (subCategory) => subCategory.id === Number(req.query.category)
             );
         let articles;
-        if (selectedCategory === undefined)
-            articles = await getArticlesCategoriesApproved(categories, editorID);
+        if (selectedSubCategory === undefined)
+            articles = await getArticlesCategoriesApproved(subCategories, editorID);
         else
-            articles = await getArticlesCategoriesApproved(selectedCategory, editorID);
+            articles = await getArticlesCategoriesApproved(selectedSubCategory, editorID);
 
         let selectedId = -1;
         if (Number(req.query.category) !== -1)
@@ -109,7 +112,7 @@ export class EditorController {
                 'DataTable.css',
             ],
             customJs: ['EditorArticlesDataTable.js'],
-            categories,
+            categories: subCategories,
             articles,
             editorID,
             selectedCategory: selectedId,

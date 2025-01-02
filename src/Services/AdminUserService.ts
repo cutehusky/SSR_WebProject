@@ -181,3 +181,12 @@ export const addPremium = async (id: number) => {
             });
     }
 };
+
+export const getCategorySubCategories = async (): Promise<any[]> => {
+    return await db('category')
+        .join('subcategory', 'category.CategoryID', 'subcategory.CategoryID')
+        .select(
+            'SubcategoryID as id',
+            db.raw('Concat(category.Name, " - ", subcategory.Name) as name'),
+        );
+}
