@@ -1,9 +1,9 @@
-import {DBConfig as db} from '../Utils/DBConfig';
+import { DBConfig as db } from '../Utils/DBConfig';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import bcrypt from 'bcryptjs';
-import {UserData, UserRole} from '../Models/UserData';
-import {getRoleName} from '../Utils/getRole';
+import { UserData, UserRole } from '../Models/UserData';
+import { getRoleName } from '../Utils/getRole';
 
 export const getUsernameById = async (id: number): Promise<string> => {
     const user = await db('user').where('UserID', id).first();
@@ -42,19 +42,23 @@ export const GetRoleOfUserById = async (userId: string) => {
 export const getUserByEmail = async (
     email: string
 ): Promise<UserData | null> => {
-    const user = await db('user').where('Email', email).select(
-        'UserID as id',
-        'FullName as fullname',
-        'Email as email',
-        'Password   as password',
-        db.raw("DATE_FORMAT(Dob, '%d/%m/%Y') as dateOfBirth"),
-        db.raw("CASE Role WHEN 0 THEN 'User' WHEN 1 THEN 'Writer' WHEN 2 THEN 'Editor' WHEN 3 THEN 'Admin' ELSE 'Invalid' END as role")
-    ).first();
+    let user = await db('user')
+        .where('Email', email)
+        .select(
+            'UserID as id',
+            'FullName as fullname',
+            'Email as email',
+            'Password   as password',
+            db.raw("DATE_FORMAT(Dob, '%d/%m/%Y') as dateOfBirth"),
+            db.raw(
+                "CASE Role WHEN 0 THEN 'User' WHEN 1 THEN 'Writer' WHEN 2 THEN 'Editor' WHEN 3 THEN 'Admin' ELSE 'Invalid' END as role"
+            )
+        )
+        .first();
 
-    if (!user)
-        return null;
-    if (user.role === "Writer") {
-        let writer = await db("writer").where({WriterID: user.id}).first();
+    if (!user) return null;
+    if (user.role === 'Writer') {
+        let writer = await db('writer').where({ WriterID: user.id }).first();
         return {
             id: user.id,
             fullname: user.fullName,
@@ -62,7 +66,7 @@ export const getUserByEmail = async (
             password: user.password,
             dob: user.dateOfBirth,
             role: user.role,
-            penName: writer.Alias
+            penName: writer.Alias,
         };
     }
     return {
@@ -83,7 +87,9 @@ export const updatePassword = async (
         // Kiểm tra xem user có tồn tại không
         const user = await db('user').where('Email', userData.email).first();
         if (!user) {
-            throw new Error(`User with email ${userData.email} does not exist.`);
+            throw new Error(
+                `User with email ${userData.email} does not exist.`
+            );
         }
         const hashPassword = await bcrypt.hash(newPassword, 10);
 
@@ -174,34 +180,43 @@ export const updateProfile = async (
         }
 
         // Update user trong database
-        await db('user').where('UserID', id).update({
-            FullName: name || null,
-            Email: email || null,
-            DOB: dob || null,
-        });
+        await db('user')
+            .where('UserID', id)
+            .update({
+                FullName: name || null,
+                Email: email || null,
+                DOB: dob || null,
+            });
     } catch (error: any) {
         console.log(error);
         throw new Error('Failed to update user.');
     }
 };
-export const getProfile = async (id: number): Promise<{
-    id: number,
-    fullname: string,
-    email: string,
-    password: string,
-    dateOfBirth: string,
-    penName?: string
+export const getProfile = async (
+    id: number
+): Promise<{
+    id: number;
+    fullname: string;
+    email: string;
+    password: string;
+    dateOfBirth: string;
+    penName?: string;
 }> => {
     try {
         // Kiểm tra xem user có tồn tại không
-        const user = await db('user').where('UserID', id).select(
-            'UserID as id',
-            'FullName as fullName',
-            'Email as email',
-            'Password   as password',
-            db.raw("DATE_FORMAT(Dob, '%d/%m/%Y') as dateOfBirth"),
-            db.raw("CASE Role WHEN 0 THEN 'User' WHEN 1 THEN 'Writer' WHEN 2 THEN 'Editor' WHEN 3 THEN 'Admin' ELSE 'Invalid' END as role")
-        ).first();
+        const user = await db('user')
+            .where('UserID', id)
+            .select(
+                'UserID as id',
+                'FullName as fullName',
+                'Email as email',
+                'Password   as password',
+                db.raw("DATE_FORMAT(Dob, '%d/%m/%Y') as dateOfBirth"),
+                db.raw(
+                    "CASE Role WHEN 0 THEN 'User' WHEN 1 THEN 'Writer' WHEN 2 THEN 'Editor' WHEN 3 THEN 'Admin' ELSE 'Invalid' END as role"
+                )
+            )
+            .first();
         if (!user) {
             throw new Error(`User with ID ${id} does not exist.`);
         }
@@ -211,13 +226,13 @@ export const getProfile = async (id: number): Promise<{
             email: user.email,
             password: user.password,
             dateOfBirth: user.dateOfBirth,
-            penName: user.role === 'Writer' ? (await getWriterNameById(user.id)) : undefined
+            penName:
+                user.role === 'Writer'
+                    ? await getWriterNameById(user.id)
+                    : undefined,
         };
-        
-
-    }
-    catch (error: any) {
+    } catch (error: any) {
         console.log(error);
         throw new Error('Failed to get user.');
     }
-}
+};

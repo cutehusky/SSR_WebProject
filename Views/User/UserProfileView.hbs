@@ -1,6 +1,8 @@
 {{#if isUser}}
-<div class="title-search-box d-flex align-items-center justify-content-between pb-4"
-    style="width: 350px; height: 60px; margin-top: 100px">
+<div
+    class="title-search-box d-flex align-items-center justify-content-between pb-4"
+    style="width: 350px; height: 60px; margin-top: 100px"
+>
     <div class="fs-2 fw-bold">Trạng thái Premium</div>
 </div>
 <ul style="padding: 20px" class="premium-status">
@@ -12,11 +14,8 @@
     <li>Hãy đăng ký ngay để nhận những trải nghiệm tốt nhất.</li>
     {{/if}}
 </ul>
-{{/if}}
-{{#if isWriter}}
-{{> User/UserProfile id=Profile.id penName=Profile.penName dateOfBirth=Profile.dateOfBirth email=Profile.email
-name=Profile.fullname}}
-{{else}}
-{{> User/UserProfile id=Profile.id dateOfBirth=Profile.dateOfBirth
-email=Profile.email name=Profile.fullname}}
-{{/if}}
+{{/if}} {{#if isWriter}} {{> User/UserProfile id=Profile.id
+penName=Profile.penName dateOfBirth=Profile.dateOfBirth email=Profile.email
+name=Profile.fullname errorEmail=this.errorEmail}} {{else}} {{> User/UserProfile
+id=Profile.id dateOfBirth=Profile.dateOfBirth email=Profile.email
+name=Profile.fullname errorEmail=this.errorEmail}} {{/if}}

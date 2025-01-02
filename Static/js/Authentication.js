@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const username = $('#sign-up-form-username').val();
         const password = $('#sign-up-form-password').val();
         const confirmPassword = $('#sign-up-form-confirm-password').val();
+        const gRecaptchaResponse = grecaptcha.getResponse();
 
         if (!validEmail(email)) {
             Swal.fire({
@@ -106,7 +107,40 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        signUpForm.off('submit').trigger('submit');
+        if (localStorage.getItem('errorSignUp')) {
+            localStorage.removeItem('errorSignUp');
+        }
+
+        $.ajax({
+            url: '/user/register',
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                email,
+                password,
+                fullname: username,
+                'g-recaptcha-response': gRecaptchaResponse,
+            }),
+            success: function () {},
+            error: function (jqXHR) {
+                const error = jqXHR.responseJSON.error;
+                const message = jqXHR.responseJSON.message;
+                const notification = {
+                    error,
+                    message,
+                };
+
+                if (!localStorage.getItem('errorSignUp'))
+                    localStorage.setItem(
+                        'errorSignUp',
+                        JSON.stringify(notification)
+                    );
+                window.location.replace('/');
+            },
+        });
+
+        // signUpForm.off('submit').trigger('submit');
     });
 });
 
@@ -130,7 +164,10 @@ document.addEventListener('DOMContentLoaded', () => {
             type: 'POST',
             dataType: 'json',
             contentType: 'application/json',
-            data: JSON.stringify({ email, password }),
+            data: JSON.stringify({
+                email,
+                password,
+            }),
             success: function (response) {
                 window.location.replace(response.successUrl);
             },
@@ -159,7 +196,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (localStorage.getItem('errorSignIn')) {
             localStorage.removeItem('errorSignIn');
 
-            $('.error-notification').addClass('d-none');
+            $('.error-signin-notification').addClass('d-none');
+        } else if (localStorage.getItem('errorSignUp')) {
+            localStorage.removeItem('errorSignUp');
+
+            $('.error-signup-notification').addClass('d-none');
         }
     });
 });

@@ -81,6 +81,16 @@ export class UserController {
             return res.status(400).json({ error: 'All fields are required' });
         }
 
+        // Kiểm tra user có bị trùng email (tồn tại) hay không
+        const user = await userService.getUserByEmail(email);
+
+        if (user) {
+            return res.status(409).json({
+                error: 'Account already exists',
+                message: 'Please check your email',
+            });
+        }
+
         try {
             // Mã hóa mật khẩu
             const hashedPassword = await bcrypt.hash(password, 10);
@@ -444,13 +454,42 @@ export class UserController {
     ): Promise<Response | void> {
         try {
             // Check if user is logged in
+            if (!req.session.authUser) {
+                res.redirect('/404');
+                return;
+            }
+
             const user = req.session.authUser;
             if (!user) {
                 return res.status(401).json({ error: 'Unauthorized' });
             }
 
             const { email, name, dob } = req.body;
-            console.log(email, name, dob);
+            // console.log(email, name, dob);
+
+            // Check if email already exists
+            const userInfo = await userService.getUserByEmail(email);
+            const originalEmail = req.session.authUser.email;
+
+            if (userInfo && userInfo.email !== originalEmail) {
+                if (!req.session.authUser) {
+                    res.redirect('/404');
+                    return;
+                }
+
+                const Profile = await userService.getProfile(
+                    req.session.authUser.id
+                );
+
+                Profile.email = email;
+
+                return res.render('User/UserProfileView', {
+                    errorEmail: true,
+                    Profile,
+                    customCss: ['User.css'],
+                });
+            }
+
             await userService.updateProfile(user.id, email, name, dob);
             res.redirect('/user/profile');
         } catch (error) {

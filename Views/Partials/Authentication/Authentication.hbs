@@ -1,20 +1,39 @@
 <!-- Modal -->
 <link rel="stylesheet" href="/css/Authentication.css" />
 
-<div class="modal fade" id="authenticationModal" tabindex="-1" aria-labelledby="authenticationModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-container-config">
+<div
+    class="modal fade"
+    id="authenticationModal"
+    tabindex="-1"
+    aria-labelledby="authenticationModalLabel"
+    aria-hidden="true"
+>
+    <div
+        class="modal-dialog modal-dialog-centered modal-lg modal-container-config"
+    >
         <div class="modal-content modal-content-config">
-            <button type="button" class="btn-close button-close-modal close-modal-icon" data-bs-dismiss="modal"
-                aria-label="Close"></button>
+            <button
+                type="button"
+                class="btn-close button-close-modal close-modal-icon"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+            ></button>
             <div class="modal-header modal-header-config">
-                <div class="modal-titles d-flex align-items-center justify-content-between w-100">
-                    <h1 class="modal-title fs-5 text-center w-50 modal-header-config-title is-active"
-                        id="authenticationModalLabel" data-target="sign-in-section">
+                <div
+                    class="modal-titles d-flex align-items-center justify-content-between w-100"
+                >
+                    <h1
+                        class="modal-title fs-5 text-center w-50 modal-header-config-title is-active"
+                        id="authenticationModalLabel"
+                        data-target="sign-in-section"
+                    >
                         Đăng nhập
                     </h1>
-                    <h1 class="modal-title fs-5 text-center w-50 modal-header-config-title"
-                        id="authenticationModalLabel" data-target="sign-up-section">
+                    <h1
+                        class="modal-title fs-5 text-center w-50 modal-header-config-title"
+                        id="authenticationModalLabel"
+                        data-target="sign-up-section"
+                    >
                         Tạo tài khoản
                     </h1>
                 </div>
@@ -25,7 +44,9 @@
             <div id="sign-up-section" class="authentication-section d-none">
                 {{> Authentication/SignUp}}
             </div>
-            <div class="modal-footer d-flex align-items-center justify-content-center border border-0">
+            <div
+                class="modal-footer d-flex align-items-center justify-content-center border border-0"
+            >
                 <p class="footer-text text-center mb-0 w-75">
                     Bạn đăng nhập là đồng ý với điều khoản sử dụng và chính sách
                     bảo mật của chúng tôi & được bảo vệ bởi reCAPTCHA
@@ -35,3 +56,48 @@
     </div>
 </div>
 <script src="/js/Authentication.js"></script>
+{{#section 'script'}}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const errorSignIn = JSON.parse(localStorage.getItem('errorSignIn'));
+
+        if (errorSignIn) {
+            const signInModal = $('#authenticationModal');
+            signInModal.modal('show');
+
+            const errorMessages = $('.error-signin-notification p');
+            $(errorMessages[0]).text(errorSignIn.error);
+            $(errorMessages[1]).text(errorSignIn.message);
+        } else {
+            $('.error-signin-notification').addClass('d-none');
+        }
+    });
+</script>
+<script>
+    const googleSignIn = $('.google');
+
+    googleSignIn.on('click', () => {
+        if (localStorage.getItem('errorSignIn')) {
+            localStorage.removeItem('errorSignIn');
+        } else if (localStorage.getItem('errorSignUp')) {
+            localStorage.removeItem('errorSignUp');
+        }
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const errorSignUp = JSON.parse(localStorage.getItem('errorSignUp'));
+
+        if (errorSignUp) {
+            const signInModal = $('#authenticationModal');
+            signInModal.modal('show');
+
+            const errorMessages = $('.error-signup-notification p');
+            $(errorMessages[0]).text(errorSignUp.error);
+            $(errorMessages[1]).text(errorSignUp.message);
+        } else {
+            $('.error-signup-notification').addClass('d-none');
+        }
+    });
+</script>
+{{/section}}
