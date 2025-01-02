@@ -491,6 +491,19 @@ export class UserController {
             }
 
             await userService.updateProfile(user.id, email, name, dob);
+
+            if (user.role === UserRole.Writer) {
+                const penName = req.body.penName as string;
+                if (!penName)
+                    return;
+                const exist = await DBConfig('writer').where('WriterID', user.id).first();
+                if (exist)
+                    await DBConfig('writer')
+                        .where('WriterID', user.id)
+                        .update({ Alias: penName });
+                else
+                    await DBConfig('writer').insert({ WriterID: user.id, Alias: penName });
+            }
             res.redirect('/user/profile');
         } catch (error) {
             console.error('Update Profile Error:', error);

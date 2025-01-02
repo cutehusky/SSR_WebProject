@@ -1,5 +1,5 @@
 import session from 'express-session';
-import express, {Express, NextFunction, Request, Response} from 'express';
+import express, { Express, NextFunction, Request, Response } from 'express';
 import { engine } from 'express-handlebars';
 
 import { ArticleRouter } from './Router/ArticleRouter';
@@ -178,7 +178,7 @@ setInterval(updateArticlePublished, 60000);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Internal Server Error: " + err.message });
 });
 
 app.listen(port, function () {

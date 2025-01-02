@@ -77,15 +77,13 @@ export class AdminController {
 
         const previousLink =
             page > 1
-                ? `/admin/categories?page=${
-                      page - 1
-                  }&category=${categoryId}&subCategoryPage=${subCategoryPage}`
+                ? `/admin/categories?page=${page - 1
+                }&category=${categoryId}&subCategoryPage=${subCategoryPage}`
                 : '';
         const nextLink =
             page < totalPages
-                ? `/admin/categories?page=${
-                      page + 1
-                  }&category=${categoryId}&subCategoryPage=${subCategoryPage}`
+                ? `/admin/categories?page=${page + 1
+                }&category=${categoryId}&subCategoryPage=${subCategoryPage}`
                 : '';
 
         // Lấy danh sách Chuyên Mục Cấp 1
@@ -119,15 +117,13 @@ export class AdminController {
 
         const subCategoryPreviousLink =
             subCategoryPage > 1
-                ? `/admin/categories?category=${categoryId}&subCategoryPage=${
-                      subCategoryPage - 1
-                  }&page=${page}`
+                ? `/admin/categories?category=${categoryId}&subCategoryPage=${subCategoryPage - 1
+                }&page=${page}`
                 : '';
         const subCategoryNextLink =
             subCategoryPage < totalSubCategoryPages
-                ? `/admin/categories?category=${categoryId}&subCategoryPage=${
-                      subCategoryPage + 1
-                  }&page=${page}`
+                ? `/admin/categories?category=${categoryId}&subCategoryPage=${subCategoryPage + 1
+                }&page=${page}`
                 : '';
 
         // Lấy danh sách Chuyên Mục Cấp 2
@@ -366,8 +362,8 @@ export class AdminController {
             }
             if (!Array.isArray(category_remove)) {
                 category_remove = category_remove
-            ? [Number(category_remove)]
-            : [];
+                    ? [Number(category_remove)]
+                    : [];
             }
             // Validation cơ bản
             if (userData.id == null || isNaN(userData.id)) {
@@ -385,7 +381,7 @@ export class AdminController {
             // Bắt lỗi nếu có
             console.error('Error updating user:', error);
             res.status(500).json({
-                error: 'Internal Server Error.',
+                error: `Internal Server Error: ${(error as Error).message}`,
             });
         }
     }
@@ -428,9 +424,7 @@ export class AdminController {
         } catch (error) {
             console.error('Error creating category:', error);
             res.status(500).json({
-                error:
-                    'Internal Server Error with message: ' +
-                    (error as Error).message,
+                error: 'Internal Server Error: ' + (error as Error).message,
             });
         }
     }
@@ -452,7 +446,7 @@ export class AdminController {
             console.log('Request body:', req.body);
             // Gọi Service để tạo user
             userData.password = await bcrypt.hash(userData.password, 10);
-            
+
             await createUser(userData, penName);
 
             const redirectUrl = req.session.retUrl || '/admin/users';
@@ -461,7 +455,7 @@ export class AdminController {
             // Bắt lỗi nếu có
             console.error('Error creating user:', error);
             res.status(500).json({
-                error: 'Internal Server Error.',
+                error: 'Internal Server Error: ' + (error as Error).message,
             });
         }
     }
@@ -474,7 +468,7 @@ export class AdminController {
             res.redirect('/admin/tags');
         } catch (error) {
             res.status(500).json({
-                error: (error as Error).message,
+                error: "Internal Server Error: " + (error as Error).message,
             });
         }
     }
@@ -526,7 +520,7 @@ export class AdminController {
             // Bắt lỗi nếu có
             console.error('Error deleting user:', error);
             res.status(500).json({
-                error: 'Internal Server Error.',
+                error: 'Internal Server Error: ' + (error as Error).message,
             });
         }
     }

@@ -64,7 +64,8 @@
                     {{#if (eq this.cover 'null')}}
                     <img src="/null.jpg" alt="Logo" class="img-fluid" />
                     {{else}}
-                    <img src="{{this.cover}}" alt="Logo" class="img-fluid" />
+                    <img src="{{this.cover}}" onerror="this.onerror=null; this.src='/null.jpg';" alt="Logo"
+                        class="img-fluid" />
                     {{/if}}
                 </div>
                 <div class="sum-article p-3 w-50 h-100">

@@ -26,8 +26,8 @@
                     <p class="position-absolute premium_badge">Premium</p>
                     {{/if}}
                     <div class="top-news__img position-relative overflow-hidden">
-                        <img src="{{topNews.URL}}" alt="" class="w-100 img-fluid"
-                            style="object-fit: cover; height: 500px" />
+                        <img src="{{topNews.URL}}" alt="" onerror="this.onerror=null; this.src='/null.jpg';"
+                            class="w-100 img-fluid" style="object-fit: cover; height: 500px" />
                         <div class="top-news__date">
                             <span>Ngày đăng: {{topNews.DatePosted}}</span>
                         </div>

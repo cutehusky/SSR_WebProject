@@ -1,18 +1,12 @@
 <section class="container mt-5 d-flex justify-content-center row g-4">
     {{#each listOfNews}}
-    <div
-        class="d-flex align-items-start article position-relative"
-        style="
+    <div class="d-flex align-items-start article position-relative" style="
             padding: 0px;
             background-color: rgba(255, 255, 255, 0.5);
             border-radius: 20px;
-        "
-    >
-        <a
-            class="d-flex align-items-start w-75 overflow-hidden position-relative"
-            style="text-decoration: none; color: unset"
-            href="/article/{{ArticleID}}"
-        >
+        ">
+        <a class="d-flex align-items-start w-75 overflow-hidden position-relative"
+            style="text-decoration: none; color: unset" href="/article/{{ArticleID}}">
             {{#if this.IsPremium}}
             <p class="text-center position-absolute premium_article_badge">
                 Premium
@@ -22,12 +16,12 @@
                 {{#if (eq this.URL 'null')}}
                 <img src="/null.jpg" alt="Logo" class="img-fluid" />
                 {{else}}
-                <img src="{{this.URL}}" alt="Logo" class="img-fluid" />
+                <img src="{{this.URL}}" onerror="this.onerror=null; this.src='/null.jpg';" alt="Logo"
+                    class="img-fluid" />
                 {{/if}}
             </div>
             <div
-                class="main-news-item__description w-50 sum-article d-flex justify-content-between flex-column pt-2 pb-2"
-            >
+                class="main-news-item__description w-50 sum-article d-flex justify-content-between flex-column pt-2 pb-2">
                 <div>
                     <h5 class="truncate">{{this.Title}}</h5>
                     <p class="truncate_long" style="height: 72px">
@@ -45,10 +39,7 @@
                 <a href="/category/{{this.categoryId}}" class="text-muted">
                     <span>{{this.category}} /</span>
                 </a>
-                <a
-                    href="/category/subcategory/{{this.subcategoryId}}"
-                    class="text-muted"
-                >
+                <a href="/category/subcategory/{{this.subcategoryId}}" class="text-muted">
                     <span>{{this.subcategory}}</span>
                 </a>
             </div>

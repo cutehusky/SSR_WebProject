@@ -41,7 +41,8 @@
 </div>
 <div class="container editor-content-view mt-3">
     <div class="text-center mb-3">
-        <img src="{{article.cover}}" alt="Logo" class="img-fluid" style="max-width: 750px" />
+        <img src="{{article.cover}}" onerror="this.onerror=null; this.src='/null.jpg';" alt="Logo" class="img-fluid"
+            style="max-width: 750px" />
     </div>
     <hr />
     <div class="text-content">
@@ -49,7 +50,8 @@
     </div>
 </div>
 
-<form action="/editor/articles/{{articleId}}/reject" method="post" class="modal fade" id="editor-decline-modal" tabindex="-1" aria-hidden="true">
+<form action="/editor/articles/{{articleId}}/reject" method="post" class="modal fade" id="editor-decline-modal"
+    tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -60,7 +62,8 @@
             </div>
             <div class="modal-body pt-1">
                 <p class="mb-2 fw-bold">Phản hồi:</p>
-                <textarea id="bulletTextarea" name="reason" class="form-control" rows="10" placeholder="Bài viết bị từ chối vì..."></textarea>
+                <textarea id="bulletTextarea" name="reason" class="form-control" rows="10"
+                    placeholder="Bài viết bị từ chối vì..."></textarea>
             </div>
             <div class="modal-footer">
                 <div class="d-flex">
@@ -76,7 +79,8 @@
     </div>
 </form>
 
-<form action="/editor/articles/{{articleId}}/approve" method="post" class="modal fade" id="editor-adjust-modal" tabindex="-1" aria-hidden="true">
+<form action="/editor/articles/{{articleId}}/approve" method="post" class="modal fade" id="editor-adjust-modal"
+    tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -90,16 +94,17 @@
                     <div class="row">
                         <div class="col-6">
                             <label for="editor-category" class="form-label fw-bold">Chuyên mục</label>
-                            <input type="text" class="form-control" id="editor-category" name="category" placeholder="{{article.category}}" disabled>
+                            <input type="text" class="form-control" id="editor-category" name="category"
+                                placeholder="{{article.category}}" disabled>
                         </div>
                         <div class="col-6">
                             <label for="editor-subcategory" class="form-label fw-bold">Chuyên mục con</label>
                             <select class="form-control" id="editor-subcategory" name="subcategory">
                                 {{#each subcategories}}
                                 {{#if (eq this.id ../article.subcategoryId)}}
-                                   <option value="{{this.id}}" selected>{{this.name}}</option>
+                                <option value="{{this.id}}" selected>{{this.name}}</option>
                                 {{else}}
-                                      <option value="{{this.id}}">{{this.name}}</option>
+                                <option value="{{this.id}}">{{this.name}}</option>
                                 {{/if}}
                                 {{/each}}
                             </select>
@@ -135,8 +140,8 @@
                 <div class="mb-2">
                     <label for="editor-time" class="form-label fw-bold">Time</label>
                     <div class="d-flex">
-                        <input type="date" class="form-control me-2" id="editor-date" value="2025-01-27" name="date"/>
-                        <input type="time" class="form-control" id="editor-time" value="20:00" name="time"/>
+                        <input type="date" class="form-control me-2" id="editor-date" value="2025-01-27" name="date" />
+                        <input type="time" class="form-control" id="editor-time" value="20:00" name="time" />
                     </div>
                 </div>
             </div>
