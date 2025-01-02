@@ -112,7 +112,8 @@ export class UserController {
             // Lưu thông tin người dùng vào session sau khi đăng ký thành công
             req.session.authUser = userDb;
             // Redirect đến trang cập nhật thông tin người dùng
-            res.redirect('/user/profile');
+            // res.redirect('/user/profile');
+            return res.status(200).json({ successUrl: '/user/profile' });
         } catch (error) {
             console.error('Registration Error:', error);
             return res.status(500).json({ error: 'Internal Server Error' });
@@ -495,15 +496,19 @@ export class UserController {
 
             if (user.role === UserRole.Writer) {
                 const penName = req.body.penName as string;
-                if (!penName)
-                    return;
-                const exist = await DBConfig('writer').where('WriterID', user.id).first();
+                if (!penName) return;
+                const exist = await DBConfig('writer')
+                    .where('WriterID', user.id)
+                    .first();
                 if (exist)
                     await DBConfig('writer')
                         .where('WriterID', user.id)
                         .update({ Alias: penName });
                 else
-                    await DBConfig('writer').insert({ WriterID: user.id, Alias: penName });
+                    await DBConfig('writer').insert({
+                        WriterID: user.id,
+                        Alias: penName,
+                    });
             }
             res.redirect('/user/profile');
         } catch (error) {
