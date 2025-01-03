@@ -159,17 +159,21 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 const updateArticlePublished = async () => {
-    let news = await DBConfig('article')
-        .where('Status', 'Approved')
-        .select("ArticleID", "DatePublished");
-    console.log("updating news status");
-    for (let i = 0; i < news.length; i++) {
-        if (news[i].DatePublished.getTime() < Date.now()) {
-            console.log("updated: " + news[i]);
-            await DBConfig('article')
-                .where("ArticleID", news[i].ArticleID)
-                .update('Status', 'Published');
+    try {
+        let news = await DBConfig('article')
+            .where('Status', 'Approved')
+            .select("ArticleID", "DatePublished");
+        console.log("updating news status");
+        for (let i = 0; i < news.length; i++) {
+            if (!news[i].DatePublished || news[i].DatePublished.getTime() < Date.now()) {
+                console.log("updated: " + news[i]);
+                await DBConfig('article')
+                    .where("ArticleID", news[i].ArticleID)
+                    .update('Status', 'Published');
+            }
         }
+    } catch (e) {
+        console.log(e);
     }
 };
 
