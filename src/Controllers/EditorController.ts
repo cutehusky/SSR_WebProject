@@ -128,6 +128,7 @@ export class EditorController {
             category: article_details[0].Category,
             subcategory: article_details[0].Subcategory,
             subcategoryId: article_details[0].SubcategoryID,
+            IsPremium: article_details[0].IsPremium,
             tags: tags,
             cover: cover,
             content: article_details[0].Content ||
