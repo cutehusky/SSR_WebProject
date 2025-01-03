@@ -573,8 +573,13 @@ export const SearchArticle = async (
             )
             .where('STT', '=', '0')
             .orderBy('article.IsPremium', 'desc')
+            .orderBy("relevance ", "desc")
             .orderBy('DatePosted', 'desc')
             .select(
+                DBConfig.raw(
+                    'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE) AS relevance',
+                    [searchValue]
+                ),
                 'article.ArticleID',
                 'Title',
                 'DatePosted',
@@ -621,8 +626,13 @@ export const SearchArticle = async (
                 'article.ArticleID'
             )
             .where('STT', '=', '0')
+            .orderBy("relevance ", "desc")
             .orderBy('DatePosted', 'desc')
             .select(
+                DBConfig.raw(
+                    'MATCH(Title, Content, Abstract) AGAINST(? IN NATURAL LANGUAGE MODE) AS relevance',
+                    [searchValue]
+                ),
                 'article.ArticleID',
                 'Title',
                 'DatePosted',
